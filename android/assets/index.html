@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#e8eef7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1726" media="(prefers-color-scheme: dark)">
+  <title>Hypr Watch</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5.5 12.5 4 4 9-9"/></symbol>
+  <symbol id="i-watch" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="3.5"/><path d="M9 6V3h6v3M9 18v3h6v-3"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4L12 4Z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-13.7 5.6M4 12a8 8 0 0 1 13.7-5.6"/><path d="M18 3v4h-4M6 21v-4h4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 19h14"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 19h14"/></symbol>
+  <symbol id="i-unlink" viewBox="0 0 24 24"><path d="M9 7H7a5 5 0 0 0 0 10h2M15 7h2a5 5 0 0 1 0 10h-2"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01M3 3l18 18"/></symbol>
+  <symbol id="i-notes" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="3"/><path d="M9 8.5h6M9 12h6M9 15.5h3.5"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 6.8a4.2 4.2 0 0 1 7.5 2.5c0 5.6-7.5 10.2-7.5 10.2Z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-workout" viewBox="0 0 24 24"><path d="M13 4.5a1.5 1.5 0 1 0 0 .01M9.5 20l2.5-5.5 3 2.5v4M7 11.5l3-3 3.5 1 2 3 2.5.5M12 14.5l-1.5-4"/></symbol>
+  <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2.5" y="7" width="17" height="10" rx="2.5"/><path d="M22 10.5v3"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 6 13.5h5L10 21l7-10.5h-5L13 3Z"/></symbol>
+  <symbol id="i-find" viewBox="0 0 24 24"><rect x="8" y="5" width="8" height="14" rx="2.5"/><path d="M4.5 9v6M19.5 9v6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 17.5h2"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7h14M10 7V4.5h4V7M7 7l1 12.5h8L17 7"/></symbol>
+  <symbol id="i-location" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+</svg>
+
+<div class="ring-banner" id="ringing" role="alert" hidden>
+  <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
+  <div class="ring-text">
+    <p><strong>Phone is ringing.</strong> Your watch is looking for this phone.</p>
+    <p class="ring-error" id="ring-stop-error" hidden></p>
+  </div>
+  <button type="button" id="ring-stop" class="secondary">Stop</button>
+</div>
+
+<div class="shell">
+  <header class="appbar">
+    <p class="brand appbar-brand" aria-hidden="true">
+      <span class="brand-mark"><svg class="icon"><use href="#i-watch"/></svg></span>
+      <span translate="no">Hypr Watch</span>
+    </p>
+    <nav class="tabs" id="tabs" aria-label="Sections">
+      <button type="button" class="tab" data-view="notes" aria-current="page">
+        <span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-notes"/></svg></span>
+        <span class="tab-label">Notes</span>
+      </button>
+      <button type="button" class="tab" data-view="health">
+        <span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span>
+        <span class="tab-label">Health</span>
+      </button>
+      <button type="button" class="tab" data-view="settings">
+        <span class="tab-icon"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg></span>
+        <span class="tab-label">Settings</span>
+      </button>
+    </nav>
+  </header>
+
+  <div class="pane" id="list-pane">
+    <header class="top">
+      <h1 class="brand">
+        <span class="brand-mark" aria-hidden="true"><svg class="icon"><use href="#i-watch"/></svg></span>
+        <span translate="no">Hypr Watch</span>
+      </h1>
+      <button id="new-note" class="primary new-note" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+        <span>New note</span>
+      </button>
+    </header>
+
+    <div class="search">
+      <svg class="icon" aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="search" type="search" name="search" placeholder="Search notes…" aria-label="Search notes" autocomplete="off" spellcheck="false" enterkeyhint="search">
+    </div>
+
+    <div class="banner" id="offline" role="alert" hidden>
+      <svg class="icon" aria-hidden="true"><use href="#i-offline"/></svg>
+      <p id="offline-text">Can’t reach your phone.</p>
+      <button type="button" id="retry" class="secondary">Try again</button>
+    </div>
+
+    <section class="watch-card" id="watch-card" data-state="unknown" aria-labelledby="watch-status">
+      <div class="watch-row">
+        <span class="status-dot" id="status-dot" aria-hidden="true"></span>
+        <div class="watch-text">
+          <h2 class="watch-status" id="watch-status">Checking watch…</h2>
+          <p class="watch-detail" id="watch-detail"></p>
+        </div>
+        <button type="button" id="sync-watch" class="secondary" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>
+          <span>Sync</span>
+        </button>
+        <button type="button" id="connect-watch" class="secondary" hidden>Connect</button>
+      </div>
+      <div class="device-row" id="device-row" hidden>
+        <span class="battery" id="battery" hidden>
+          <svg class="icon" aria-hidden="true"><use id="battery-icon" href="#i-battery"/></svg>
+          <span id="battery-text"></span>
+        </span>
+        <span class="device-name" id="device-name"></span>
+      </div>
+      <div class="device-actions" id="device-actions" hidden>
+        <button type="button" id="find-watch" class="secondary">
+          <svg class="icon" aria-hidden="true"><use href="#i-find"/></svg>
+          <span>Find watch</span>
+        </button>
+        <button type="button" id="time-sync" class="ghost">
+          <svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>
+          <span>Sync time</span>
+        </button>
+      </div>
+      <p class="save-status device-status" id="device-status" role="status"></p>
+      <p class="watch-warning" id="watch-warning" hidden>
+        <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+        <span id="watch-warning-text"></span>
+      </p>
+    </section>
+
+    <section class="notes" id="notes-section" aria-labelledby="notes-heading">
+      <h2 class="section-title" id="notes-heading">Notes <span class="count" id="count"></span></h2>
+      <ul class="note-list" id="notes" aria-busy="true">
+        <li class="skeleton" aria-hidden="true"><span></span><span></span></li>
+        <li class="skeleton" aria-hidden="true"><span></span><span></span></li>
+        <li class="skeleton" aria-hidden="true"><span></span><span></span></li>
+      </ul>
+      <p class="list-note" id="all-done" hidden>Nothing open. Done notes are below.</p>
+      <p class="list-note" id="no-results" hidden></p>
+    </section>
+
+    <div class="empty" id="empty" hidden>
+      <div class="empty-art" aria-hidden="true"><svg class="icon"><use href="#i-watch"/></svg></div>
+      <h2>No notes yet</h2>
+      <p>Write the full note here. Its short title can go to your watch.</p>
+    </div>
+
+    <details class="done" id="done-section" hidden>
+      <summary class="section-title">
+        <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        Done <span class="count" id="done-count"></span>
+      </summary>
+      <ul class="note-list" id="done-notes"></ul>
+    </details>
+
+    <footer class="pane-footer">
+      <div class="footer-actions">
+        <button type="button" id="export-notes" class="ghost">
+          <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>
+          <span>Export notes</span>
+        </button>
+        <button type="button" id="disconnect-watch" class="ghost" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-unlink"/></svg>
+          <span>Disconnect watch</span>
+        </button>
+      </div>
+      <p class="footnote" id="sync-info">The watch shows each note’s short title in Reminders, with no alert. Complete it on the watch and it’s marked done here too.</p>
+    </footer>
+  </div>
+
+  <main class="view" id="health-view" aria-labelledby="health-title" hidden>
+    <header class="view-head">
+      <h1 class="view-title" id="health-title">Health</h1>
+    </header>
+
+    <section class="sync-card" id="health-sync" data-state="idle" aria-label="Health sync">
+      <span class="status-dot" aria-hidden="true"></span>
+      <div class="sync-text">
+        <p class="sync-title" id="health-sync-title">Checking sync…</p>
+        <p class="sync-detail" id="health-sync-detail"></p>
+      </div>
+      <button type="button" id="health-sync-now" class="secondary">
+        <svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>
+        <span>Sync now</span>
+      </button>
+    </section>
+
+    <section class="live-card" id="live-hr" data-state="off" aria-labelledby="live-title">
+      <span class="live-icon" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span>
+      <div class="live-text">
+        <h2 class="live-label" id="live-title">Heart rate now</h2>
+        <p class="live-value" id="live-value"></p>
+        <p class="live-note" id="live-note"></p>
+      </div>
+      <button type="button" id="live-retry" class="secondary" hidden>Try again</button>
+    </section>
+
+    <div class="callout" id="profile-callout" hidden>
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+      <div class="callout-text">
+        <p class="callout-title">Health profile not set</p>
+        <p>The watch needs your height, weight and age to count calories and set heart-rate zones.</p>
+      </div>
+      <button type="button" class="secondary" id="profile-callout-go">Set up</button>
+    </div>
+
+    <div class="banner" id="health-error" role="alert" hidden>
+      <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+      <p id="health-error-text"></p>
+      <button type="button" id="health-retry" class="secondary">Try again</button>
+    </div>
+
+    <div class="empty health-empty" id="health-empty" hidden>
+      <div class="empty-art" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></div>
+      <h2>No health data yet</h2>
+      <p id="health-empty-text">Connect the watch on the Notes tab, then tap Sync now. Steps, heart rate and sleep show up here after the first sync.</p>
+      <button type="button" class="secondary" id="health-empty-go">Go to Notes</button>
+    </div>
+
+    <div class="health-body" id="health-body" aria-busy="true">
+      <section class="today" aria-labelledby="today-title">
+        <h2 class="section-title" id="today-title">Today</h2>
+        <div class="tiles" id="today-tiles">
+          <div class="tile tile-steps skeleton-tile"></div>
+          <div class="tile skeleton-tile"></div>
+          <div class="tile skeleton-tile"></div>
+          <div class="tile skeleton-tile"></div>
+          <div class="tile skeleton-tile"></div>
+        </div>
+      </section>
+
+      <div class="trends-head">
+        <h2 class="section-title" id="trends-title">Trends</h2>
+        <div class="segmented" id="range" role="group" aria-label="Range">
+          <button type="button" data-range="7" aria-pressed="true">7 days</button>
+          <button type="button" data-range="30" aria-pressed="false">30 days</button>
+          <button type="button" data-range="90" aria-pressed="false">90 days</button>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <section class="card chart-card" aria-labelledby="steps-title">
+          <div class="card-head">
+            <h3 class="card-title" id="steps-title">Steps</h3>
+            <p class="card-sub" id="steps-sub"></p>
+          </div>
+          <div class="chart" id="steps-chart"></div>
+          <details class="table-view">
+            <summary>Show as table</summary>
+            <div class="table-wrap" id="steps-table"></div>
+          </details>
+        </section>
+
+        <section class="card chart-card" aria-labelledby="hr-title">
+          <div class="card-head">
+            <h3 class="card-title" id="hr-title">Heart rate</h3>
+            <p class="card-sub" id="hr-sub"></p>
+          </div>
+          <div class="chart" id="hr-chart"></div>
+        </section>
+
+        <section class="card chart-card" aria-labelledby="sleep-title">
+          <div class="card-head">
+            <h3 class="card-title" id="sleep-title">Sleep</h3>
+            <p class="card-sub" id="sleep-sub"></p>
+          </div>
+          <ul class="legend" id="sleep-legend"></ul>
+          <div class="chart" id="sleep-chart"></div>
+          <details class="table-view">
+            <summary>Show as table</summary>
+            <div class="table-wrap" id="sleep-table"></div>
+          </details>
+        </section>
+
+        <section class="card" aria-labelledby="workouts-title">
+          <div class="card-head">
+            <h3 class="card-title" id="workouts-title">Workouts</h3>
+            <p class="card-sub" id="workouts-sub"></p>
+          </div>
+          <ul class="workouts" id="workouts"></ul>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <main class="view" id="settings-view" aria-labelledby="settings-title" hidden>
+    <header class="view-head">
+      <h1 class="view-title" id="settings-title">Settings</h1>
+    </header>
+
+    <div class="settings-grid">
+      <h2 class="group-title">Health</h2>
+      <details class="card settings-card fold" id="sec-profile" data-fold="profile">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="profile-title">Health profile</h2>
+            <span class="fold-sub" id="profile-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">The watch uses this for calories and heart-rate zones.</p>
+          <form id="profile-form" novalidate>
+            <p class="form-error" id="profile-error" role="alert" hidden></p>
+            <div class="field-grid">
+              <div class="field">
+                <label for="pf-height_cm">Height</label>
+                <div class="unit-input">
+                  <input id="pf-height_cm" name="height_cm" type="number" inputmode="numeric" min="50" max="250" step="1" autocomplete="off" aria-describedby="pf-height_cm-error">
+                  <span class="unit" aria-hidden="true">cm</span>
+                </div>
+                <p class="field-error" id="pf-height_cm-error" hidden></p>
+              </div>
+              <div class="field">
+                <label for="pf-weight_kg">Weight</label>
+                <div class="unit-input">
+                  <input id="pf-weight_kg" name="weight_kg" type="number" inputmode="decimal" min="20" max="300" step="0.1" autocomplete="off" aria-describedby="pf-weight_kg-error">
+                  <span class="unit" aria-hidden="true">kg</span>
+                </div>
+                <p class="field-error" id="pf-weight_kg-error" hidden></p>
+              </div>
+              <div class="field">
+                <label for="pf-birthday">Birthday</label>
+                <input id="pf-birthday" name="birthday" type="date" min="1900-01-01" autocomplete="off" aria-describedby="pf-birthday-error">
+                <p class="field-error" id="pf-birthday-error" hidden></p>
+              </div>
+              <fieldset class="field gender-field" id="pf-gender" aria-describedby="pf-gender-error">
+                <legend>Gender</legend>
+                <div class="segmented radios">
+                  <label><input type="radio" name="gender" value="female"><span>Female</span></label>
+                  <label><input type="radio" name="gender" value="male"><span>Male</span></label>
+                </div>
+                <p class="field-error" id="pf-gender-error" hidden></p>
+              </fieldset>
+            </div>
+
+            <h3 class="form-section">Daily goals</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="pf-goal_steps">Steps</label>
+                <div class="unit-input">
+                  <input id="pf-goal_steps" name="goal_steps" type="number" inputmode="numeric" min="100" max="100000" step="1" autocomplete="off" aria-describedby="pf-goal_steps-error">
+                  <span class="unit" aria-hidden="true">steps</span>
+                </div>
+                <p class="field-error" id="pf-goal_steps-error" hidden></p>
+              </div>
+              <div class="field">
+                <label for="pf-goal_calories">Active calories</label>
+                <div class="unit-input">
+                  <input id="pf-goal_calories" name="goal_calories" type="number" inputmode="numeric" min="10" max="5000" step="1" autocomplete="off" aria-describedby="pf-goal_calories-error">
+                  <span class="unit" aria-hidden="true">kcal</span>
+                </div>
+                <p class="field-error" id="pf-goal_calories-error" hidden></p>
+              </div>
+              <div class="field">
+                <label for="pf-goal_standing_hours">Standing</label>
+                <div class="unit-input">
+                  <input id="pf-goal_standing_hours" name="goal_standing_hours" type="number" inputmode="numeric" min="1" max="24" step="1" autocomplete="off" aria-describedby="pf-goal_standing_hours-error">
+                  <span class="unit" aria-hidden="true">hours</span>
+                </div>
+                <p class="field-error" id="pf-goal_standing_hours-error" hidden></p>
+              </div>
+              <div class="field">
+                <label for="pf-goal_moving_minutes">Moving</label>
+                <div class="unit-input">
+                  <input id="pf-goal_moving_minutes" name="goal_moving_minutes" type="number" inputmode="numeric" min="1" max="1440" step="1" autocomplete="off" aria-describedby="pf-goal_moving_minutes-error">
+                  <span class="unit" aria-hidden="true">min</span>
+                </div>
+                <p class="field-error" id="pf-goal_moving_minutes-error" hidden></p>
+              </div>
+            </div>
+
+            <div class="form-foot">
+              <p class="save-status" id="profile-status" role="status"></p>
+              <button type="submit" id="profile-save" class="primary">Save profile</button>
+            </div>
+          </form>
+        </div>
+      </details>
+
+      <details class="card settings-card fold" id="sec-watch-settings" data-fold="watch-settings">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="ws-title">Watch health settings</h2>
+            <span class="fold-sub" id="ws-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">Measurements and alerts the watch runs on its own. Changes save right away.</p>
+          <p class="section-note" id="ws-note" hidden></p>
+          <div class="ws-groups" id="ws-groups"></div>
+        </div>
+      </details>
+
+      <details class="card settings-card fold" id="sec-health-connect" data-fold="health-connect">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="hc-title">Health Connect</h2>
+            <span class="fold-sub" id="hc-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <label class="switch-row setting-row" for="hc-enabled">
+            <span class="switch-text">
+              <span class="switch-label">Copy to Health Connect</span>
+              <span class="switch-hint" id="hc-hint">Steps, distance, heart rate, SpO2, sleep and workouts, after each sync</span>
+            </span>
+            <input type="checkbox" id="hc-enabled" role="switch" aria-describedby="hc-hint">
+          </label>
+          <div class="access-row" id="hc-access" data-state="unknown" hidden>
+            <span class="status-dot" aria-hidden="true"></span>
+            <div class="sync-text">
+              <p class="sync-title" id="hc-access-title"></p>
+              <p class="sync-detail" id="hc-access-detail"></p>
+            </div>
+            <button type="button" id="hc-allow" class="secondary">Allow</button>
+          </div>
+          <p class="section-note" id="hc-note" hidden></p>
+          <p class="hint" id="hc-last"></p>
+          <div class="form-foot hc-actions">
+            <p class="save-status" id="hc-status" role="status"></p>
+            <button type="button" id="hc-all" class="ghost" hidden>Export all again</button>
+            <button type="button" id="hc-now" class="secondary" hidden>
+              <svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>
+              <span>Export now</span>
+            </button>
+          </div>
+        </div>
+      </details>
+
+      <h2 class="group-title">On the watch</h2>
+      <details class="card settings-card fold" id="sec-alarms" data-fold="alarms">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="alarms-title">Alarms</h2>
+            <span class="fold-sub" id="alarms-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <div class="list-head">
+            <p class="list-count" id="alarms-count"></p>
+            <button type="button" id="alarms-refresh" class="ghost small">
+              <svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+          <p class="section-note" id="alarms-note" hidden></p>
+          <ul class="alarm-list" id="alarm-list"></ul>
+          <p class="section-note info" id="alarms-changed" role="status" hidden></p>
+          <button type="button" id="alarm-add" class="secondary block">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+            <span>Add alarm</span>
+          </button>
+          <p class="hint" id="alarms-limit" hidden></p>
+
+          <div class="sub-block" id="sleep-block">
+            <label class="switch-row" for="sleep-enabled">
+              <span class="switch-text">
+                <span class="switch-label">Sleep mode</span>
+                <span class="switch-hint" id="sleep-hint">Quiets the watch on a schedule</span>
+              </span>
+              <input type="checkbox" id="sleep-enabled" role="switch" aria-describedby="sleep-hint">
+            </label>
+            <p class="section-note" id="sleep-note" hidden></p>
+            <div class="field-grid" id="sleep-times">
+              <div class="field">
+                <label for="sleep-start">Starts</label>
+                <input id="sleep-start" type="time" required>
+              </div>
+              <div class="field">
+                <label for="sleep-end">Ends</label>
+                <input id="sleep-end" type="time" required>
+              </div>
+            </div>
+            <div class="form-foot">
+              <p class="save-status" id="sleep-status" role="status"></p>
+              <button type="button" id="sleep-save" class="secondary" hidden>Save times</button>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="card settings-card fold" id="sec-faces" data-fold="faces">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="faces-title">Watch faces</h2>
+            <span class="fold-sub" id="faces-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <div class="list-head">
+            <p class="list-count" id="faces-count"></p>
+            <button type="button" id="faces-refresh" class="ghost small">
+              <svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+          <p class="section-note" id="faces-note" hidden></p>
+          <ul class="row-list" id="face-list"></ul>
+          <p class="save-status" id="faces-status" role="status"></p>
+
+          <div class="sub-block face-install" id="face-install">
+            <input type="file" id="face-file" class="sr-only" accept=".bin" tabindex="-1" aria-hidden="true">
+            <button type="button" id="face-pick" class="secondary block" aria-describedby="face-install-hint">
+              <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>
+              <span>Install face (.bin)</span>
+            </button>
+            <p class="hint" id="face-install-hint">Use a face made for this watch. Keep the watch charged and close by until it finishes.</p>
+
+            <div class="face-confirm" id="face-confirm" role="group" aria-labelledby="face-confirm-file" hidden>
+              <p class="face-confirm-file" id="face-confirm-file"></p>
+              <ul class="face-warnings" id="face-warnings"></ul>
+              <div class="face-confirm-actions">
+                <button type="button" id="face-cancel" class="ghost">Cancel</button>
+                <button type="button" id="face-go" class="primary">Install anyway</button>
+              </div>
+            </div>
+
+            <div class="face-progress" id="face-progress" hidden>
+              <p class="face-progress-label" id="face-progress-label"></p>
+              <div class="progress" id="face-bar" role="progressbar" aria-labelledby="face-progress-label" aria-valuemin="0" aria-valuemax="100">
+                <span class="progress-fill" id="face-bar-fill"></span>
+              </div>
+            </div>
+
+            <p class="install-result" id="face-result" role="status"></p>
+          </div>
+        </div>
+      </details>
+
+      <details class="card settings-card fold" id="sec-quick-replies" data-fold="quick-replies">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="qr-title">Quick replies</h2>
+            <span class="fold-sub" id="qr-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">Short texts the watch offers when you decline a call.</p>
+          <div class="list-head">
+            <p class="list-count" id="qr-count"></p>
+            <p class="check-state" id="qr-state" role="status"></p>
+          </div>
+          <p class="section-note" id="qr-note" hidden></p>
+          <ol class="edit-list" id="qr-list"></ol>
+          <button type="button" id="qr-add" class="ghost add-row">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+            <span>Add reply</span>
+          </button>
+          <div class="form-foot">
+            <p class="save-status" id="qr-status" role="status"></p>
+            <button type="button" id="qr-save" class="primary">Save replies</button>
+          </div>
+        </div>
+      </details>
+
+      <details class="card settings-card fold" id="sec-contacts" data-fold="contacts">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="contacts-title">Favourite contacts</h2>
+            <span class="fold-sub" id="contacts-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">People you can call from the watch. They stay on this phone and the watch.</p>
+          <p class="section-note" id="contacts-note" hidden></p>
+          <ol class="edit-list" id="contact-list"></ol>
+          <button type="button" id="contact-add" class="ghost add-row">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+            <span>Add contact</span>
+          </button>
+          <div class="form-foot">
+            <p class="save-status" id="contacts-status" role="status"></p>
+            <button type="button" id="contacts-save" class="primary">Save contacts</button>
+          </div>
+        </div>
+      </details>
+
+      <h2 class="group-title">From the phone</h2>
+      <details class="card settings-card fold" id="sec-notifications" data-fold="notifications">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="notif-title">Watch notifications</h2>
+            <span class="fold-sub" id="notif-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">Pick which phone notifications reach the watch. Changes save right away.</p>
+          <div class="access-row" id="notif-access" data-state="unknown">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div class="sync-text">
+              <p class="sync-title" id="notif-access-title">Checking notification access…</p>
+              <p class="sync-detail" id="notif-access-detail"></p>
+            </div>
+            <button type="button" id="notif-access-open" class="secondary">Open settings</button>
+          </div>
+
+          <label class="switch-row setting-row" for="notif-calls">
+            <span class="switch-text">
+              <span class="switch-label">Forward calls</span>
+              <span class="switch-hint" id="notif-calls-hint">Incoming calls show on the watch</span>
+            </span>
+            <input type="checkbox" id="notif-calls" role="switch" aria-describedby="notif-calls-hint">
+          </label>
+
+          <div class="apps-head">
+            <h3 class="form-section" id="apps-title">Apps</h3>
+            <p class="save-status" id="notif-status" role="status"></p>
+          </div>
+          <ul class="app-list" id="notif-apps" aria-labelledby="apps-title"></ul>
+          <p class="list-note" id="notif-empty" hidden>No apps yet. An app shows up here after it posts a notification on the phone.</p>
+        </div>
+      </details>
+
+      <details class="card settings-card fold" id="sec-music" data-fold="music">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="music-title">Music</h2>
+            <span class="fold-sub" id="music-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <label class="switch-row setting-row" for="music-enabled">
+            <span class="switch-text">
+              <span class="switch-label">Phone media on the watch</span>
+              <span class="switch-hint" id="music-hint">Play, pause and skip from the watch</span>
+            </span>
+            <input type="checkbox" id="music-enabled" role="switch" aria-describedby="music-hint">
+          </label>
+          <div class="access-row" id="music-access" data-state="unknown">
+            <span class="status-dot" aria-hidden="true"></span>
+            <div class="sync-text">
+              <p class="sync-title" id="music-access-title">Checking media access…</p>
+              <p class="sync-detail" id="music-access-detail"></p>
+            </div>
+            <button type="button" id="music-access-open" class="secondary" hidden>Open settings</button>
+          </div>
+          <p class="hint" id="music-watch"></p>
+          <p class="save-status" id="music-status" role="status"></p>
+        </div>
+      </details>
+
+      <details class="card settings-card fold" id="sec-weather" data-fold="weather">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="weather-title">Weather</h2>
+            <span class="fold-sub" id="weather-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <label class="switch-row setting-row" for="weather-enabled">
+            <span class="switch-text">
+              <span class="switch-label">Weather on the watch</span>
+              <span class="switch-hint" id="weather-hint">Forecast from Open-Meteo, updated every 30 minutes</span>
+            </span>
+            <input type="checkbox" id="weather-enabled" role="switch" aria-describedby="weather-hint">
+          </label>
+          <div class="weather-now" id="weather-now" hidden>
+            <p class="weather-temp" id="weather-temp"></p>
+            <div class="weather-text">
+              <p class="weather-cond" id="weather-cond"></p>
+              <p class="weather-meta" id="weather-meta"></p>
+            </div>
+          </div>
+          <p class="section-note" id="weather-note" hidden></p>
+          <div id="weather-controls">
+            <div class="option-row">
+              <span class="option-label" id="weather-units-label">Units</span>
+              <div class="segmented" id="weather-units" role="group" aria-labelledby="weather-units-label">
+                <button type="button" data-units="metric" aria-pressed="false">°C, km/h</button>
+                <button type="button" data-units="imperial" aria-pressed="false">°F, mph</button>
+              </div>
+            </div>
+            <div class="option-row">
+              <span class="option-label" id="weather-where-label">Location</span>
+              <div class="segmented" id="weather-where" role="group" aria-labelledby="weather-where-label">
+                <button type="button" data-mode="device" aria-pressed="false">This phone</button>
+                <button type="button" data-mode="manual" aria-pressed="false">A place</button>
+              </div>
+            </div>
+            <div class="weather-device" id="weather-device">
+              <p class="hint">Uses the phone’s approximate location, rounded before it leaves the phone.</p>
+              <button type="button" id="weather-allow" class="secondary" hidden>
+                <svg class="icon" aria-hidden="true"><use href="#i-location"/></svg>
+                <span>Allow location</span>
+              </button>
+            </div>
+            <form class="weather-manual" id="weather-manual" novalidate hidden>
+              <div class="field">
+                <label for="wm-name">Place name</label>
+                <input id="wm-name" maxlength="32" autocomplete="off" enterkeyhint="next" placeholder="Shown on the watch" aria-describedby="wm-name-error">
+                <p class="field-error" id="wm-name-error" hidden></p>
+              </div>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="wm-lat">Latitude</label>
+                  <input id="wm-lat" inputmode="decimal" autocomplete="off" placeholder="52.52" aria-describedby="wm-lat-error">
+                  <p class="field-error" id="wm-lat-error" hidden></p>
+                </div>
+                <div class="field">
+                  <label for="wm-lon">Longitude</label>
+                  <input id="wm-lon" inputmode="decimal" autocomplete="off" placeholder="13.40" aria-describedby="wm-lon-error">
+                  <p class="field-error" id="wm-lon-error" hidden></p>
+                </div>
+              </div>
+              <div class="form-foot">
+                <button type="submit" id="wm-save" class="secondary">Save place</button>
+              </div>
+            </form>
+          </div>
+          <div class="form-foot">
+            <p class="save-status" id="weather-status" role="status"></p>
+            <button type="button" id="weather-refresh" class="secondary">
+              <svg class="icon" aria-hidden="true"><use href="#i-sync"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+          <p class="hint" id="weather-watch"></p>
+        </div>
+      </details>
+
+      <h2 class="group-title" id="backup-group" hidden>This phone</h2>
+      <details class="card settings-card fold" id="sec-backup" data-fold="backup" hidden>
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="backup-title">Backup and restore</h2>
+            <span class="fold-sub" id="backup-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">One encrypted file with your notes, health data, settings and the watch key. Restore it after a reinstall or on a new phone, and the watch connects with the restored key. On a new phone, pair the watch in Android’s Bluetooth settings first.</p>
+          <form id="backup-form" novalidate>
+            <div class="field">
+              <label for="bk-pass">Passphrase</label>
+              <input id="bk-pass" type="password" autocomplete="new-password" aria-describedby="bk-pass-hint bk-pass-error">
+              <p class="hint" id="bk-pass-hint">At least 8 characters. It can’t be reset: without it, the backup can’t be opened.</p>
+              <p class="field-error" id="bk-pass-error" hidden></p>
+            </div>
+            <div class="field">
+              <label for="bk-pass2">Repeat passphrase</label>
+              <input id="bk-pass2" type="password" autocomplete="new-password" aria-describedby="bk-pass2-error">
+              <p class="field-error" id="bk-pass2-error" hidden></p>
+            </div>
+            <div class="form-foot">
+              <p class="save-status" id="backup-status" role="status"></p>
+              <button type="submit" id="backup-save" class="primary">
+                <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>
+                <span>Back up</span>
+              </button>
+            </div>
+          </form>
+
+          <div class="sub-block">
+            <h3 class="form-section" id="restore-title">Restore</h3>
+            <button type="button" id="restore-start" class="secondary block" aria-describedby="restore-hint">
+              <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>
+              <span>Restore from a backup</span>
+            </button>
+            <p class="hint" id="restore-hint">Replaces everything on this phone with what the backup holds.</p>
+
+            <form class="restore-confirm" id="restore-confirm" aria-labelledby="restore-title" novalidate hidden>
+              <p class="face-warning">
+                <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+                <span>This replaces all notes, health data, settings and the watch key on this phone. Anything the backup doesn’t have is lost. The watch disconnects, then reconnects with the restored key.</span>
+              </p>
+              <div class="field">
+                <label for="rs-pass">Backup passphrase</label>
+                <input id="rs-pass" type="password" autocomplete="off" aria-describedby="rs-pass-error">
+                <p class="field-error" id="rs-pass-error" hidden></p>
+              </div>
+              <div class="face-confirm-actions">
+                <button type="button" id="restore-cancel" class="ghost">Cancel</button>
+                <button type="submit" id="restore-go" class="danger">Choose backup and replace</button>
+              </div>
+            </form>
+            <p class="save-status" id="restore-status" role="status"></p>
+          </div>
+        </div>
+      </details>
+    </div>
+  </main>
+
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+
+  <section class="editor" id="editor" aria-labelledby="editor-title">
+    <form id="note-form" novalidate>
+      <div class="editor-head">
+        <button type="button" id="close-editor" class="icon-button" aria-label="Close">
+          <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+        </button>
+        <h2 id="editor-title" tabindex="-1">New note</h2>
+        <p class="save-status" id="save-status" role="status"></p>
+        <div class="discard-bar" id="discard-bar" hidden>
+          <p id="discard-text">Discard changes?</p>
+          <button type="button" id="keep-editing" class="ghost">Keep editing</button>
+          <button type="button" id="discard" class="danger">Discard</button>
+        </div>
+      </div>
+
+      <div class="editor-body" id="editor-body">
+        <div class="conflict" id="conflict" role="alert" hidden>
+          <p><strong>Changed on another device.</strong> Load that version, or save yours over it.</p>
+          <div class="conflict-actions">
+            <button type="button" id="load-latest" class="secondary">Load latest</button>
+            <button type="button" id="save-mine" class="ghost">Save mine</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="title">Title</label>
+          <input id="title" name="title" class="title-input" maxlength="200" autocomplete="off" enterkeyhint="next" placeholder="What do you need to remember?" aria-describedby="title-error">
+          <p class="field-error" id="title-error" hidden></p>
+        </div>
+
+        <div class="field">
+          <label for="body">Details</label>
+          <textarea id="body" name="body" maxlength="20000" rows="6" placeholder="The full note. It stays on your phone and PC…"></textarea>
+        </div>
+
+        <fieldset class="watch-box" id="watch-box">
+          <legend class="sr-only">Watch</legend>
+          <label class="switch-row" for="watch-enabled">
+            <span class="switch-text">
+              <span class="switch-label">Send to watch</span>
+              <span class="switch-hint" id="watch-mode-note">Short title only, with no alert</span>
+            </span>
+            <input type="checkbox" id="watch-enabled" name="watch-enabled" role="switch" aria-describedby="watch-mode-note">
+          </label>
+
+          <div class="watch-fields" id="watch-fields">
+            <div class="device" aria-hidden="true">
+              <div class="screen">
+                <span class="screen-app">Reminders</span>
+                <span class="screen-item">
+                  <span class="screen-check"></span>
+                  <span class="screen-title" id="watch-preview-title">Short title</span>
+                </span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label-row">
+                <label for="watch-title">Watch title</label>
+                <span class="counter" id="watch-count">0/20</span>
+              </div>
+              <input id="watch-title" name="watch-title" autocomplete="off" enterkeyhint="done" spellcheck="false" aria-describedby="watch-count watch-title-hint watch-title-error">
+              <p class="hint" id="watch-title-hint">Leave empty to use the start of the title.</p>
+              <p class="field-error" id="watch-title-error" hidden></p>
+            </div>
+          </div>
+
+          <p class="watch-state" id="watch-state" hidden>
+            <svg class="icon" aria-hidden="true"><use id="watch-state-icon" href="#i-watch"/></svg>
+            <span id="watch-state-text"></span>
+          </p>
+        </fieldset>
+      </div>
+
+      <div class="editor-foot">
+        <button type="button" id="delete-note" class="ghost delete" hidden>Delete</button>
+        <button type="submit" id="save-note" class="primary save">Save</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<dialog class="sheet" id="alarm-sheet" aria-labelledby="alarm-sheet-title">
+  <form id="alarm-form" novalidate>
+    <div class="sheet-head">
+      <button type="button" id="alarm-close" class="icon-button" aria-label="Close">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+      <h2 id="alarm-sheet-title">New alarm</h2>
+    </div>
+    <div class="sheet-body">
+      <p class="form-error" id="alarm-error" role="alert" hidden></p>
+      <div class="field">
+        <label for="alarm-time">Time</label>
+        <input id="alarm-time" class="time-input" type="time" required>
+      </div>
+      <fieldset class="field days-field">
+        <legend>Repeat</legend>
+        <div class="day-toggles" id="alarm-days"></div>
+        <p class="hint" id="alarm-days-hint"></p>
+      </fieldset>
+      <div class="field">
+        <div class="label-row">
+          <label for="alarm-label">Label</label>
+          <span class="counter" id="alarm-label-count">0/40</span>
+        </div>
+        <input id="alarm-label" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder="Optional" aria-describedby="alarm-label-hint">
+        <p class="hint" id="alarm-label-hint">Kept on this phone. The watch shows only the time.</p>
+      </div>
+      <label class="switch-row" for="alarm-smart">
+        <span class="switch-text">
+          <span class="switch-label">Smart wake</span>
+          <span class="switch-hint" id="alarm-smart-hint">Rings in light sleep, shortly before this time</span>
+        </span>
+        <input type="checkbox" id="alarm-smart" role="switch" aria-describedby="alarm-smart-hint">
+      </label>
+    </div>
+    <div class="sheet-foot">
+      <button type="button" id="alarm-delete" class="ghost delete" hidden>Delete</button>
+      <button type="submit" id="alarm-save" class="primary save">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="notice" role="status">
+  <p id="notice-text"></p>
+  <button type="button" id="notice-action" class="toast-action" hidden></button>
+</div>
+
+<section class="access" id="access" hidden aria-labelledby="access-title">
+  <div class="access-card">
+    <span class="brand-mark large" aria-hidden="true"><svg class="icon"><use href="#i-watch"/></svg></span>
+    <h2 id="access-title">Connect this PC</h2>
+    <p id="access-text">Plug in the phone, then run this on the PC. It opens this page already connected.</p>
+    <code class="command" translate="no">python scripts/connect-pc.py --open</code>
+    <form id="access-form" novalidate>
+      <label for="access-token">Or paste the access token</label>
+      <input id="access-token" name="access-token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="access-error">
+      <p class="field-error" id="access-error" hidden></p>
+      <button id="access-submit" class="primary" type="submit">Connect</button>
+    </form>
+  </div>
+</section>
+</body>
+</html>

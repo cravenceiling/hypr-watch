@@ -1,0 +1,92 @@
+Hypr Watch: standalone companion for the Redmi Watch 5 Active.
+
+Licensing
+
+Hypr Watch is licensed under the MIT License (LICENSE), except for the files
+below, which are ported from Gadgetbridge and stay under the GNU Affero General
+Public License, version 3 or later (LICENSE-AGPL):
+
+AlarmsFeature.kt, ContactsFeature.kt, DataUpload.kt, DeviceFeature.kt,
+Frames.kt, HealthCapture.kt, HealthFileId.kt, HealthParsers.kt,
+HealthParsersRecords.kt, HealthParsersWorkout.kt, HealthSettingsFeature.kt,
+LiveHeartRateFeature.kt, MusicFeature.kt, NotificationsFeature.kt,
+QuickRepliesFeature.kt, WatchAuth.kt, WatchCrypto.kt, WatchFacesFeature.kt,
+WatchNotifications.kt, WeatherFeature.kt and WristNotificationListener.kt in
+android/src/local/hyprwatch/, and tests/HealthParsersTest.kt.
+
+The Android app is built from both sets of files, so an APK built from this
+repository is distributed under AGPL-3.0-or-later as a whole. Everything else,
+including the PC scripts, the MCP server and the phone's web page, can be used
+on its own under MIT.
+
+Gadgetbridge
+
+The Xiaomi framing, authentication and reminder implementation was developed
+with reference to Gadgetbridge, licensed AGPL-3.0-or-later, from release 0.94.0
+up to its 2026 sources: https://codeberg.org/Freeyourgadget/Gadgetbridge
+
+Parts of the Android source are ported from Gadgetbridge, AGPL-3.0-or-later.
+Each file names its upstream sources and copyright holders in its header:
+
+- Frames.kt: the SPP v2 send window and ack/nack/resend logic, from
+  XiaomiSppV2SendWindow (Copyright (C) 2026 Dany Mestas) and
+  XiaomiSppProtocolV2 (Copyright (C) 2024 Yoran Vulker).
+- HealthCapture.kt: the 8/1, 8/2, 8/3 fetch sequence, channel-5 chunk layout,
+  CRC-32 check and user info message, from XiaomiHealthService and
+  XiaomiActivityFileFetcher (Copyright (C) 2023-2024 José Rebelo, Yoran Vulker).
+- HealthFileId.kt: from XiaomiActivityFileId (Copyright (C) 2023-2024 Andreas
+  Shimokawa, José Rebelo).
+- HealthParsers.kt: from XiaomiActivityFileFetcher, XiaomiActivityParser,
+  XiaomiComplexActivityParser, DailyDetailsParser, DailySummaryParser,
+  SleepDetailsParser, SleepStagesParser and ManualSamplesParser
+  (Copyright (C) 2023-2026 José Rebelo, Andreas Shimokawa, Dany Mestas).
+- HealthParsersWorkout.kt: from WorkoutSummaryParser, XiaomiSimpleActivityParser,
+  XiaomiSimpleDataEntry and the XiaomiWorkoutType table (Copyright (C)
+  2023-2024 José Rebelo, Yoran Vulker).
+- HealthParsersRecords.kt: record shapes for the parsers above (Copyright (C)
+  2023-2026 José Rebelo, Andreas Shimokawa, Yoran Vulker, Dany Mestas).
+- WatchNotifications.kt: from XiaomiNotificationService and
+  wear_notification.proto (Copyright (C) 2023-2024 Andreas Shimokawa, José
+  Rebelo).
+- WristNotificationListener.kt: the background activity start, from
+  NotificationListener.sendAllowingBackgroundActivityStart.
+- WatchCrypto.kt and WatchAuth.kt: the miwear-auth handshake and SPP v2
+  encryption, from XiaomiAuthService (Copyright (C) 2023-2024 Andreas
+  Shimokawa, José Rebelo, Yoran Vulker) and XiaomiSppProtocolV2 (Copyright (C)
+  2024 Yoran Vulker).
+- AlarmsFeature.kt: alarm and sleep-mode commands, from XiaomiScheduleService
+  (Copyright (C) 2023-2024 José Rebelo).
+- ContactsFeature.kt: favourite contacts, from XiaomiPhonebookService
+  (Copyright (C) 2023-2024 Andreas Shimokawa, Yoran Vulker).
+- DataUpload.kt: the mass-data upload, from XiaomiDataUploadService
+  (Copyright (C) 2023-2024 José Rebelo).
+- DeviceFeature.kt: time, battery, device info and state, find watch and find
+  phone, from XiaomiSystemService (Copyright (C) 2023-2024 Andreas Shimokawa,
+  José Rebelo, LuK1337, Yoran Vulker).
+- HealthSettingsFeature.kt and LiveHeartRateFeature.kt: from
+  XiaomiHealthService (Copyright (C) 2023-2024 José Rebelo, Yoran Vulker).
+- MusicFeature.kt: from XiaomiMusicService (Copyright (C) 2023-2024 José
+  Rebelo, Yoran Vulker).
+- QuickRepliesFeature.kt: canned messages, from XiaomiNotificationService
+  (Copyright (C) 2023-2024 Andreas Shimokawa, José Rebelo).
+- WatchFacesFeature.kt: watch face list, install and file parsing, from
+  XiaomiWatchfaceService and XiaomiFWHelper (Copyright (C) 2023-2024 José
+  Rebelo).
+- WeatherFeature.kt: the weather encoding, from XiaomiWeatherService,
+  XiaomiWeatherConditions and WeatherSpec.toBeaufort (Copyright (C) 2023-2024
+  Andreas Shimokawa, José Rebelo, opcode).
+- tests/HealthParsersTest.kt: byte fixtures and expected values from
+  XiaomiActivityFileIdTest, DailySummaryParserTest, ManualSamplesParserTest and
+  WorkoutSummaryParserTest (Copyright (C) 2023-2026 José Rebelo, Dany Mestas).
+
+The ported files also carry "Copyright (C) 2026 Gadgetbridge contributors".
+Android and database code was removed; decoding and protocol logic were kept.
+Referenced Xiaomi implementation copyright holders also include Yoran Vulker,
+Andreas Böhler and José Rebelo; preserve the upstream source notices when
+redistributing. No upstream Java files and no proprietary APKs are
+included.
+
+The MCP adapter uses the official Python MCP SDK, licensed MIT:
+https://github.com/modelcontextprotocol/python-sdk
+The host sync tests use JSON-java, licensed public domain:
+https://github.com/stleary/JSON-java

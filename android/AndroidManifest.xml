@@ -1,0 +1,37 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.hyprwatch" android:versionCode="1" android:versionName="0.1.0">
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+  <!-- Health Connect export (Android 14+): write only, see HcType. -->
+  <uses-permission android:name="android.permission.health.WRITE_STEPS" />
+  <uses-permission android:name="android.permission.health.WRITE_DISTANCE" />
+  <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
+  <uses-permission android:name="android.permission.health.WRITE_RESTING_HEART_RATE" />
+  <uses-permission android:name="android.permission.health.WRITE_OXYGEN_SATURATION" />
+  <uses-permission android:name="android.permission.health.WRITE_SLEEP" />
+  <uses-permission android:name="android.permission.health.WRITE_EXERCISE" />
+  <uses-permission android:name="android.permission.health.WRITE_ACTIVE_CALORIES_BURNED" />
+  <application android:label="Hypr Watch" android:debuggable="true" android:allowBackup="false" android:usesCleartextTraffic="true" android:theme="@android:style/Theme.Material.Light.NoActionBar" android:enableOnBackInvokedCallback="true">
+    <activity android:name=".NotesActivity" android:exported="true" android:windowSoftInputMode="adjustResize">
+      <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+    </activity>
+    <!-- Health Connect links here to show why the app asks for its permissions (Android 14+). -->
+    <activity-alias android:name=".ViewPermissionUsageActivity" android:targetActivity=".NotesActivity" android:exported="true" android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+      <intent-filter><action android:name="android.intent.action.VIEW_PERMISSION_USAGE"/><category android:name="android.intent.category.HEALTH_PERMISSIONS"/></intent-filter>
+    </activity-alias>
+    <!-- Starts the service after a reboot or an update while the app owns the watch. -->
+    <receiver android:name=".LinkStartReceiver" android:exported="false">
+      <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED"/><action android:name="android.intent.action.MY_PACKAGE_REPLACED"/></intent-filter>
+    </receiver>
+    <service android:name=".NotesService" android:exported="false" android:foregroundServiceType="connectedDevice" />
+    <service android:name=".WristNotificationListener" android:label="Hypr Watch" android:exported="true" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+      <intent-filter><action android:name="android.service.notification.NotificationListenerService"/></intent-filter>
+    </service>
+  </application>
+</manifest>
