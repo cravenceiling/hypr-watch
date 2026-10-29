@@ -1,45 +1,64 @@
 /* Hypr Watch. Served under a self-only CSP: no inline styles, no external fonts or images. */
 
+/* Geist (SIL OFL 1.1), subset to Latin. Figures use its tabular digits, not a monospace. */
+@font-face {
+  font-family: "Geist";
+  src: url("/geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/*
+ * Parchment and ink. The chrome holds no colour: ink is the accent and the selected state is an
+ * inverted ink block. Hue appears only on status (brick for errors, ochre for warnings).
+ * Text colours are the readable tones; the *-mark colours are for squares, bars and fills.
+ */
 :root {
   color-scheme: light;
 
   /* Page background must match the native system bars. */
-  --bg: #e8eef7;
-  --surface: #ffffff;
-  --field: #f3f6fb;
-  --ink: #132c4c;
-  --ink-2: #4b607c;
-  --ink-3: #5f7189;
-  --line: #d5deea;
-  --line-strong: #b0bfd3;
-  --accent: #5a4ac4;
-  --accent-press: #4a3bab;
-  --accent-text: #4b3cb3;
-  --accent-soft: #ebe8fb;
-  --accent-soft-press: #ddd8f7;
-  --on-accent: #ffffff;
-  --ok: #1d7a55;
-  --ok-soft: #dcf1e6;
-  --warn: #8a5200;
-  --warn-soft: #fbefd6;
-  --danger: #b4321f;
-  --danger-strong: #c2412c;
-  --danger-soft: #fae6e2;
-  --scrim: rgb(10 22 40 / 0.3);
-  --shadow-card: 0 1px 2px rgb(19 44 76 / 0.06), 0 0 0 1px rgb(19 44 76 / 0.045);
-  --shadow-float: 0 10px 28px rgb(19 44 76 / 0.2), 0 2px 6px rgb(19 44 76 / 0.12);
-  --focus: #6b5ce7;
-  --device: #0b1018;
-  --device-rim: #2b3546;
-  --skeleton: #dfe6f0;
+  --bg: #ccc8b1;
+  --surface: #d1cdb7;
+  --surface-2: #c6c2ab;
+  --overlay: #d7d3bf;
+  --field: #d7d3bf;
+  --ink: #211f1b;
+  --ink-2: #4d4b3f;
+  --ink-3: #514f43;
+  --line: #aeaa95;
+  --line-strong: #8a8672;
+  --accent: #211f1b;
+  --accent-press: #3a372f;
+  --accent-text: #211f1b;
+  --accent-soft: #c1bda5;
+  --accent-soft-press: #b8b49c;
+  --on-accent: #e4e0cb;
+  --ok: #211f1b;
+  --ok-soft: #c1bda5;
+  --warn: #544820;
+  --warn-mark: #a08e42;
+  --warn-soft: #c8c098;
+  --danger: #7d3427;
+  --danger-mark: #a94a38;
+  --danger-strong: #a94a38;
+  --on-danger: #f3efe2;
+  --danger-soft: #cfb7a2;
+  --scrim: rgb(33 31 27 / 0.38);
+  --shadow-float: 0 14px 34px rgb(33 31 27 / 0.22), 0 0 0 1px rgb(33 31 27 / 0.14);
+  --focus: #211f1b;
+  --device: #1b1a16;
+  --device-rim: #3a382f;
+  --skeleton: #c1bda5;
 
-  /* Chart series, from the validated data-viz palette (adjacent CVD and contrast checked on --surface). */
-  --viz-steps: #2a78d6;
-  --viz-hr: #eb6834;
-  --viz-deep: #2a78d6;
-  --viz-light: #1baf7a;
-  --viz-rem: #6250d6;
-  --viz-awake: #eb6834;
+  /* Charts are ink: one subject, one tone. Sleep stages are a lightness ramp; awake is the one hue. */
+  --viz-steps: #211f1b;
+  --viz-muted: #7f7a64;
+  --viz-hr: #211f1b;
+  --viz-deep: #211f1b;
+  --viz-rem: #5e5b4c;
+  --viz-light: #9c9882;
+  --viz-awake: #8a7633;
+  --grid: #b9b5a0;
 
   --safe-top-value: var(--safe-top, env(safe-area-inset-top, 0px));
   --safe-bottom-value: var(--safe-bottom, env(safe-area-inset-bottom, 0px));
@@ -48,56 +67,69 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
+  /* Square-ish, decided once: cards, controls, chips. */
+  --r-card: 4px;
+  --r-control: 3px;
+  --r-chip: 2px;
+
+  --font: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-code: ui-monospace, "SF Mono", "Roboto Mono", monospace;
+
   --gutter: 16px;
   /* The floating New note button: its height, its gap above the tab bar, and the room the list keeps clear below its last line. */
-  --fab-height: 56px;
+  --fab-height: 52px;
   --fab-offset: 12px;
   --fab-space: calc(var(--fab-offset) + var(--fab-height) + 32px);
   --tabbar: 64px;
 
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font);
   color: var(--ink);
   background: var(--bg);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --bg: #0f1726;
-    --surface: #18233a;
-    --field: #111b2e;
-    --ink: #e6ecf5;
-    --ink-2: #a8b6ca;
-    --ink-3: #8b9ab0;
-    --line: #27354e;
-    --line-strong: #3d4d69;
-    --accent: #6857ec;
-    --accent-press: #5a49d8;
-    --accent-text: #b7adff;
-    --accent-soft: #272454;
-    --accent-soft-press: #312d66;
-    --on-accent: #ffffff;
-    --ok: #5ccf9b;
-    --ok-soft: #12352a;
-    --warn: #f2b65a;
-    --warn-soft: #382a12;
-    --danger: #ff8d7d;
-    --danger-strong: #d8442f;
-    --danger-soft: #3c1d1d;
-    --scrim: rgb(0 0 0 / 0.5);
-    --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.045);
-    --shadow-float: 0 10px 30px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.06);
-    --focus: #a097ff;
-    --device: #04070c;
-    --device-rim: #46536b;
-    --skeleton: #1d2a42;
-    --viz-steps: #3987e5;
-    --viz-hr: #d95926;
-    --viz-deep: #3987e5;
-    --viz-light: #199e70;
-    --viz-rem: #9085e9;
-    --viz-awake: #d95926;
-  }
+/* Set by theme.js before first paint: the saved Appearance on the phone, else the system setting. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #2f2d26;
+  --surface: #36342c;
+  --surface-2: #3b3930;
+  --overlay: #3d3b32;
+  --field: #2b2923;
+  --ink: #d1cdb7;
+  --ink-2: #a8a593;
+  --ink-3: #a3a08d;
+  --line: #4f4d45;
+  --line-strong: #67645a;
+  --accent: #d1cdb7;
+  --accent-press: #bdb9a2;
+  --accent-text: #d1cdb7;
+  --accent-soft: #3d3b33;
+  --accent-soft-press: #45433a;
+  --on-accent: #2f2d26;
+  --ok: #d1cdb7;
+  --ok-soft: #3d3b33;
+  --warn: #d3c47e;
+  --warn-mark: #c2b169;
+  --warn-soft: #403a24;
+  --danger: #e09583;
+  --danger-mark: #c96b57;
+  --danger-strong: #a94a38;
+  --on-danger: #f3efe2;
+  --danger-soft: #45302a;
+  --scrim: rgb(0 0 0 / 0.55);
+  --shadow-float: 0 16px 40px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(209 205 183 / 0.1);
+  --focus: #d1cdb7;
+  --device: #12110e;
+  --device-rim: #5a584e;
+  --skeleton: #3a382f;
+  --viz-steps: #d1cdb7;
+  --viz-muted: #7f7c6d;
+  --viz-hr: #d1cdb7;
+  --viz-deep: #e4e0cb;
+  --viz-rem: #a8a593;
+  --viz-light: #6f6c5e;
+  --viz-awake: #9a8740;
+  --grid: #45433a;
 }
 
 /* ---------- Base ---------- */
@@ -120,9 +152,26 @@ body {
   min-height: 100dvh;
   background: var(--bg);
   color: var(--ink);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  font-synthesis-weight: none;
+}
+
+/* Measured figures keep their columns: tabular digits in the text face. */
+.num,
+.count,
+.counter,
+.tile-value,
+.live-value,
+.alarm-time,
+.time-input,
+.weather-temp,
+.workout-stats b,
+.chart-tip strong,
+.table-wrap td,
+.face-progress-label {
+  font-variant-numeric: tabular-nums;
 }
 
 html.sheet-open body {
@@ -175,23 +224,28 @@ p {
   flex: none;
   fill: none;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
 code {
-  font-family: ui-monospace, "SF Mono", "Roboto Mono", monospace;
+  font-family: var(--font-code);
   font-size: 0.88em;
   padding: 1px 5px;
-  border-radius: 6px;
-  background: var(--field);
+  border-radius: var(--r-chip);
+  background: var(--surface-2);
   overflow-wrap: anywhere;
 }
 
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--bg);
 }
 
 /* ---------- Buttons ---------- */
@@ -219,11 +273,11 @@ button {
   gap: 8px;
   min-height: 44px;
   padding: 0 16px;
-  border-radius: 12px;
+  border-radius: var(--r-control);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   white-space: nowrap;
-  transition: transform 120ms var(--ease-out), background-color 150ms ease, color 150ms ease;
+  transition: transform 120ms var(--ease-out), background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
 }
 
 .primary {
@@ -236,12 +290,13 @@ button {
 }
 
 .secondary {
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  color: var(--ink);
 }
 
 .secondary:active {
-  background: var(--accent-soft-press);
+  background: var(--accent-soft);
 }
 
 .ghost {
@@ -249,12 +304,12 @@ button {
 }
 
 .ghost:active {
-  background: var(--field);
+  background: var(--accent-soft);
 }
 
 .danger {
   background: var(--danger-strong);
-  color: #fff;
+  color: var(--on-danger);
 }
 
 .icon-button {
@@ -264,7 +319,7 @@ button {
 }
 
 .icon-button:active {
-  background: var(--field);
+  background: var(--accent-soft);
 }
 
 .primary:active,
@@ -277,8 +332,15 @@ button {
 
 button:disabled {
   cursor: default;
-  opacity: 0.55;
+  opacity: 0.5;
   transform: none;
+}
+
+/* A disabled primary keeps full opacity: a flat grey block with readable text. */
+.primary:disabled {
+  opacity: 1;
+  background: var(--accent-soft);
+  color: var(--ink-2);
 }
 
 button .icon {
@@ -329,35 +391,41 @@ html[data-view="notes"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
+/* The mark: a watch case drawn as a square frame around an ink square, the app's selection block. */
 .brand-mark {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  background: var(--accent);
-  color: var(--on-accent);
+  width: 26px;
+  height: 26px;
+  border-radius: var(--r-chip);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.brand-mark::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--ink);
 }
 
 .brand-mark .icon {
-  width: 20px;
-  height: 20px;
+  display: none;
 }
 
 .brand-mark.large {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  box-shadow: inset 0 0 0 3px var(--ink);
 }
 
-.brand-mark.large .icon {
-  width: 28px;
-  height: 28px;
+.brand-mark.large::before {
+  width: 16px;
+  height: 16px;
 }
 
 /* On phones the main action is a floating button within thumb reach. */
@@ -367,16 +435,16 @@ html[data-view="notes"] {
   bottom: calc(var(--safe-bottom-value) + var(--tabbar) + var(--fab-offset));
   z-index: 4;
   min-height: var(--fab-height);
-  padding: 0 22px 0 18px;
-  border-radius: 18px;
-  font-size: 16px;
+  padding: 0 20px 0 16px;
+  border-radius: var(--r-card);
+  font-size: 15px;
   box-shadow: var(--shadow-float);
 }
 
 .new-note .icon {
-  width: 22px;
-  height: 22px;
-  stroke-width: 2.2;
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
 }
 
 /* ---------- Search ---------- */
@@ -385,18 +453,22 @@ html[data-view="notes"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 48px;
+  height: 44px;
   margin-top: 4px;
-  padding: 0 14px;
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
-  color: var(--ink-3);
-  transition: box-shadow 150ms ease;
+  padding: 0 12px;
+  border-radius: var(--r-control);
+  background: var(--field);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink-2);
+}
+
+.search .icon {
+  width: 18px;
+  height: 18px;
 }
 
 .search:focus-within {
-  box-shadow: 0 0 0 2px var(--focus);
+  box-shadow: inset 0 0 0 1px var(--ink), 0 0 0 1px var(--ink);
 }
 
 .search input {
@@ -412,6 +484,10 @@ html[data-view="notes"] {
   outline: none;
 }
 
+.search input::-webkit-search-cancel-button {
+  filter: grayscale(1);
+}
+
 .search input::placeholder {
   color: var(--ink-3);
 }
@@ -423,8 +499,8 @@ html[data-view="notes"] {
   align-items: center;
   gap: 12px;
   margin-top: 12px;
-  padding: 12px 12px 12px 16px;
-  border-radius: 14px;
+  padding: 10px 10px 10px 14px;
+  border-radius: var(--r-card);
   background: var(--danger-soft);
   color: var(--danger);
   font-size: 14px;
@@ -438,16 +514,16 @@ html[data-view="notes"] {
 }
 
 .banner .secondary {
-  background: var(--surface);
-  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--danger);
+  color: var(--danger);
 }
 
 .watch-card {
-  margin: 12px 0 20px;
-  padding: 10px 10px 10px 16px;
-  border-radius: 16px;
+  margin: 12px 0 28px;
+  padding: 12px 12px 12px 16px;
+  border-radius: var(--r-card);
   background: var(--surface);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
 }
 
 .watch-row {
@@ -460,36 +536,36 @@ html[data-view="notes"] {
   align-self: center;
 }
 
+/* Status is a square: filled ink when well, an outline when off, pulsing while working, hue only on trouble. */
 .status-dot {
   flex: none;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   margin-top: 9px;
-  border-radius: 50%;
-  background: var(--line-strong);
-  box-shadow: 0 0 0 4px var(--field);
-  transition: background-color 200ms ease;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ink-2);
 }
 
 .watch-card[data-state="connected"] .status-dot {
-  background: var(--ok);
-  box-shadow: 0 0 0 4px var(--ok-soft);
+  background: var(--ink);
+  box-shadow: none;
 }
 
 .watch-card[data-state="connecting"] .status-dot {
-  background: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-soft);
-  animation: pulse 1.1s ease-in-out infinite;
+  background: var(--ink);
+  box-shadow: none;
+  animation: pulse 1.2s steps(2, jump-none) infinite;
 }
 
 .watch-card[data-state="error"] .status-dot {
-  background: var(--danger);
-  box-shadow: 0 0 0 4px var(--danger-soft);
+  background: var(--danger-mark);
+  box-shadow: none;
 }
 
 @keyframes pulse {
   50% {
-    opacity: 0.35;
+    opacity: 0.25;
   }
 }
 
@@ -500,9 +576,10 @@ html[data-view="notes"] {
 }
 
 .watch-status {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .watch-detail {
@@ -521,9 +598,9 @@ html[data-view="notes"] {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin: 8px 6px 4px 0;
+  margin: 10px 4px 2px 0;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   background: var(--warn-soft);
   color: var(--warn);
   font-size: 13px;
@@ -539,53 +616,85 @@ html[data-view="notes"] {
 
 /* ---------- Note list ---------- */
 
-.section-title {
+.section-title,
+.group-title {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-height: 32px;
   margin-bottom: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--ink-2);
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+
+/* NieR's menu marker: a small ink square before each section heading. */
+h2.section-title::before,
+.group-title::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
 }
 
 .count {
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-3);
-  font-weight: 500;
+  color: var(--ink-2);
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .note-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
+  border-radius: var(--r-card);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.note-list:empty {
+  display: none;
 }
 
 .note {
   position: relative;
   display: flex;
   align-items: flex-start;
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
-  transition: transform 160ms var(--ease-out), box-shadow 150ms ease;
+  transition: background-color 120ms ease;
+}
+
+.note + .note,
+.skeleton + .skeleton {
+  box-shadow: inset 0 1px 0 var(--line);
 }
 
 .note:has(.note-open:active) {
-  transform: scale(0.985);
+  background: var(--accent-soft);
 }
 
 .note:has(.note-open:focus-visible) {
   outline: 2px solid var(--focus);
-  outline-offset: 2px;
+  outline-offset: -2px;
 }
 
+/* The open note on a wide screen: an ink bar at its edge, the selection marker. */
 .note:has(.note-open[aria-current="true"]) {
-  box-shadow: 0 0 0 2px var(--accent);
+  background: var(--accent-soft);
+}
+
+.note:has(.note-open[aria-current="true"])::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--ink);
 }
 
 .check {
@@ -596,16 +705,16 @@ html[data-view="notes"] {
   place-items: center;
   width: 52px;
   height: 52px;
-  border-radius: 14px;
+  border-radius: 0;
 }
 
 .check .box {
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  border: 2px solid var(--line-strong);
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-chip);
+  border: 1.5px solid var(--ink-2);
   color: var(--on-accent);
   transition: background-color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
 }
@@ -618,8 +727,8 @@ html[data-view="notes"] {
   width: 16px;
   height: 16px;
   stroke-width: 2.6;
-  stroke-dasharray: 20;
-  stroke-dashoffset: 20;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
   transition: stroke-dashoffset 220ms var(--ease-out) 40ms;
 }
 
@@ -635,12 +744,12 @@ html[data-view="notes"] {
 .note-main {
   flex: 1;
   min-width: 0;
-  padding: 14px 16px 14px 0;
+  padding: 15px 16px 14px 0;
 }
 
 .note-title {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 550;
   line-height: 1.35;
   overflow-wrap: anywhere;
   display: -webkit-box;
@@ -666,11 +775,10 @@ html[data-view="notes"] {
   content: "";
   position: absolute;
   inset: 0 0 0 52px;
-  border-radius: 0 14px 14px 0;
 }
 
 .note-body {
-  margin-top: 3px;
+  margin-top: 2px;
   font-size: 14px;
   line-height: 1.45;
   color: var(--ink-2);
@@ -678,7 +786,7 @@ html[data-view="notes"] {
   overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
@@ -689,34 +797,35 @@ html[data-view="notes"] {
   gap: 6px 10px;
   margin-top: 8px;
   font-size: 12px;
-  color: var(--ink-3);
-}
-
-.note-meta time {
-  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-height: 22px;
-  padding: 0 8px 0 6px;
-  border-radius: 999px;
-  background: var(--field);
+  min-height: 20px;
+  padding: 0 6px 0 4px;
+  border-radius: var(--r-chip);
+  background: var(--surface-2);
   color: var(--ink-2);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .chip .icon {
-  width: 14px;
-  height: 14px;
-  stroke-width: 2.2;
+  width: 13px;
+  height: 13px;
+  stroke-width: 2;
 }
 
 .chip.ok {
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  color: var(--ink);
+}
+
+.note-meta time {
+  font-variant-numeric: tabular-nums;
 }
 
 .chip.warn {
@@ -725,14 +834,14 @@ html[data-view="notes"] {
 }
 
 .note.is-done .note-title {
-  color: var(--ink-3);
+  color: var(--ink-2);
   text-decoration: line-through;
   text-decoration-thickness: 1px;
   text-decoration-color: var(--ink-3);
 }
 
 .note.is-done .note-body {
-  color: var(--ink-3);
+  color: var(--ink-2);
   -webkit-line-clamp: 1;
 }
 
@@ -748,10 +857,8 @@ html[data-view="notes"] {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  height: 84px;
-  padding: 18px 16px 18px 52px;
-  border-radius: 14px;
-  background: var(--surface);
+  height: 76px;
+  padding: 20px 16px 18px 52px;
   opacity: 0;
   animation: skeleton-in 200ms ease 400ms forwards;
 }
@@ -760,7 +867,6 @@ html[data-view="notes"] {
   display: block;
   height: 12px;
   width: 60%;
-  border-radius: 6px;
   background: var(--skeleton);
 }
 
@@ -783,23 +889,24 @@ html[data-view="notes"] {
 .empty-art {
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
+  width: 56px;
+  height: 56px;
   margin: 0 auto 16px;
-  border-radius: 20px;
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  border-radius: var(--r-card);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  color: var(--ink);
 }
 
 .empty-art .icon {
-  width: 32px;
-  height: 32px;
-  stroke-width: 1.8;
+  width: 26px;
+  height: 26px;
+  stroke-width: 1.5;
 }
 
 .empty h2 {
   font-size: 18px;
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--ink);
 }
 
@@ -812,7 +919,7 @@ html[data-view="notes"] {
 }
 
 .done {
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .done summary {
@@ -820,7 +927,7 @@ html[data-view="notes"] {
   min-height: 44px;
   margin: 0 0 4px -6px;
   padding: 0 10px 0 4px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   cursor: pointer;
   list-style: none;
   user-select: none;
@@ -832,13 +939,13 @@ html[data-view="notes"] {
 }
 
 .done summary:active {
-  background: var(--surface);
+  background: var(--accent-soft);
 }
 
 .chevron {
   width: 18px;
   height: 18px;
-  transition: transform 200ms var(--ease-in-out);
+  transition: transform 160ms var(--ease-out);
 }
 
 .done[open] .chevron {
@@ -869,7 +976,7 @@ html[data-view="notes"] {
   margin-top: 8px;
   font-size: 13px;
   line-height: 1.5;
-  color: var(--ink-3);
+  color: var(--ink-2);
   text-wrap: pretty;
 }
 
@@ -899,10 +1006,10 @@ html.sheet-open .scrim {
   z-index: 6;
   height: var(--editor-height, 100dvh);
   max-height: var(--editor-height, 100dvh);
-  border-radius: 20px 20px 0 0;
+  border-radius: 10px 10px 0 0;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
+  background: var(--overlay);
   overflow: hidden;
   transform: translateY(100%);
   visibility: hidden;
@@ -937,7 +1044,7 @@ html.sheet-open .scrim {
   flex: 1;
   min-width: 0;
   font-size: 17px;
-  font-weight: 650;
+  font-weight: 600;
   outline: none;
 }
 
@@ -946,7 +1053,7 @@ html.sheet-open .scrim {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--ink-3);
+  color: var(--ink-2);
   white-space: nowrap;
 }
 
@@ -971,7 +1078,7 @@ html.sheet-open .scrim {
   align-items: center;
   gap: 8px;
   padding: 8px var(--gutter) 8px 18px;
-  background: var(--surface);
+  background: var(--overlay);
 }
 
 .discard-bar p {
@@ -1005,7 +1112,7 @@ html.sheet-open .scrim {
   justify-content: space-between;
   margin-bottom: 6px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
 }
 
@@ -1019,15 +1126,15 @@ html.sheet-open .scrim {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  padding: 11px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
   background: var(--field);
   color: var(--ink);
   font: inherit;
   font-size: 16px;
   line-height: 1.45;
-  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
 }
 
 .field input::placeholder,
@@ -1041,8 +1148,7 @@ html.sheet-open .scrim {
 .access input:focus {
   outline: none;
   border-color: var(--focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent);
-  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--focus);
 }
 
 .field [aria-invalid="true"] {
@@ -1051,7 +1157,8 @@ html.sheet-open .scrim {
 
 .title-input {
   font-size: 18px !important;
-  font-weight: 600;
+  font-weight: 550;
+  letter-spacing: -0.01em;
 }
 
 .field textarea {
@@ -1069,21 +1176,20 @@ html.sheet-open .scrim {
 
 .hint {
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.4;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 .counter {
   font-size: 12px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-3);
+  font-weight: 400;
+  color: var(--ink-2);
 }
 
 .counter.over {
   color: var(--danger);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* ---------- Watch section ---------- */
@@ -1092,8 +1198,9 @@ html.sheet-open .scrim {
   margin: 0;
   padding: 0 16px 16px;
   border: 0;
-  border-radius: 16px;
-  background: var(--field);
+  border-radius: var(--r-card);
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
 .watch-box:has(.watch-fields[hidden]):has(.watch-state[hidden]) {
@@ -1118,7 +1225,7 @@ html.sheet-open .scrim {
 
 .switch-label {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
 }
 
@@ -1134,34 +1241,44 @@ input[role="switch"] {
   -webkit-appearance: none;
   position: relative;
   flex: none;
-  width: 48px;
-  height: 28px;
+  width: 42px;
+  height: 24px;
   margin: 0;
-  border-radius: 999px;
-  background: var(--line-strong);
+  border-radius: var(--r-control);
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ink-2);
   cursor: pointer;
-  transition: background-color 180ms ease;
+  transition: background-color 120ms ease, box-shadow 120ms ease;
 }
 
 input[role="switch"]::before {
   content: "";
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
-  transition: transform 180ms var(--ease-out);
+  top: 5px;
+  left: 5px;
+  width: 14px;
+  height: 14px;
+  border-radius: 1px;
+  background: var(--ink-2);
+  transition: transform 160ms var(--ease-out), background-color 120ms ease;
 }
 
 input[role="switch"]:checked {
-  background: var(--accent);
+  background: var(--ink);
+  box-shadow: none;
 }
 
 input[role="switch"]:checked::before {
-  transform: translateX(20px);
+  background: var(--on-accent);
+  transform: translateX(18px);
+}
+
+input[role="switch"]:active::before {
+  transform: scale(0.85);
+}
+
+input[role="switch"]:checked:active::before {
+  transform: translateX(18px) scale(0.85);
 }
 
 input[role="switch"]:disabled {
@@ -1239,8 +1356,8 @@ input[role="switch"]:disabled {
   align-items: flex-start;
   gap: 6px;
   padding: 7px 6px;
-  border-radius: 10px;
-  background: #1c2433;
+  border-radius: 8px;
+  background: #2a2823;
 }
 
 .screen-check {
@@ -1249,7 +1366,7 @@ input[role="switch"]:disabled {
   height: 9px;
   margin-top: 2px;
   border-radius: 50%;
-  border: 1.5px solid #8796ad;
+  border: 1.5px solid #9a9683;
 }
 
 .screen-title {
@@ -1265,7 +1382,7 @@ input[role="switch"]:disabled {
 }
 
 .screen-title.placeholder {
-  color: #7d8aa0;
+  color: #a5a18c;
 }
 
 .watch-state {
@@ -1285,12 +1402,12 @@ input[role="switch"]:disabled {
 }
 
 .watch-state.ok {
-  color: var(--accent-text);
+  color: var(--ink);
 }
 
 .watch-state.warn {
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   background: var(--warn-soft);
   color: var(--warn);
 }
@@ -1298,7 +1415,7 @@ input[role="switch"]:disabled {
 .conflict {
   margin-bottom: 18px;
   padding: 14px 16px;
-  border-radius: 14px;
+  border-radius: var(--r-card);
   background: var(--warn-soft);
   color: var(--ink);
   font-size: 14px;
@@ -1317,7 +1434,7 @@ input[role="switch"]:disabled {
 }
 
 .conflict .secondary {
-  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--warn);
   color: var(--ink);
 }
 
@@ -1327,7 +1444,7 @@ input[role="switch"]:disabled {
   gap: 8px;
   padding: 10px var(--gutter) calc(10px + var(--safe-bottom-value));
   border-top: 1px solid var(--line);
-  background: var(--surface);
+  background: var(--overlay);
 }
 
 /* The keyboard covers the gesture bar, so its inset would only waste space. */
@@ -1347,7 +1464,7 @@ html.keyboard-open .editor-foot {
 
 .delete.armed {
   background: var(--danger-strong);
-  color: #fff;
+  color: var(--on-danger);
 }
 
 /* ---------- Toast ---------- */
@@ -1364,9 +1481,9 @@ html.keyboard-open .editor-foot {
   max-width: calc(100vw - 2 * var(--gutter));
   min-height: 48px;
   padding: 6px 6px 6px 16px;
-  border-radius: 14px;
+  border-radius: var(--r-card);
   background: var(--ink);
-  color: var(--bg);
+  color: var(--on-accent);
   box-shadow: var(--shadow-float);
   font-size: 14px;
   line-height: 1.35;
@@ -1391,9 +1508,11 @@ html.keyboard-open .editor-foot {
 .toast-action {
   min-height: 36px;
   padding: 0 12px;
-  border-radius: 10px;
-  font-weight: 700;
-  color: var(--accent-soft);
+  border-radius: var(--r-control);
+  font-weight: 600;
+  color: var(--on-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
   transition: transform 120ms var(--ease-out);
 }
 
@@ -1425,15 +1544,15 @@ html.sheet-open.keyboard-open .toast {
 .access-card {
   width: min(420px, 100%);
   padding: 28px;
-  border-radius: 20px;
+  border-radius: var(--r-card);
   background: var(--surface);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
 }
 
 .access-card h2 {
   margin-top: 18px;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -1441,7 +1560,8 @@ html.sheet-open.keyboard-open .toast {
   display: block;
   margin: 12px 0;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
+  background: var(--surface-2);
   font-size: 13px;
   color: var(--ink);
   white-space: nowrap;
@@ -1467,7 +1587,7 @@ html.sheet-open.keyboard-open .toast {
   display: block;
   margin-bottom: 6px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
 }
 
@@ -1495,9 +1615,10 @@ html.sheet-open.keyboard-open .toast {
   z-index: 4;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
   height: calc(var(--tabbar) + var(--safe-bottom-value));
-  padding: 0 8px var(--safe-bottom-value);
-  background: var(--surface);
+  padding: 6px 8px calc(6px + var(--safe-bottom-value));
+  background: var(--bg);
   box-shadow: 0 -1px 0 var(--line);
 }
 
@@ -1515,47 +1636,33 @@ html.keyboard-open .tabs {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 3px;
   min-width: 0;
-  color: var(--ink-3);
+  border-radius: var(--r-control);
+  color: var(--ink-2);
   font-size: 12px;
-  font-weight: 600;
-  transition: color 150ms ease;
+  font-weight: 500;
+  transition: transform 120ms var(--ease-out);
 }
 
 .tab-icon {
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 30px;
-  border-radius: 999px;
-  transition: background-color 150ms ease, transform 120ms var(--ease-out);
 }
 
 .tab .icon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
-.tab:active .tab-icon {
-  transform: scale(0.94);
+.tab:active {
+  transform: scale(0.96);
 }
 
+/* The selected section is an inverted ink block, as in a YoRHa menu. */
 .tab[aria-current="page"] {
-  color: var(--accent-text);
-}
-
-.tab[aria-current="page"] .tab-icon {
-  background: var(--accent-soft);
-}
-
-.tab:focus-visible {
-  outline: none;
-}
-
-.tab:focus-visible .tab-icon {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
+  background: var(--ink);
+  color: var(--on-accent);
 }
 
 html:not([data-view="notes"]) .toast {
@@ -1575,16 +1682,16 @@ html:not([data-view="notes"]) .toast {
 }
 
 .view-title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
 }
 
 .card {
   padding: 16px;
-  border-radius: 16px;
+  border-radius: var(--r-card);
   background: var(--surface);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
 }
 
 .card-head {
@@ -1593,8 +1700,9 @@ html:not([data-view="notes"]) .toast {
 
 .card-title {
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .card-sub {
@@ -1615,14 +1723,14 @@ html:not([data-view="notes"]) .toast {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  border-radius: 16px;
+  border-radius: var(--r-card);
 }
 
 .sync-card {
   margin: 4px 0 16px;
   padding: 10px 10px 10px 16px;
   background: var(--surface);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
 }
 
 .sync-card > button,
@@ -1638,7 +1746,7 @@ html:not([data-view="notes"]) .toast {
 
 .sync-title {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
 }
 
@@ -1655,24 +1763,24 @@ html:not([data-view="notes"]) .toast {
 }
 
 [data-state="ok"] > .status-dot {
-  background: var(--ok);
-  box-shadow: 0 0 0 4px var(--ok-soft);
+  background: var(--ink);
+  box-shadow: none;
 }
 
 [data-state="busy"] > .status-dot {
-  background: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-soft);
-  animation: pulse 1.1s ease-in-out infinite;
+  background: var(--ink);
+  box-shadow: none;
+  animation: pulse 1.2s steps(2, jump-none) infinite;
 }
 
 [data-state="warn"] > .status-dot {
-  background: var(--warn);
-  box-shadow: 0 0 0 4px var(--warn-soft);
+  background: var(--warn-mark);
+  box-shadow: none;
 }
 
 [data-state="error"] > .status-dot {
-  background: var(--danger);
-  box-shadow: 0 0 0 4px var(--danger-soft);
+  background: var(--danger-mark);
+  box-shadow: none;
 }
 
 #health-sync-now.busy .icon {
@@ -1685,7 +1793,7 @@ html:not([data-view="notes"]) .toast {
   gap: 10px;
   margin-bottom: 16px;
   padding: 12px 12px 12px 14px;
-  border-radius: 14px;
+  border-radius: var(--r-card);
   background: var(--warn-soft);
   color: var(--warn);
   font-size: 14px;
@@ -1706,13 +1814,13 @@ html:not([data-view="notes"]) .toast {
 }
 
 .callout-title {
-  font-weight: 650;
+  font-weight: 600;
   color: var(--warn);
 }
 
 .callout .secondary {
   align-self: center;
-  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--warn);
   color: var(--ink);
 }
 
@@ -1731,21 +1839,24 @@ html:not([data-view="notes"]) .toast {
   margin-bottom: 20px;
 }
 
+/* One card split by hairlines: the 1px gap shows the line colour behind the tiles. */
 .tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 1px;
+  border-radius: var(--r-card);
+  background: var(--line);
+  border: 1px solid var(--line);
+  overflow: hidden;
 }
 
 .tile {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-height: 92px;
-  padding: 12px 14px;
-  border-radius: 14px;
+  min-height: 96px;
+  padding: 14px 16px;
   background: var(--surface);
-  box-shadow: var(--shadow-card);
 }
 
 .tile-steps {
@@ -1759,7 +1870,7 @@ html:not([data-view="notes"]) .toast {
 
 .tile-label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
 }
 
@@ -1768,33 +1879,41 @@ html:not([data-view="notes"]) .toast {
   align-items: baseline;
   flex-wrap: wrap;
   gap: 0 6px;
+  margin-top: 2px;
   font-size: 26px;
-  font-weight: 650;
+  font-weight: 500;
   line-height: 1.2;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+}
+
+.tile-steps .tile-value {
+  font-size: 36px;
 }
 
 .tile-unit {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 400;
   letter-spacing: 0;
   color: var(--ink-2);
 }
 
 .tile-value.none {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.95;
-  color: var(--ink-3);
+  letter-spacing: 0;
+  color: var(--ink-2);
 }
 
 .tile-note {
   display: flex;
   align-items: center;
   gap: 4px;
+  margin-top: auto;
+  padding-top: 2px;
   font-size: 12px;
   line-height: 1.35;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 .tile-note .icon {
@@ -1804,15 +1923,15 @@ html:not([data-view="notes"]) .toast {
 }
 
 .tile-note.ok {
-  color: var(--ok);
-  font-weight: 600;
+  color: var(--ink);
+  font-weight: 500;
 }
 
 .meter {
-  height: 8px;
-  margin: 8px 0 6px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--viz-steps) 16%, var(--surface));
+  height: 6px;
+  margin: 10px 0 8px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
   overflow: hidden;
 }
 
@@ -1820,7 +1939,6 @@ html:not([data-view="notes"]) .toast {
   display: block;
   height: 100%;
   width: 100%;
-  border-radius: 999px;
   background: var(--viz-steps);
   transform-origin: left;
   transition: transform 400ms var(--ease-out);
@@ -1843,10 +1961,11 @@ html:not([data-view="notes"]) .toast {
 
 .segmented {
   display: inline-flex;
+  gap: 2px;
   padding: 3px;
-  border-radius: 12px;
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--line);
 }
 
 .segmented button,
@@ -1854,14 +1973,14 @@ html:not([data-view="notes"]) .toast {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 36px;
+  min-height: 34px;
   padding: 0 12px;
-  border-radius: 9px;
+  border-radius: var(--r-chip);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
   white-space: nowrap;
-  transition: background-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
+  transition: transform 120ms var(--ease-out);
 }
 
 .segmented button:active,
@@ -1871,8 +1990,8 @@ html:not([data-view="notes"]) .toast {
 
 .segmented [aria-pressed="true"],
 .segmented label:has(input:checked) {
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background: var(--ink);
+  color: var(--on-accent);
 }
 
 .chart-grid {
@@ -1887,6 +2006,11 @@ html:not([data-view="notes"]) .toast {
 .settings-grid > *,
 .tiles > * {
   min-width: 0;
+}
+
+/* Skeleton tiles fade in late; until then the hairline colour behind them must not show as a block. */
+.tiles:has(.skeleton-tile) {
+  background: var(--surface);
 }
 
 .chart {
@@ -1906,28 +2030,27 @@ html:not([data-view="notes"]) .toast {
   place-items: center;
   min-height: 176px;
   padding: 0 16px;
-  border-radius: 12px;
-  background: var(--field);
+  border-radius: var(--r-control);
+  box-shadow: inset 0 0 0 1px var(--line);
   font-size: 14px;
-  color: var(--ink-3);
+  color: var(--ink-2);
   text-align: center;
 }
 
 .chart text {
-  font-family: inherit;
   font-size: 11px;
-  fill: var(--ink-3);
+  fill: var(--ink-2);
   font-variant-numeric: tabular-nums;
 }
 
 .chart .grid {
-  stroke: var(--line);
+  stroke: var(--grid);
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
 
 .chart .baseline {
-  stroke: var(--line-strong);
+  stroke: var(--ink-2);
   stroke-width: 1;
   shape-rendering: crispEdges;
 }
@@ -1935,11 +2058,12 @@ html:not([data-view="notes"]) .toast {
 .chart .goal {
   stroke: var(--ink-2);
   stroke-width: 1;
+  stroke-dasharray: 3 3;
   shape-rendering: crispEdges;
 }
 
 .chart .goal-label {
-  fill: var(--ink-2);
+  fill: var(--ink);
   font-weight: 600;
   paint-order: stroke;
   stroke: var(--surface);
@@ -1948,7 +2072,7 @@ html:not([data-view="notes"]) .toast {
 }
 
 .chart .hover-band {
-  fill: var(--field);
+  fill: var(--accent-soft);
   opacity: 0;
 }
 
@@ -1964,14 +2088,14 @@ html:not([data-view="notes"]) .toast {
 .chart .line {
   fill: none;
   stroke: var(--viz-hr);
-  stroke-width: 2;
+  stroke-width: 1.5;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 
 .chart .band {
   fill: var(--viz-hr);
-  opacity: 0.14;
+  opacity: 0.1;
 }
 
 .chart .dot {
@@ -1993,8 +2117,8 @@ html:not([data-view="notes"]) .toast {
   width: max-content;
   max-width: 220px;
   padding: 6px 10px;
-  border-radius: 10px;
-  background: var(--surface);
+  border-radius: var(--r-control);
+  background: var(--overlay);
   box-shadow: var(--shadow-float);
   font-size: 12px;
   line-height: 1.4;
@@ -2018,7 +2142,7 @@ html:not([data-view="notes"]) .toast {
 .chart-tip strong {
   display: block;
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 500;
   color: var(--ink);
 }
 
@@ -2030,9 +2154,8 @@ html:not([data-view="notes"]) .toast {
 
 .swatch {
   flex: none;
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
+  width: 9px;
+  height: 9px;
 }
 
 .swatch.deep { background: var(--viz-deep); }
@@ -2044,7 +2167,8 @@ html:not([data-view="notes"]) .toast {
 .seg-light { fill: var(--viz-light); }
 .seg-rem { fill: var(--viz-rem); }
 .seg-awake { fill: var(--viz-awake); }
-.seg-steps { fill: var(--viz-steps); }
+.seg-steps { fill: var(--viz-muted); }
+.seg-steps.is-today { fill: var(--viz-steps); }
 
 .legend {
   display: flex;
@@ -2064,7 +2188,7 @@ html:not([data-view="notes"]) .toast {
 }
 
 .legend .legend-value {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
@@ -2079,10 +2203,13 @@ html:not([data-view="notes"]) .toast {
   min-height: 36px;
   padding: 0 8px;
   margin-left: -8px;
-  border-radius: 8px;
+  border-radius: var(--r-control);
   font-size: 13px;
-  font-weight: 600;
-  color: var(--accent-text);
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
   cursor: pointer;
   list-style: none;
 }
@@ -2097,7 +2224,7 @@ html:not([data-view="notes"]) .toast {
   overflow: auto;
   overscroll-behavior-x: contain;
   margin-top: 4px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   border: 1px solid var(--line);
 }
 
@@ -2124,9 +2251,10 @@ html:not([data-view="notes"]) .toast {
 .table-wrap thead th {
   position: sticky;
   top: 0;
-  background: var(--field);
-  font-weight: 600;
+  background: var(--surface);
+  font-weight: 500;
   color: var(--ink-2);
+  box-shadow: inset 0 -1px 0 var(--ink-2);
 }
 
 /* The date column stays put while a wide table scrolls sideways. */
@@ -2142,7 +2270,7 @@ html:not([data-view="notes"]) .toast {
 }
 
 .table-wrap td.none {
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 .table-wrap tbody tr:last-child > * {
@@ -2175,11 +2303,14 @@ html:not([data-view="notes"]) .toast {
   display: grid;
   place-items: center;
   flex: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  width: 20px;
+  height: 22px;
+  color: var(--ink-2);
+}
+
+.workout-icon .icon {
+  width: 20px;
+  height: 20px;
 }
 
 .workout-main {
@@ -2189,7 +2320,7 @@ html:not([data-view="notes"]) .toast {
 
 .workout-title {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
@@ -2201,15 +2332,14 @@ html:not([data-view="notes"]) .toast {
 .workout-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px 12px;
-  margin-top: 4px;
+  gap: 2px 14px;
+  margin-top: 6px;
   font-size: 13px;
   color: var(--ink-2);
-  font-variant-numeric: tabular-nums;
 }
 
 .workout-stats b {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
 }
 
@@ -2221,12 +2351,12 @@ html:not([data-view="notes"]) .toast {
 .workouts-more .ghost {
   margin-left: -12px;
   padding: 0 12px;
-  color: var(--accent-text);
+  color: var(--ink);
 }
 
 .empty-note {
   font-size: 14px;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 /* ---------- Settings ---------- */
@@ -2292,21 +2422,21 @@ html:not([data-view="notes"]) .toast {
   margin-bottom: 6px;
   padding: 0;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
 }
 
 .gender-field .segmented {
   display: flex;
-  min-height: 49px;
+  min-height: 48px;
   background: var(--field);
-  box-shadow: inset 0 0 0 1px var(--line);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
 .gender-field .segmented label {
   flex: 1;
   margin: 0;
-  min-height: 43px;
+  min-height: 40px;
   font-size: 15px;
   cursor: pointer;
 }
@@ -2337,16 +2467,16 @@ html:not([data-view="notes"]) .toast {
 }
 
 .form-section {
-  margin: 20px 0 10px;
-  font-size: 13px;
+  margin: 22px 0 10px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--ink-2);
+  color: var(--ink);
 }
 
 .form-error {
   margin-bottom: 14px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   background: var(--danger-soft);
   color: var(--danger);
   font-size: 14px;
@@ -2380,7 +2510,7 @@ html:not([data-view="notes"]) .toast {
   flex-wrap: wrap;
   margin-bottom: 4px;
   padding: 10px 10px 10px 14px;
-  background: var(--field);
+  background: var(--surface-2);
 }
 
 /* On narrow cards the button drops below the text instead of squeezing it. */
@@ -2433,7 +2563,7 @@ html:not([data-view="notes"]) .toast {
 
 .app-name {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
   overflow-wrap: anywhere;
   display: -webkit-box;
@@ -2445,7 +2575,7 @@ html:not([data-view="notes"]) .toast {
 .app-meta {
   font-size: 12px;
   line-height: 1.4;
-  color: var(--ink-3);
+  color: var(--ink-2);
   overflow-wrap: anywhere;
 }
 
@@ -2467,8 +2597,8 @@ html:not([data-view="notes"]) .toast {
   max-width: 1180px;
   margin: calc(var(--safe-top-value) + 8px) var(--gutter) 0;
   padding: 10px 10px 10px 14px;
-  border-radius: 14px;
-  background: var(--accent);
+  border-radius: var(--r-card);
+  background: var(--ink);
   color: var(--on-accent);
   box-shadow: var(--shadow-float);
   font-size: 14px;
@@ -2490,7 +2620,8 @@ html:not([data-view="notes"]) .toast {
 }
 
 .ring-banner .secondary {
-  background: var(--surface);
+  background: var(--on-accent);
+  box-shadow: none;
   color: var(--ink);
 }
 
@@ -2508,7 +2639,7 @@ html:not([data-view="notes"]) .toast {
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 12px;
-  margin: 6px 0 0 22px;
+  margin: 8px 0 0 21px;
   font-size: 13px;
   color: var(--ink-2);
 }
@@ -2517,7 +2648,7 @@ html:not([data-view="notes"]) .toast {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
@@ -2525,7 +2656,7 @@ html:not([data-view="notes"]) .toast {
 .battery .icon {
   width: 18px;
   height: 18px;
-  color: var(--ok);
+  color: var(--ink);
 }
 
 .battery[data-level="low"] .icon,
@@ -2546,11 +2677,12 @@ html:not([data-view="notes"]) .toast {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 10px 0 2px 22px;
+  margin: 12px 0 2px 21px;
 }
 
 .device-actions .secondary.active {
-  background: var(--accent);
+  background: var(--ink);
+  box-shadow: none;
   color: var(--on-accent);
 }
 
@@ -2559,7 +2691,7 @@ html:not([data-view="notes"]) .toast {
 }
 
 #device-status {
-  margin: 8px 6px 2px 22px;
+  margin: 8px 6px 2px 21px;
   white-space: normal;
 }
 
@@ -2575,40 +2707,43 @@ button.is-busy:disabled {
   opacity: 0.8;
 }
 
+.primary.is-busy:disabled {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 /* ---------- Health: live heart rate ---------- */
 
 .live-card {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: 0 0 16px;
+  margin: 0 0 28px;
   padding: 14px 12px 14px 16px;
-  border-radius: 16px;
+  border-radius: var(--r-card);
   background: var(--surface);
-  box-shadow: var(--shadow-card);
+  border: 1px solid var(--line);
 }
 
 .live-icon {
   display: grid;
   place-items: center;
   flex: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--field);
-  color: var(--ink-3);
-  transition: background-color 200ms ease, color 200ms ease;
+  align-self: flex-start;
+  width: 24px;
+  height: 28px;
+  color: var(--ink-2);
+  transition: color 200ms ease;
 }
 
 .live-icon .icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .live-card[data-state="live"] .live-icon,
 .live-card[data-state="measuring"] .live-icon {
-  background: color-mix(in srgb, var(--viz-hr) 14%, var(--surface));
-  color: var(--viz-hr);
+  color: var(--danger-mark);
 }
 
 .live-card[data-state="live"] .live-icon .icon {
@@ -2620,7 +2755,6 @@ button.is-busy:disabled {
 }
 
 .live-card[data-state="error"] .live-icon {
-  background: var(--danger-soft);
   color: var(--danger);
 }
 
@@ -2636,7 +2770,7 @@ button.is-busy:disabled {
 
 .live-label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
 }
 
@@ -2644,15 +2778,18 @@ button.is-busy:disabled {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  font-size: 30px;
-  font-weight: 650;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.live-value:empty {
+  display: none;
 }
 
 .live-card[data-state="stale"] .live-value {
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 .live-note {
@@ -2668,10 +2805,7 @@ button.is-busy:disabled {
 /* ---------- Settings: groups and folding sections ---------- */
 
 .group-title {
-  margin: 12px 4px -4px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-2);
+  margin: 20px 0 -4px;
 }
 
 .group-title:first-child {
@@ -2685,7 +2819,8 @@ button.is-busy:disabled {
   min-height: 44px;
   margin: -16px;
   padding: 16px;
-  border-radius: 16px;
+  border-radius: var(--r-card);
+  transition: background-color 120ms ease;
   cursor: pointer;
   list-style: none;
   user-select: none;
@@ -2698,6 +2833,10 @@ button.is-busy:disabled {
 
 .fold-head:focus-visible {
   outline-offset: -2px;
+}
+
+.fold-head:active {
+  background: var(--accent-soft);
 }
 
 .fold-text {
@@ -2720,7 +2859,7 @@ button.is-busy:disabled {
 }
 
 .fold-head .chevron {
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 .fold[open] > .fold-head .chevron {
@@ -2732,18 +2871,20 @@ button.is-busy:disabled {
 }
 
 .fold-body {
-  padding-top: 20px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 
 .fold-lead {
-  margin: -6px 0 14px;
+  margin: 0 0 14px;
 }
 
 .section-note {
   margin: 0 0 12px;
   padding: 10px 12px;
-  border-radius: 10px;
-  background: var(--field);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
   font-size: 14px;
   line-height: 1.4;
   color: var(--ink-2);
@@ -2763,7 +2904,7 @@ button.is-busy:disabled {
 .section-note.info {
   margin-top: 8px;
   background: var(--accent-soft);
-  color: var(--accent-text);
+  color: var(--ink);
 }
 
 .list-head {
@@ -2784,7 +2925,6 @@ button.is-busy:disabled {
 
 .list-count {
   font-size: 13px;
-  font-weight: 600;
   color: var(--ink-2);
   font-variant-numeric: tabular-nums;
 }
@@ -2795,19 +2935,19 @@ button.is-busy:disabled {
 .danger.small {
   min-height: 36px;
   padding: 0 12px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   font-size: 14px;
 }
 
 .list-head .ghost.small {
   margin-right: -8px;
-  color: var(--accent-text);
+  color: var(--ink);
 }
 
 .icon-button.small {
   width: 40px;
   min-height: 40px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
 }
 
 .icon-button.delete {
@@ -2837,12 +2977,7 @@ button.is-busy:disabled {
 
 .option-label {
   font-size: 15px;
-  font-weight: 600;
-}
-
-.option-row .segmented {
-  background: var(--field);
-  box-shadow: inset 0 0 0 1px var(--line);
+  font-weight: 500;
 }
 
 .check-state {
@@ -2850,7 +2985,7 @@ button.is-busy:disabled {
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
 }
 
@@ -2881,11 +3016,11 @@ button.is-busy:disabled {
 .field select {
   display: block;
   width: 100%;
-  min-height: 49px;
+  min-height: 48px;
   margin: 0;
-  padding: 12px 40px 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  padding: 11px 40px 11px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-control);
   background: var(--field);
   color: var(--ink);
   font: inherit;
@@ -2898,7 +3033,7 @@ button.is-busy:disabled {
 .field select:focus {
   outline: none;
   border-color: var(--focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent);
+  box-shadow: 0 0 0 1px var(--focus);
 }
 
 .field select:disabled,
@@ -2917,7 +3052,7 @@ button.is-busy:disabled {
   width: 18px;
   height: 18px;
   transform: translateY(-50%);
-  color: var(--ink-3);
+  color: var(--ink-2);
   pointer-events: none;
 }
 
@@ -2999,7 +3134,7 @@ button.is-busy:disabled {
   min-height: 64px;
   padding: 10px 0;
   text-align: left;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   transition: transform 160ms var(--ease-out);
 }
 
@@ -3012,15 +3147,14 @@ button.is-busy:disabled {
 }
 
 .alarm-time {
-  font-size: 26px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 500;
   line-height: 1.1;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .alarm.is-off .alarm-time {
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 .alarm-meta {
@@ -3033,7 +3167,7 @@ button.is-busy:disabled {
 
 .alarm-label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
   overflow-wrap: anywhere;
 }
@@ -3048,18 +3182,17 @@ button.is-busy:disabled {
   display: inline-grid;
   place-items: center;
   min-width: 24px;
-  height: 22px;
+  height: 20px;
   padding: 0 4px;
-  border-radius: 6px;
-  background: var(--field);
-  color: var(--ink-3);
-  font-size: 11px;
-  font-weight: 600;
+  border-radius: var(--r-chip);
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .day-chip.on {
-  background: var(--accent-soft);
-  color: var(--accent-text);
+  background: var(--ink);
+  color: var(--on-accent);
 }
 
 .day-chip.wide {
@@ -3068,7 +3201,7 @@ button.is-busy:disabled {
 
 .row-spinner {
   margin: 0 14px;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 /* ---------- Alarm sheet (dialog) ---------- */
@@ -3080,8 +3213,8 @@ button.is-busy:disabled {
   margin: auto 0 0;
   padding: 0;
   border: 0;
-  border-radius: 20px 20px 0 0;
-  background: var(--surface);
+  border-radius: 10px 10px 0 0;
+  background: var(--overlay);
   color: var(--ink);
   overflow: hidden;
   transition: transform 300ms var(--ease-drawer);
@@ -3120,7 +3253,7 @@ button.is-busy:disabled {
 
 .sheet-head h2 {
   font-size: 17px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .sheet-body {
@@ -3145,9 +3278,8 @@ button.is-busy:disabled {
 }
 
 .time-input {
-  font-size: 28px !important;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-size: 30px !important;
+  font-weight: 500;
 }
 
 .days-field {
@@ -3161,7 +3293,7 @@ button.is-busy:disabled {
   margin-bottom: 6px;
   padding: 0;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--ink-2);
 }
 
@@ -3173,13 +3305,13 @@ button.is-busy:disabled {
 
 .day-toggle {
   min-height: 44px;
-  border-radius: 12px;
+  border-radius: var(--r-control);
   background: var(--field);
-  box-shadow: inset 0 0 0 1px var(--line);
+  box-shadow: inset 0 0 0 1px var(--line-strong);
   color: var(--ink-2);
   font-size: 14px;
-  font-weight: 600;
-  transition: background-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
+  font-weight: 500;
+  transition: transform 120ms var(--ease-out);
 }
 
 .day-toggle:active {
@@ -3187,7 +3319,7 @@ button.is-busy:disabled {
 }
 
 .day-toggle[aria-pressed="true"] {
-  background: var(--accent);
+  background: var(--ink);
   box-shadow: none;
   color: var(--on-accent);
 }
@@ -3211,7 +3343,7 @@ button.is-busy:disabled {
   flex: 1;
   min-width: 0;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
@@ -3241,7 +3373,7 @@ button.is-busy:disabled {
 
 .face-confirm-file {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
@@ -3258,7 +3390,7 @@ button.is-busy:disabled {
   align-items: flex-start;
   gap: 8px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--r-control);
   background: var(--warn-soft);
   color: var(--warn);
   font-size: 14px;
@@ -3289,27 +3421,23 @@ button.is-busy:disabled {
 
 .face-progress-label {
   font-size: 14px;
-  font-weight: 600;
   color: var(--ink-2);
-  font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
 .progress {
   position: relative;
-  height: 8px;
+  height: 6px;
   margin-top: 8px;
   overflow: hidden;
-  border-radius: 999px;
-  background: var(--field);
+  background: var(--surface-2);
   box-shadow: inset 0 0 0 1px var(--line);
 }
 
 .progress-fill {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
-  background: var(--accent);
+  background: var(--ink);
   transform: scaleX(0);
   transform-origin: left;
   /* Status arrives about once a second; a linear glide joins the steps. */
@@ -3407,9 +3535,8 @@ button.is-busy:disabled {
 .row-index {
   flex: 1;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  color: var(--ink-2);
 }
 
 .contact-fields {
@@ -3425,7 +3552,7 @@ button.is-busy:disabled {
 .add-row {
   margin: 6px 0 0 -12px;
   padding: 0 12px;
-  color: var(--accent-text);
+  color: var(--ink);
 }
 
 /* ---------- Weather ---------- */
@@ -3433,19 +3560,18 @@ button.is-busy:disabled {
 .weather-now {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   margin: 14px 0;
   padding: 14px 16px;
-  border-radius: 14px;
-  background: var(--field);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
 }
 
 .weather-temp {
-  font-size: 34px;
-  font-weight: 650;
+  font-size: 36px;
+  font-weight: 500;
   line-height: 1;
   letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
 }
 
 .weather-text {
@@ -3454,7 +3580,7 @@ button.is-busy:disabled {
 
 .weather-cond {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .weather-meta {
@@ -3515,13 +3641,20 @@ button.is-busy:disabled {
   display: none;
 }
 
+.appearance-card .option-row {
+  padding: 0;
+  border-bottom: 0;
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .fold-head:hover .card-title {
-    color: var(--accent-text);
+  .fold-head:hover {
+    background: var(--accent-soft);
   }
 
   .alarm-open:not(:disabled):hover .alarm-time {
-    color: var(--accent-text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
   }
 
   .day-toggle:hover {
@@ -3532,9 +3665,8 @@ button.is-busy:disabled {
     color: var(--on-accent);
   }
 
-  .ring-banner .secondary:hover,
-  .option-row .segmented button:hover {
-    background: var(--field);
+  .ring-banner .secondary:hover {
+    background: var(--bg);
   }
 }
 
@@ -3561,14 +3693,19 @@ button.is-busy:disabled {
     padding-top: 16px;
   }
 
-  .fold-head:hover .card-title {
-    color: inherit;
+  .fold-head:hover,
+  .fold-head:active {
+    background: none;
+  }
+
+  .fold-body {
+    margin-top: 12px;
   }
 
   .sheet {
     width: min(440px, calc(100% - 48px));
     margin: auto;
-    border-radius: 20px;
+    border-radius: 6px;
     box-shadow: var(--shadow-float);
     transition: transform 200ms var(--ease-out), opacity 200ms ease;
   }
@@ -3636,12 +3773,12 @@ button.is-busy:disabled {
   }
 
   .secondary:hover {
-    background: var(--accent-soft-press);
+    background: var(--accent-soft);
   }
 
   .ghost:hover,
   .icon-button:hover {
-    background: var(--field);
+    background: var(--accent-soft);
     color: var(--ink);
   }
 
@@ -3651,53 +3788,42 @@ button.is-busy:disabled {
 
   .delete.armed:hover {
     background: var(--danger-strong);
-    color: #fff;
+    color: var(--on-danger);
   }
 
-  .note:hover .note-title {
-    color: var(--accent-text);
-  }
-
-  .note.is-done:hover .note-title {
-    color: var(--ink-2);
+  .note:hover {
+    background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface));
   }
 
   .check:hover .box {
-    border-color: var(--accent);
+    border-color: var(--ink);
   }
 
   .done summary:hover {
-    background: var(--surface);
+    background: var(--accent-soft);
   }
 
   .toast-action:hover {
-    background: rgb(255 255 255 / 0.1);
+    background: color-mix(in srgb, var(--on-accent) 14%, transparent);
   }
 
-  .tab:hover {
+  .tab:not([aria-current="page"]):hover {
+    background: var(--accent-soft);
     color: var(--ink);
   }
 
-  .tab[aria-current="page"]:hover {
-    color: var(--accent-text);
-  }
-
-  .segmented button:hover,
-  .segmented label:hover {
+  .segmented button:not([aria-pressed="true"]):hover,
+  .segmented label:not(:has(input:checked)):hover {
+    background: var(--accent-soft);
     color: var(--ink);
-  }
-
-  .segmented [aria-pressed="true"]:hover,
-  .segmented label:has(input:checked):hover {
-    color: var(--accent-text);
   }
 
   .table-view summary:hover {
-    background: var(--field);
+    text-decoration-color: var(--ink);
   }
 
   .callout .secondary:hover {
-    background: var(--field);
+    background: var(--warn-soft);
   }
 }
 
@@ -3730,7 +3856,7 @@ button.is-busy:disabled {
     position: static;
     min-height: 44px;
     padding: 0 18px 0 14px;
-    border-radius: 12px;
+    border-radius: var(--r-control);
     font-size: 15px;
     box-shadow: none;
   }
@@ -3751,8 +3877,9 @@ button.is-busy:disabled {
     height: auto;
     max-height: calc(100dvh - 40px);
     margin-top: 68px;
-    border-radius: 20px;
-    box-shadow: var(--shadow-card);
+    border-radius: var(--r-card);
+    background: var(--surface);
+    border: 1px solid var(--line);
     transform: none;
     visibility: visible;
     transition: none;
@@ -3799,52 +3926,28 @@ button.is-busy:disabled {
     display: inline-flex;
     gap: 2px;
     height: auto;
-    padding: 4px;
-    border-radius: 14px;
-    box-shadow: var(--shadow-card);
+    padding: 3px;
+    border-radius: var(--r-control);
+    background: var(--surface-2);
+    box-shadow: inset 0 0 0 1px var(--line);
   }
 
   .tab {
     flex-direction: row;
     gap: 6px;
-    min-height: 40px;
+    min-height: 36px;
     padding: 0 14px 0 10px;
-    border-radius: 10px;
+    border-radius: var(--r-chip);
     font-size: 14px;
-    color: var(--ink-2);
-    transition: background-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
-  }
-
-  .tab-icon {
-    width: auto;
-    height: auto;
-    background: none !important;
   }
 
   .tab .icon {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
   }
 
   .tab:active {
     transform: scale(0.97);
-  }
-
-  .tab:active .tab-icon {
-    transform: none;
-  }
-
-  .tab[aria-current="page"] {
-    background: var(--accent-soft);
-  }
-
-  .tab:focus-visible {
-    outline: 2px solid var(--focus);
-    outline-offset: 2px;
-  }
-
-  .tab:focus-visible .tab-icon {
-    outline: none;
   }
 
   /* The notes header loses its brand to the top bar; search and New note share one row. */
@@ -3870,8 +3973,14 @@ button.is-busy:disabled {
     margin-top: 0;
   }
 
+  /* The top bar shows the wordmark; the h1 stays for screen readers, visually hidden. */
   #list-pane > .top .brand {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   .new-note {
@@ -3897,8 +4006,42 @@ button.is-busy:disabled {
     margin-bottom: 12px;
   }
 
+  /* The selected tab names the view; its h1 stays for screen readers, visually hidden. */
   .view .view-head {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Sync status and the live heart rate share the first row. */
+  #health-view {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    align-items: stretch;
+  }
+
+  #health-view > * {
+    grid-column: 1 / -1;
+  }
+
+  #health-view > .sync-card,
+  #health-view > .live-card {
+    grid-column: auto;
+    margin: 0 0 28px;
+  }
+
+  #health-view > .sync-card {
+    align-items: center;
+  }
+
+  #health-view > .sync-card > .status-dot {
+    margin-top: 0;
   }
 
   .tiles {

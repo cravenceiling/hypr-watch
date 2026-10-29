@@ -1276,7 +1276,7 @@ function labelIndexes(count) {
 
 /** A bar with a 4px rounded data end and a square baseline. */
 function columnPath(x, y, w, h, rounded) {
-  const r = rounded ? Math.min(4, w / 2, h) : 0;
+  const r = rounded ? Math.min(1.5, w / 2, h) : 0;
   if (!r) return `M${x},${y + h}V${y}H${x + w}V${y + h}Z`;
   return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
 }
@@ -1401,7 +1401,7 @@ function columnChart(container, { dates, series, goal, tickFormat, label, tip })
   const barW = Math.min(24, Math.max(1, band - STACK_GAP));
 
   const svg = svgNode('svg', { viewBox: `0 0 ${width} ${CHART_HEIGHT}`, height: CHART_HEIGHT, role: 'img', 'aria-label': label });
-  const hover = svgNode('rect', { class: 'hover-band', y: PAD.top, height: plotH, width: band, rx: 6 });
+  const hover = svgNode('rect', { class: 'hover-band', y: PAD.top, height: plotH, width: band });
   svg.append(hover);
   yAxis(svg, ticks, y, width, tickFormat);
 
@@ -1416,14 +1416,19 @@ function columnChart(container, { dates, series, goal, tickFormat, label, tip })
       acc += v;
       const h = bottom - y(acc);
       if (h < 0.5) return;
-      svg.append(svgNode('path', { class: s.cls, d: columnPath(x, bottom - h, barW, h, k === lastSeries) }));
+      // The newest column is today's (or last night's): drawn in full ink, the rest in a lighter tone.
+      svg.append(svgNode('path', { class: s.cls + (i === dates.length - 1 ? ' is-today' : ''), d: columnPath(x, bottom - h, barW, h, k === lastSeries) }));
     });
   });
 
   if (goal) {
     const gy = Math.round(y(goal)) + 0.5;
     svg.append(svgNode('line', { class: 'goal', x1: PAD.left, x2: width - PAD.right, y1: gy, y2: gy }));
-    svg.append(svgNode('text', { class: 'goal-label', x: width - PAD.right, y: gy - 5, 'text-anchor': 'end' }, `Goal ${compactFormat.format(goal)}`));
+    // The goal takes its place in the y-axis lane, so it never sits on a bar; ticks too close to it give way.
+    for (const tick of svg.querySelectorAll('text')) {
+      if (Math.abs(Number(tick.getAttribute('y')) - 4 - gy) < 12) tick.remove();
+    }
+    svg.append(svgNode('text', { class: 'goal-label', x: PAD.left - 8, y: gy + 4, 'text-anchor': 'end' }, compactFormat.format(goal)));
   }
 
   for (const i of labelIndexes(dates.length)) {
@@ -3282,7 +3287,7 @@ async function loadAlarms() {
     alarms.sleepError = null;
   } else if (sleep.reason.status !== 401) alarms.sleepError = sleep.reason;
   renderAlarms();
-  renderSleep();
+  renderSleepMode();
   refreshStaleAlarms();
 }
 
@@ -3477,7 +3482,7 @@ $('alarms-refresh').addEventListener('click', async () => {
     if (sleep) alarms.sleep = sleep;
     restore();
     renderAlarms();
-    renderSleep();
+    renderSleepMode();
   } catch (error) {
     restore();
     renderAlarms();
@@ -3651,7 +3656,7 @@ $('alarm-add').addEventListener('click', () => openAlarmSheet(null));
 
 /* Sleep mode */
 
-function renderSleep() {
+function renderSleepMode() {
   const s = alarms.sleep;
   const connected = watchConnected();
   const toggle = $('sleep-enabled');
@@ -3690,7 +3695,7 @@ for (const id of ['sleep-start', 'sleep-end']) {
   $(id).addEventListener('input', () => {
     $(id).dataset.dirty = '1';
     setStatusLine('sleep-status', '');
-    renderSleep();
+    renderSleepMode();
   });
 }
 
@@ -3713,7 +3718,7 @@ async function saveSleep(payload, button) {
   } finally {
     if (restore) restore();
     delete toggle.dataset.busy;
-    renderSleep();
+    renderSleepMode();
   }
 }
 
@@ -4603,11 +4608,15 @@ function renderMusic() {
 }
 
 $('music-enabled').addEventListener('change', async () => {
+  // Read the new value before renderMusic puts the saved one back on the toggle.
+  const enabled = $('music-enabled').checked;
   music.saving = true;
   renderMusic();
+  // Keep the switch where the user put it while the save runs.
+  $('music-enabled').checked = enabled;
   setStatusLine('music-status', 'Saving…');
   try {
-    music.data = await api('music/settings', 'PUT', { enabled: $('music-enabled').checked }, { timeout: 15000 });
+    music.data = await api('music/settings', 'PUT', { enabled }, { timeout: 15000 });
     setStatusLine('music-status', 'Saved', 'ok');
   } catch (error) {
     if (error.status !== 401) setStatusLine('music-status', errorText(error), 'error');
@@ -5059,6 +5068,24 @@ const hasBackup = () => Boolean(window.AndroidNotes && typeof window.AndroidNote
 $('backup-group').hidden = !hasBackup();
 $('sec-backup').hidden = !hasBackup();
 setSummary('backup-sum', 'Encrypted with a passphrase');
+
+/* ---------- Settings: appearance (phone only) ---------- */
+
+// A PC browser has no bridge and follows its own OS; theme.js already applied the saved mode before first paint.
+if (window.AndroidNotes && typeof window.AndroidNotes.setTheme === 'function') {
+  const buttons = [...document.querySelectorAll('#appearance button')];
+  const showMode = (mode) => buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeMode === mode)));
+  showMode(document.documentElement.dataset.themeMode || 'system');
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      const mode = button.dataset.themeMode;
+      window.applyTheme(mode);
+      showMode(mode);
+      window.AndroidNotes.setTheme(mode);
+    });
+  }
+  $('sec-appearance').hidden = false;
+}
 
 function showRestoreConfirm(open) {
   $('restore-confirm').hidden = !open;
