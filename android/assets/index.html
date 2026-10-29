@@ -732,6 +732,47 @@
         </div>
       </details>
 
+      <h2 class="group-title" id="agents-group" hidden>Agents</h2>
+      <details class="card settings-card fold" id="sec-agents" data-fold="agents" hidden>
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="agents-title">Agents on Wi-Fi</h2>
+            <span class="fold-sub" id="agents-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">Let AI agents on a computer you pair, such as Claude Code or Codex, read and change your notes, health data and watch settings over this Wi-Fi network.</p>
+          <label class="switch-row setting-row" for="agents-enabled">
+            <span class="switch-text">
+              <span class="switch-label">Allow agents on Wi-Fi</span>
+              <span class="switch-hint" id="agents-hint">Off</span>
+            </span>
+            <input type="checkbox" id="agents-enabled" role="switch" aria-describedby="agents-hint">
+          </label>
+          <p class="section-note" id="agents-note" hidden></p>
+          <button type="button" id="agents-connect" class="primary block" disabled>
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+            <span>Connect an agent</span>
+          </button>
+          <div class="access-row agents-battery" id="agents-battery" data-state="unknown" hidden>
+            <span class="status-dot" aria-hidden="true"></span>
+            <div class="sync-text">
+              <p class="sync-title" id="agents-battery-title"></p>
+              <p class="sync-detail" id="agents-battery-detail"></p>
+            </div>
+            <button type="button" id="agents-battery-open" class="secondary">Open settings</button>
+          </div>
+
+          <div class="sub-block">
+            <h3 class="form-section" id="agents-list-title">Paired computers</h3>
+            <ul class="row-list" id="agents-list" aria-labelledby="agents-list-title"></ul>
+            <p class="list-note" id="agents-empty" hidden>None yet. Turn on the switch, then tap Connect an agent.</p>
+            <p class="save-status" id="agents-status" role="status"></p>
+          </div>
+        </div>
+      </details>
+
       <h2 class="group-title" id="backup-group" hidden>This phone</h2>
       <details class="card settings-card fold" id="sec-backup" data-fold="backup" hidden>
         <summary class="fold-head">
@@ -930,6 +971,35 @@
   </form>
 </dialog>
 
+<dialog class="sheet" id="pair-sheet" aria-labelledby="pair-sheet-title">
+  <form id="pair-form" novalidate>
+    <div class="sheet-head">
+      <button type="button" id="pair-close" class="icon-button" aria-label="Close">
+        <svg class="icon" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+      <h2 id="pair-sheet-title">Connect an agent</h2>
+    </div>
+    <div class="sheet-body pair-body">
+      <p class="pair-step">On the computer, on the same Wi-Fi, run</p>
+      <code class="command" translate="no">npx hypr-watch setup</code>
+      <p class="pair-step">and enter this code:</p>
+      <p class="pair-code" id="pair-code" translate="no" aria-describedby="pair-timer"></p>
+      <p class="pair-timer" id="pair-timer"></p>
+      <div class="access-row" id="pair-state" data-state="busy" role="status" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div class="sync-text">
+          <p class="sync-title" id="pair-state-title"></p>
+          <p class="sync-detail" id="pair-state-detail"></p>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button type="button" id="pair-again" class="secondary save" hidden>New code</button>
+      <button type="submit" id="pair-done" class="secondary save">Cancel</button>
+    </div>
+  </form>
+</dialog>
+
 <div class="toast" id="notice" role="status">
   <p id="notice-text"></p>
   <button type="button" id="notice-action" class="toast-action" hidden></button>
@@ -940,7 +1010,7 @@
     <span class="brand-mark large" aria-hidden="true"><svg class="icon"><use href="#i-watch"/></svg></span>
     <h2 id="access-title">Connect this PC</h2>
     <p id="access-text">Plug in the phone, then run this on the PC. It opens this page already connected.</p>
-    <code class="command" translate="no">python scripts/connect-pc.py --open</code>
+    <code class="command" translate="no">hypr-watch usb --open</code>
     <form id="access-form" novalidate>
       <label for="access-token">Or paste the access token</label>
       <input id="access-token" name="access-token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" aria-describedby="access-error">

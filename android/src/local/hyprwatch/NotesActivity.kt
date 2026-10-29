@@ -20,6 +20,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.provider.Settings
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -202,6 +203,18 @@ class NotesActivity : Activity() {
                 @JavascriptInterface
                 fun restore(passphrase: String?) {
                     if (NotesService.serving) runOnUiThread { pickBackupFile(RESTORE, passphrase) }
+                }
+
+                /** Android's list of apps exempt from battery optimisation; needs no permission, unlike asking for the exemption directly. */
+                @JavascriptInterface
+                fun openBatterySettings() {
+                    runOnUiThread {
+                        try {
+                            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                        } catch (e: Exception) {
+                            Toast.makeText(this@NotesActivity, "Couldn’t open battery settings", Toast.LENGTH_LONG).show()
+                        }
+                    }
                 }
 
                 @JavascriptInterface

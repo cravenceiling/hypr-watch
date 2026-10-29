@@ -29,9 +29,13 @@ your data stays on your phone.
 - **AI access.** A local MCP server, so an agent such as Claude Code or Codex
   can read your health data, manage notes and alarms, and more.
 
-No cloud account, no telemetry. The PC side reaches the phone over USB only.
+No cloud account, no telemetry. Agents reach the phone over paired Wi-Fi with
+TLS or authorized USB. The PC dashboard uses USB.
 
-## Getting started
+## Build from source
+
+Everyone currently builds and installs the phone app from source. Follow these
+steps before connecting an agent. The PC helper supports macOS and Linux.
 
 You need:
 
@@ -44,7 +48,8 @@ You need:
 - JDK 17 or later and the Android SDK (platform 36, build-tools 36.0.0).
   Gradle is not used, and the Kotlin compiler is downloaded and checked on the
   first build.
-- Python 3.10 or later for the PC helper and the MCP server.
+- Node 22.18 or later and npm for the PC helper and MCP server.
+- Python 3 for the Android build scripts.
 
 Then:
 
@@ -56,20 +61,38 @@ adb install -r build/android/hypr-watch.apk
 # Give the app your watch key. It stays in the app's private storage.
 echo '{"auth_key": "<your 32 hex digits>"}' |
   adb shell "run-as local.hyprwatch sh -c 'mkdir -p files && cat > files/watch.json'"
-
-# Pair the watch in Android's Bluetooth settings, open Hypr Watch, then:
-python scripts/connect-pc.py --watch --open
 ```
 
-`connect-pc.py --watch` pauses Mi Fitness so it doesn't fight over the watch,
-connects, and opens the dashboard on your PC. `--release` hands the watch back
-to Mi Fitness. Keep the signing key in `~/.local/state/hypr-watch/`: an APK
-signed with a different key can't update the app, and reinstalling wipes your
-data.
+Pair the watch in Android's Bluetooth settings, then open Hypr Watch.
+Keep the signing key in `~/.local/state/hypr-watch/`. An APK signed with a
+different key cannot update the app, and reinstalling wipes your data.
 
 The build is debuggable so the PC helper can read the app's API token over
 USB. That also means anyone with USB debugging access to your unlocked phone
 can read the app's data, watch key included.
+
+## Connect an agent
+
+With Hypr Watch installed on the phone and Node 22 or later on a macOS or Linux
+computer:
+
+1. On the phone, open **Settings > Agents**, enable **Allow agents on Wi-Fi**,
+   and select **Connect an agent**.
+2. On the computer, on the same Wi-Fi, run `npx hypr-watch setup`.
+3. Enter the code and accept registration with Claude Code or Codex.
+   Restart your agent, then ask "how did I sleep this week?"
+
+The MCP server stays on your computer over stdio. Setup checks existing
+pairings and replaces the agents' user-level MCP entries. Use
+`npx hypr-watch setup --host ip[:port]` if discovery is blocked.
+See [plugin/README.md](plugin/README.md) for options and transport settings.
+
+For the USB dashboard or checkout development, run `bash plugin/setup.sh`
+to build and link the local CLI, then `hypr-watch usb --watch --open`.
+This pauses Mi Fitness, connects the watch, and opens the PC dashboard.
+`hypr-watch usb --release` hands the watch back to Mi Fitness. For agent access
+from the checkout, run `node plugin/server/cli.ts setup` on Node 22.18 or later.
+Setup registers the local source with the current Node executable.
 
 ## Documentation
 

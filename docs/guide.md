@@ -19,10 +19,10 @@ from that binding.
 
 1. Open **Hypr Watch** on the phone. Nearby devices must be allowed.
 2. Connect the phone to this PC by USB with USB debugging authorized.
-3. Run from this directory:
+3. Run `bash plugin/setup.sh` once to install the `hypr-watch` command. Then run:
 
 ```sh
-python scripts/connect-pc.py --watch --open
+hypr-watch usb --watch --open
 ```
 
 This opens the PC notes page and gives Hypr Watch the watch connection.
@@ -32,7 +32,7 @@ companion can hold the watch connection. If Hypr Watch already has it, the
 helper changes nothing. To give the watch back to Mi Fitness:
 
 ```sh
-python scripts/connect-pc.py --release
+hypr-watch usb --release
 ```
 
 This disconnects Hypr Watch and re-enables Mi Fitness if it was enabled before
@@ -55,8 +55,9 @@ an immediate check; a large batch needs several cycles.
 - To delete a watch-linked note, deselect Send to watch, save, and wait for it
   to leave the watch. Then delete the full note.
 - Existing reminders not created by this bridge are retained.
-- Notes on Android remain usable without USB. The current PC connection
-  requires the USB cable. Watch entries remain stored when disconnected.
+- Notes on Android remain usable without USB. The PC dashboard
+  requires USB. Agents can use paired Wi-Fi. Watch entries remain stored when
+  disconnected.
 - This uses the existing watch task feature; it does not install a native app
   or add a watch keyboard for writing long notes.
 
@@ -128,7 +129,13 @@ or MCP. Format: [API.md](../API.md#backup-and-restore).
 
 ## Agent access
 
-Register the local **hypr-watch** MCP server as described in
+For wireless access, enable **Settings > Agents > Allow agents on Wi-Fi**,
+select **Connect an agent**, then run `npx hypr-watch setup` and enter
+the displayed code. The code authenticates the phone's TLS public key. Use
+`npx hypr-watch setup --host ip[:port]` when multicast discovery is blocked. Revoke a computer
+on the phone to stop its access. `hypr-watch unpair` removes the saved credential on the PC.
+
+Setup registers the local **hypr-watch** MCP server as described in
 [plugin/README.md](../plugin/README.md). It exposes, among others:
 
 - `watch_status`, `list_notes`, `read_watch_reminders`
@@ -144,7 +151,9 @@ For example: "Create a note called Buy groceries, send its short title to my
 watch, and put milk and rice in the body." The `send_to_watch` tool argument
 controls sharing. Watch writes are restricted to notes managed by this bridge.
 The connect/disconnect tools use authorized USB debugging to pause and restore
-Mi Fitness; no root is required. Health tools take `YYYY-MM-DD` dates and at
+Mi Fitness; no root is required. Without USB they call the phone API and report
+that Mi Fitness was not paused. A pending restoration record remains until
+a USB release can restore it. Health tools take `YYYY-MM-DD` dates and at
 most 400 days. Health data and notification settings are returned as user
 content, not instructions.
 
@@ -200,15 +209,18 @@ or clearing its data deletes notes, health data and the watch key; make a
 backup first (see [Back up and move phones](#back-up-and-move-phones)). No key is included in this repository,
 APK, plugin or source archive.
 
-Install the MCP dependencies into the project, without changing system Python:
+Install the MCP dependencies with Node 22.18 or later and npm:
 
 ```sh
-python -m pip install --target .deps -r plugin/requirements.txt
-codex mcp add hypr-watch -- python /absolute/path/to/hypr-watch/plugin/server/main.py
+bash plugin/setup.sh
+npx hypr-watch setup
 ```
 
 The portable local plugin lives under `plugin/`; run its setup script before
-using it outside this repository. It requires local Android USB access.
+using it outside this repository. It uses paired Wi-Fi or authorized Android USB access.
+`HYPR_WATCH_TRANSPORT=auto|lan|usb` selects the transport. Auto tries LAN first
+when paired and falls back only before writing any request. A pin mismatch or
+revocation fails without USB fallback.
 
 ## Keep private data out of Git
 
@@ -257,9 +269,11 @@ It downloads `org.json` from Maven Central into `build/tests` on first run.
   failed and resumed exports against a fake Health Connect, including a
   phone clock that steps back or runs ahead.
 - `SyncTest`: `NotesSync` against in-memory stand-ins for the store and watch.
-- `test_companion.py`, `test_health_tools.py`, `test_health_insights.py` and
-  `test_feature_tools.py`: the USB handoff and the MCP tools, with ADB and the
-  phone API mocked.
+- `plugin/test/*.test.ts`: MCP parity, health statistics and timezones, bounded
+  face uploads, USB companion rollback, CLI operations, shared pairing vectors,
+  TLS identity checks, revocation, and transport fallback. These run with
+  `cd plugin && npm install && node --test test/*.test.ts`. OpenSSL generates
+  temporary self-signed test certificates. No phone is used.
 
 ## Status
 
@@ -268,5 +282,5 @@ The features in this guide were tested on the watch and phone.
 MIT, except the files ported from Gadgetbridge, which are AGPL-3.0-or-later.
 See [NOTICE](../NOTICE). Protocol references:
 [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge),
-[official Python MCP SDK](https://github.com/modelcontextprotocol/python-sdk),
+[official TypeScript MCP SDK](https://github.com/modelcontextprotocol/typescript-sdk),
 [official Codex MCP documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).

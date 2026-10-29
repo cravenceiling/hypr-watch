@@ -4,6 +4,7 @@
  * Hypr Watch UI. Served to the Android WebView and, over an adb-forwarded port, to a PC browser.
  * Native contract: window.setAccessToken(token), global fitEditor(), optional window.AndroidNotes.exportNotes(json),
  * AndroidNotes.backup(passphrase) and AndroidNotes.restore(passphrase) answered by window.onBackupResult(result),
+ * AndroidNotes.openBatterySettings(),
  * and the CSS variables --safe-top / --safe-bottom set on <html>.
  */
 
@@ -111,7 +112,7 @@ async function api(path, method = 'GET', body, options = {}) {
   }
   setReachable(true);
   if (response.status === 401) {
-    showAccess(state.token ? 'That token didn’t work. Run the connect script again for a fresh link.' : '');
+    showAccess(state.token ? 'That token didn’t work. Run hypr-watch usb --open again for a fresh link.' : '');
     throw new ApiError(data.error || 'Connect with your local access token', 401);
   }
   if (!response.ok) {
@@ -2515,7 +2516,7 @@ async function loadProfile() {
 async function loadSettings() {
   if (!state.token || settings.loading) return;
   settings.loading = true;
-  const [profileOk] = await Promise.all([loadProfile(), loadNotifications(), loadFeatures()]);
+  const [profileOk] = await Promise.all([loadProfile(), loadNotifications(), loadFeatures(), loadAgents()]);
   settings.loading = false;
   if (profileOk) settings.loaded = true;
 }
@@ -5085,6 +5086,250 @@ if (window.AndroidNotes && typeof window.AndroidNotes.setTheme === 'function') {
     });
   }
   $('sec-appearance').hidden = false;
+}
+
+/* ---------- Settings: agents on Wi-Fi (phone only) ---------- */
+
+// Pairing and revoking belong to the phone's own screen; a PC browser over USB doesn't get the card.
+const hasAgents = () => Boolean(window.AndroidNotes && typeof window.AndroidNotes.openBatterySettings === 'function');
+const agents = { data: null, error: null, saving: false, armed: null, armTimer: 0, poll: 0 };
+const pairSheet = $('pair-sheet');
+
+async function loadAgents() {
+  if (!hasAgents()) return;
+  try {
+    agents.data = await api('agents');
+    agents.error = null;
+  } catch (error) {
+    if (error.status === 401) return;
+    agents.error = error;
+  }
+  renderAgents();
+  if (pairSheet.open) renderPairing();
+}
+
+function renderAgents() {
+  const d = agents.data;
+  const toggle = $('agents-enabled');
+  const connect = $('agents-connect');
+  if (!d) {
+    setNote('agents-note', agents.error ? `Couldn’t load agent settings. ${errorText(agents.error)}` : '', 'error');
+    toggle.disabled = true;
+    connect.disabled = true;
+    return;
+  }
+  const host = d.listening && d.listening.host;
+  const count = d.agents.length;
+  const paired = `${count} ${count === 1 ? 'computer' : 'computers'}`;
+  setSummary('agents-sum', !d.enabled ? (count ? `Off · ${paired}` : 'Off') : host ? `On · ${paired}` : 'On · not on Wi-Fi');
+  toggle.checked = d.enabled;
+  toggle.disabled = agents.saving;
+  $('agents-hint').textContent = !d.enabled ? 'Off' : host ? `Listening on ${host}` : 'Not on Wi-Fi';
+  let note = '';
+  if (agents.error) note = `Couldn’t refresh. ${errorText(agents.error)}`;
+  else if (d.enabled && !d.listening) note = 'Hypr Watch couldn’t start listening. Turn the switch off and on again.';
+  setNote('agents-note', note, 'error');
+  connect.disabled = !host || agents.saving || connect.classList.contains('is-busy');
+
+  const battery = $('agents-battery');
+  battery.hidden = !d.enabled;
+  battery.dataset.state = d.battery_exempt ? 'ok' : 'warn';
+  $('agents-battery-title').textContent = d.battery_exempt ? 'Battery optimization is off' : 'Battery optimization is on';
+  $('agents-battery-detail').textContent = d.battery_exempt
+    ? 'Agents can reach the phone while it sleeps.'
+    : 'Android may pause Hypr Watch while the phone sleeps, and agents can’t connect. Set Hypr Watch to Not optimized.';
+  $('agents-battery-open').textContent = d.battery_exempt ? 'Manage' : 'Open settings';
+  $('agents-battery-open').className = d.battery_exempt ? 'ghost' : 'secondary';
+
+  $('agents-list').replaceChildren(...d.agents.map(agentRow));
+  $('agents-empty').hidden = count > 0;
+}
+
+function agentMeta(agent) {
+  const paired = `Paired ${dateFormat.format(agent.created_at)}`;
+  if (!agent.last_seen_at) return `${paired} · Not used yet`;
+  return `${paired} · Last used ${relativeTime(agent.last_seen_at)}${agent.last_ip ? ' from ' + agent.last_ip : ''}`;
+}
+
+function agentRow(agent) {
+  const item = element('li', 'agent-row');
+  const text = element('div', 'agent-text');
+  text.append(element('p', 'face-name', agent.name), element('p', 'agent-meta', agentMeta(agent)));
+  const armed = agents.armed === agent.id;
+  const revoke = element('button', armed ? 'danger small' : 'ghost small delete', armed ? 'Tap again to revoke' : 'Revoke');
+  revoke.type = 'button';
+  revoke.setAttribute('aria-label', armed ? `Confirm: revoke ${agent.name}` : `Revoke ${agent.name}`);
+  revoke.addEventListener('click', () => {
+    if (agents.armed !== agent.id) {
+      agents.armed = agent.id;
+      clearTimeout(agents.armTimer);
+      agents.armTimer = setTimeout(() => {
+        agents.armed = null;
+        renderAgents();
+      }, 4000);
+      renderAgents();
+      const again = [...$('agents-list').querySelectorAll('button')].find((b) => b.getAttribute('aria-label') === `Confirm: revoke ${agent.name}`);
+      if (again) again.focus();
+      return;
+    }
+    agents.armed = null;
+    clearTimeout(agents.armTimer);
+    revokeAgent(agent, revoke);
+  });
+  item.append(text, revoke);
+  return item;
+}
+
+async function revokeAgent(agent, button) {
+  const restore = busyButton(button, 'Revoking…');
+  try {
+    await api('agents/' + encodeURIComponent(agent.id), 'DELETE', {});
+    notice(`${agent.name} can no longer connect`);
+  } catch (error) {
+    restore();
+    if (error.status !== 401) setStatusLine('agents-status', `Couldn’t revoke ${agent.name}. ${errorText(error)}`, 'error');
+  }
+  await loadAgents();
+}
+
+$('agents-enabled').addEventListener('change', async () => {
+  const on = $('agents-enabled').checked;
+  agents.saving = true;
+  setStatusLine('agents-status', '');
+  renderAgents();
+  try {
+    agents.data = await api('agents/lan', 'PUT', { enabled: on });
+    agents.error = null;
+  } catch (error) {
+    if (error.status !== 401) setStatusLine('agents-status', errorText(error), 'error');
+  }
+  agents.saving = false;
+  renderAgents();
+});
+
+$('agents-battery-open').addEventListener('click', () => window.AndroidNotes.openBatterySettings());
+
+// Back from Android's battery list, or after a while away: the exemption and "last used" may have changed.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && view.current === 'settings') loadAgents();
+});
+
+/* Pairing sheet: one code at a time, polled while it is open; closing it closes the code on the phone. */
+
+async function openPairing() {
+  const button = pairSheet.open ? $('pair-again') : $('agents-connect');
+  const restore = busyButton(button, 'Getting a code…');
+  try {
+    const pairing = await api('agents/pairing', 'POST', {});
+    agents.data = { ...agents.data, pairing, last_pairing: null };
+    restore();
+  } catch (error) {
+    restore();
+    if (error.status !== 401) setStatusLine('agents-status', errorText(error), 'error');
+    renderAgents();
+    return;
+  }
+  renderAgents();
+  renderPairing();
+  if (!pairSheet.open) {
+    pairSheet.showModal();
+    if (!(history.state && history.state.sheet === 'pair')) history.pushState({ view: 'settings', sheet: 'pair' }, '');
+    $('pair-done').focus({ preventScroll: true });
+  }
+  clearInterval(agents.poll);
+  agents.poll = setInterval(() => {
+    renderPairing();
+    loadAgents();
+  }, 1000);
+}
+
+function renderPairing() {
+  const d = agents.data || {};
+  const pairing = d.pairing;
+  const ended = d.last_pairing;
+  let tone = 'busy';
+  let title = 'Waiting for the computer';
+  let detail = 'Keep this open until the computer says it’s paired.';
+  let again = false;
+  if (pairing) {
+    const left = Math.max(0, Math.ceil((pairing.expires_at - Date.now()) / 1000));
+    $('pair-code').textContent = pairing.code;
+    $('pair-timer').textContent = `Expires in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+    if (pairing.attempts_left < 5) {
+      tone = 'warn';
+      title = 'That code didn’t match';
+      detail = `${pairing.attempts_left} ${pairing.attempts_left === 1 ? 'try' : 'tries'} left. Check the code on the computer and try again.`;
+    }
+  } else {
+    $('pair-timer').textContent = '';
+    again = Boolean(d.listening);
+    if (ended && ended.result === 'paired') {
+      tone = 'ok';
+      title = `Paired with ${ended.name}`;
+      detail = 'Its agents can use Hypr Watch over Wi-Fi now. You can revoke it in Settings at any time.';
+      again = false;
+    } else if (ended && ended.result === 'no_tries') {
+      tone = 'error';
+      title = 'Too many wrong tries';
+      detail = 'This code no longer works. Get a new one to try again.';
+    } else if (ended && ended.result === 'expired') {
+      tone = 'error';
+      title = 'The code expired';
+      detail = 'Get a new code to try again.';
+    } else {
+      tone = 'error';
+      title = 'Pairing stopped';
+      detail = d.listening ? 'Get a new code to try again.' : 'Allow agents on Wi-Fi is off.';
+    }
+  }
+  $('pair-code').classList.toggle('is-spent', !pairing);
+  $('pair-state').dataset.state = tone;
+  $('pair-state-title').textContent = title;
+  $('pair-state-detail').textContent = detail;
+  $('pair-again').hidden = !again;
+  $('pair-done').textContent = pairing ? 'Cancel' : 'Done';
+  // Cancelling is the way out, not the goal, so it stays quiet; Done after the outcome is the main action.
+  $('pair-done').className = (pairing ? 'secondary' : 'primary') + ' save';
+}
+
+function closePairSheet() {
+  if (history.state && history.state.sheet === 'pair') history.back();
+  else if (pairSheet.open) pairSheet.close();
+}
+
+window.addEventListener('popstate', () => {
+  if (pairSheet.open && !(history.state && history.state.sheet === 'pair')) pairSheet.close();
+});
+
+pairSheet.addEventListener('close', () => {
+  clearInterval(agents.poll);
+  agents.poll = 0;
+  const open = agents.data && agents.data.pairing;
+  if (open) agents.data = { ...agents.data, pairing: null };
+  attempt(async () => {
+    if (open) await api('agents/pairing', 'DELETE', {});
+    await loadAgents();
+  });
+});
+pairSheet.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closePairSheet();
+});
+pairSheet.addEventListener('click', (event) => {
+  // A tap on the backdrop lands on the dialog itself.
+  if (event.target === pairSheet) closePairSheet();
+});
+$('pair-close').addEventListener('click', closePairSheet);
+$('pair-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  closePairSheet();
+});
+$('pair-again').addEventListener('click', openPairing);
+$('agents-connect').addEventListener('click', openPairing);
+
+if (hasAgents()) {
+  $('agents-group').hidden = false;
+  $('sec-agents').hidden = false;
 }
 
 function showRestoreConfirm(open) {

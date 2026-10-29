@@ -1,65 +1,87 @@
-# Hypr Watch local plugin
+# Hypr Watch
 
-Run `bash setup.sh` to install the pinned official MCP SDK privately into
-`server/vendor`. Install this local stdio plugin using your agent host's local
-plugin support, or register `python3 /absolute/path/server/main.py` as an MCP
-server. The project installation already uses its private `.deps` directory.
+Connect Claude Code or Codex to your phone's notes, watch settings, alarms,
+and health data. The MCP server runs on your computer over stdio.
+Runs on macOS and Linux. Requires Node 22 or later and npm.
+Windows is not supported.
 
-This plugin operates a locally attached Android phone over authorized USB
-and its Hypr Watch API. The phone app and private watch configuration must
-already be installed. Run the project's `scripts/connect-pc.py` first.
+1. On the phone, open **Settings > Agents**, enable **Allow agents on Wi-Fi**,
+   and select **Connect an agent**.
+2. On a computer on the same Wi-Fi, run `npx hypr-watch setup`.
+3. Enter the phone's code and accept registration with Claude Code or Codex.
+   Restart your agent, then ask "how did I sleep this week?"
 
-Tools:
+Setup detects installed agents and replaces their `hypr-watch` MCP entry at
+user scope. Re-running setup replaces the whole entry, dropping extra env
+settings and timeouts. Run it again to check an existing pairing or register another agent.
+Use `--claude` or `--codex` to select agents and `--yes` to accept registration
+without questions. The phone code is still required for a new pairing.
 
-- Notes: `list_notes`, `create_note`, `update_note`, `delete_note`.
-  `create_note` and `update_note` accept `send_to_watch`.
-- Watch: `watch_status`, `connect_watch`, `disconnect_watch`,
-  `read_watch_reminders`, `sync_watch_notes`, `device_status`, `find_watch`,
-  `find_phone_stop`, `sync_watch_time`. Connect pauses Mi Fitness reversibly
-  and force-stops Gadgetbridge; disconnect restores Mi Fitness's prior enabled
-  state.
-- Weather and music: `weather_get`, `weather_set`, `weather_refresh`,
-  `music_status`, `music_set_enabled`.
-- Alarms: `list_alarms`, `create_alarm`, `update_alarm`, `delete_alarm`,
-  `get_sleep_schedule`, `set_sleep_schedule`. `update_alarm` and
-  `delete_alarm` take an optional `expect`, the alarm as listed; a changed or
-  missing alarm fails instead of changing an alarm that reused its id.
-- Watch settings and live heart rate: `get_watch_settings`,
-  `set_watch_settings`, `get_live_heart_rate`, `start_live_heart_rate`.
-- Watch faces: `list_watch_faces`, `set_watch_face`, `delete_watch_face`,
-  `install_watch_face`. Installation accepts a local `.bin` watch-face file,
-  not firmware. Follow its progress in `watch_status`.
-- Contacts and replies: `get_favourite_contacts`, `set_favourite_contacts`,
-  `get_quick_replies`, `set_quick_replies`.
-- Health: `health_status`, `sync_health`, `health_days`, `health_series`,
-  `health_sleep`, `health_samples`, `health_workouts`, `get_health_profile`,
-  `set_health_profile`. Dates are `YYYY-MM-DD`, at most 400 days per call.
-  `health_series` takes `steps`, `heart_rate`, `spo2` or `stress` and a
-  bucket of 1, 5, 15 or 60 minutes. `health_status` includes the Health
-  Connect export's status under `health_connect`; turning the export on is
-  left to the phone, where Health Connect asks for access.
-- Health insights: `health_period_summary`, `health_trend`,
-  `health_sleep_analysis`. They read the same phone routes and return small
-  computed summaries instead of raw rows, so an agent can answer "how did I
-  sleep this month?" or "this week vs last" in one call.
-  `health_period_summary` compares a range with the same number of days just
-  before `start_date`, not with the calendar's previous month. An `end_date`
-  after today is cut to today. When the two ranges have day data on a different
-  number of days, `change` leaves out the `*_total` fields.
-  `health_trend` takes one `health_days` field and reports a least-squares
-  slope per week. It leaves out today, which may be partial. It calls a
-  direction `up` or `down` only with at least 14 days of data and a slope that
-  passes a two-sided 95% t test; below 7 days there is no slope. Its
-  `sleep_minutes` sums every session that ended that day, naps included.
-  `health_sleep_analysis` reports duration, bedtime and wake-time regularity,
-  stage shares and short nights (`short_night_minutes`, default 360). Each
-  result has a `notes` list for missing, partial or sparse data. They report
-  numbers only, not medical advice.
-- Notifications: `get_notification_settings`, `set_notification_settings`
-  (allowed package names and the calls toggle).
+```sh
+# If discovery is blocked, specify the phone's address.
+npx hypr-watch setup --host 192.168.1.23:8767 --name Laptop --codex --yes
+npx hypr-watch status
+npx hypr-watch unpair
+```
 
-The plugin validates tool arguments before calling the phone. No firmware
-upload, raw health file, backup or authentication-key tool is exposed.
+Pairing pins the phone's TLS identity. Credentials stay in
+`$XDG_STATE_HOME/hypr-watch/pairing.json`, defaulting to
+`~/.local/state/hypr-watch/pairing.json`, with mode 0600 in a 0700 directory.
+`unpair` deletes the local copy. To invalidate access, revoke the computer
+under **Paired computers** on the phone.
 
-No account tokens, watch keys or user notes are included. Cloud-hosted ChatGPT
-sessions cannot use this local USB process merely by uploading the package.
+The 50 tools cover notes, watch connection, alarms, sleep schedules, weather,
+music, watch faces, contacts, quick replies, notifications, health records, and
+health summaries. Firmware, raw health files, backups, and watch keys are not
+exposed. Wi-Fi serves the API only. Allow unrestricted battery use on the
+phone if agent access stops while idle.
+
+`HYPR_WATCH_TRANSPORT=auto` tries paired Wi-Fi first and falls back to USB only
+before a request is written. Changed identities and revoked credentials never
+fall back. Set it to `lan` or `usb` to require that transport.
+`ANDROID_SERIAL` selects the USB phone. The PC dashboard and export require USB.
+Agents do not inherit your shell environment. Put `HYPR_WATCH_TRANSPORT` and
+`ANDROID_SERIAL` in the agent entry's env, using `-e` for Claude Code or `--env`
+for Codex. For example, after removing the existing entry:
+
+```sh
+claude mcp add -s user -e HYPR_WATCH_TRANSPORT=usb -e ANDROID_SERIAL=DEVICE_SERIAL hypr-watch -- npx --prefer-offline --fetch-retries=0 --fetch-timeout=5000 -y hypr-watch@0.1.0 mcp
+codex mcp add --env HYPR_WATCH_TRANSPORT=usb --env ANDROID_SERIAL=DEVICE_SERIAL hypr-watch -- npx --prefer-offline --fetch-retries=0 --fetch-timeout=5000 -y hypr-watch@0.1.0 mcp
+```
+
+When `XDG_STATE_HOME` is set, setup includes it in the entry with
+`-e XDG_STATE_HOME=...` or `--env XDG_STATE_HOME=...` so the server finds your
+pairing. Preserve that flag when editing the entry yourself. Setup warms the
+npm cache once before returning. If warming fails, it warns so you can retry
+before launching agents.
+
+## Contribute
+
+From the repository root, install dependencies and build with
+`bash plugin/setup.sh`. It also links the local CLI. Then run
+`node plugin/server/cli.ts setup` or `hypr-watch setup`.
+Checkout registration uses the current Node executable's absolute path and
+prefers `server/cli.ts`, so a stale build is never selected on Node versions
+with type stripping enabled by default. These include Node 22.18+, 23.6+, and
+24 or later. Older Node versions use `dist/cli.js` and warn if `server/` is
+newer. Run `npm run build` in `plugin/` to refresh it. `setup.sh` runs
+`npm link`, which makes an `npx` registration resolve to the linked checkout.
+`node plugin/server/main.ts` also runs the stdio server.
+
+For USB and the dashboard, run `hypr-watch usb --watch --open`.
+`hypr-watch usb --release` restores Mi Fitness's prior state. Without USB,
+watch connection tools report that Mi Fitness was not paused.
+Use `hypr-watch --help` for other CLI operations.
+
+```sh
+cd plugin
+npm ci
+npm run typecheck
+npm test
+npm pack
+```
+
+Tests use fake executables and local TLS phones, never a real phone. OpenSSL
+must be on PATH. `npm pack` builds ESM JavaScript in `dist/`. The npm package
+contains that build, this README, the MIT license, and `npm-shrinkwrap.json`
+to pin dependency versions. `prepack` cleans `dist/` before rebuilding.

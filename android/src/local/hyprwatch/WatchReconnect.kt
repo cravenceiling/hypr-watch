@@ -315,8 +315,8 @@ class WatchReconnect(
 
         /**
          * Whether a boot or an app update ([bootOrUpdate]) starts the service: only while the app owns
-         * the watch, and on Android 12+ ([sdk] 31) only with the Bluetooth permission, without which
-         * the connected-device service is refused its foreground start.
+         * the watch or agents may connect on Wi-Fi ([owned]), and on Android 12+ ([sdk] 31) only with
+         * the Bluetooth permission, without which the connected-device service is refused its foreground start.
          */
         fun startsAfter(bootOrUpdate: Boolean, owned: Boolean, sdk: Int, bluetoothGranted: Boolean): Boolean =
             bootOrUpdate && owned && (sdk < 31 || bluetoothGranted)

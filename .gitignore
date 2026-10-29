@@ -1,5 +1,4 @@
 .deps/
-.venv/
 build/
 __pycache__/
 *.pyc
@@ -38,3 +37,7 @@ notes-export*.json
 # Watch face files and raw watch captures
 *.bin
 *.hprof
+
+plugin/node_modules/
+dist/
+pairing.json

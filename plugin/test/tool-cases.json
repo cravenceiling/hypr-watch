@@ -1,0 +1,4445 @@
+[
+  {
+    "tool": "create_alarm",
+    "arguments": {
+      "time": "07:30",
+      "repeat": [
+        "mon",
+        "wed"
+      ],
+      "label": "Work",
+      "smart": true,
+      "enabled": false
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms",
+        "method": "POST",
+        "data": {
+          "time": "07:30",
+          "smart": true,
+          "enabled": false,
+          "repeat": [
+            "mon",
+            "wed"
+          ],
+          "label": "Work"
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "42",
+      "time": "08:15",
+      "repeat": [
+        "tue"
+      ],
+      "label": "Later",
+      "smart": false,
+      "enabled": true
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms/42",
+        "method": "PUT",
+        "data": {
+          "time": "08:15",
+          "repeat": [
+            "tue"
+          ],
+          "label": "Later",
+          "smart": false,
+          "enabled": true
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "delete_alarm",
+    "arguments": {
+      "alarm_id": "42"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms/42",
+        "method": "DELETE",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "42",
+      "time": null,
+      "repeat": null,
+      "label": null,
+      "smart": null,
+      "enabled": false,
+      "expect": {
+        "time": "07:30",
+        "repeat": [
+          "mon"
+        ],
+        "repeat_mode": "weekly",
+        "enabled": true,
+        "smart": false
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms/42",
+        "method": "PUT",
+        "data": {
+          "enabled": false,
+          "expect": {
+            "time": "07:30",
+            "repeat": [
+              "mon"
+            ],
+            "repeat_mode": "weekly",
+            "enabled": true,
+            "smart": false
+          }
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "delete_alarm",
+    "arguments": {
+      "alarm_id": "42",
+      "expect": {
+        "time": "07:30",
+        "repeat": [
+          "mon"
+        ],
+        "repeat_mode": "weekly",
+        "enabled": true,
+        "smart": false
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms/42",
+        "method": "DELETE",
+        "data": {
+          "expect": {
+            "time": "07:30",
+            "repeat": [
+              "mon"
+            ],
+            "repeat_mode": "weekly",
+            "enabled": true,
+            "smart": false
+          }
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "set_sleep_schedule",
+    "arguments": {
+      "enabled": true,
+      "start": "22:30",
+      "end": "06:45"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms/sleep-mode",
+        "method": "PUT",
+        "data": {
+          "enabled": true,
+          "start": "22:30",
+          "end": "06:45"
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "set_favourite_contacts",
+    "arguments": {
+      "contacts": [
+        {
+          "name": "Ada",
+          "number": "+44 7700 900123"
+        },
+        {
+          "name": "Lin",
+          "number": "555 0100"
+        }
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "contacts",
+        "method": "PUT",
+        "data": {
+          "contacts": [
+            {
+              "name": "Ada",
+              "number": "+44 7700 900123"
+            },
+            {
+              "name": "Lin",
+              "number": "555 0100"
+            }
+          ]
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "set_quick_replies",
+    "arguments": {
+      "replies": [
+        "On my way",
+        "Call you soon"
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "quick-replies",
+        "method": "PUT",
+        "data": {
+          "replies": [
+            "On my way",
+            "Call you soon"
+          ]
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "find_watch",
+    "arguments": {
+      "on": true
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "device/find-watch",
+        "method": "POST",
+        "data": {
+          "on": true
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "music_set_enabled",
+    "arguments": {
+      "enabled": false
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "music/settings",
+        "method": "PUT",
+        "data": {
+          "enabled": false
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "device_status",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "device",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "find_phone_stop",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "device/find-phone/stop",
+        "method": "POST",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "sync_watch_time",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "device/time-sync",
+        "method": "POST",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "weather_get",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "weather",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "weather_refresh",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "weather/refresh",
+        "method": "POST",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "music_status",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "music",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "list_alarms",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "list_alarms",
+    "arguments": {
+      "refresh": true
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms/refresh",
+        "method": "POST",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "get_sleep_schedule",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "alarms/sleep-mode",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "get_watch_settings",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "watch-settings",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "get_live_heart_rate",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "heart-rate/live",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "start_live_heart_rate",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "heart-rate/live",
+        "method": "POST",
+        "data": {
+          "on": true
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "list_watch_faces",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "watch-faces",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "list_watch_faces",
+    "arguments": {
+      "refresh": true
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "watch-faces?refresh=true",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "get_favourite_contacts",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "contacts",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "get_quick_replies",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "quick-replies",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "create_alarm",
+    "arguments": {
+      "time": "7:30"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "time must be a time in HH:MM 24-hour format."
+  },
+  {
+    "tool": "create_alarm",
+    "arguments": {
+      "time": "07:30",
+      "repeat": [
+        "monday"
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "repeat days must be one of: mon, tue, wed, thu, fri, sat, sun."
+  },
+  {
+    "tool": "create_alarm",
+    "arguments": {
+      "time": "07:30",
+      "repeat": null,
+      "label": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "label must be at most 40 characters with no control characters."
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "01"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "alarm_id must be 0 or 1 to 10 decimal digits without a leading zero."
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "0"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Give at least one alarm field to change."
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "4"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Give at least one alarm field to change."
+  },
+  {
+    "tool": "delete_alarm",
+    "arguments": {
+      "alarm_id": "../4"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "alarm_id must be 0 or 1 to 10 decimal digits without a leading zero."
+  },
+  {
+    "tool": "delete_alarm",
+    "arguments": {
+      "alarm_id": "4",
+      "expect": "07:30"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "expect must be an object of alarm fields."
+  },
+  {
+    "tool": "delete_alarm",
+    "arguments": {
+      "alarm_id": "4",
+      "expect": {
+        "label": "Gym"
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Unknown expect field label."
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "4",
+      "time": null,
+      "repeat": null,
+      "label": null,
+      "smart": null,
+      "enabled": false,
+      "expect": {
+        "time": "7:30"
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "expect.time must be a time in HH:MM 24-hour format."
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "4",
+      "time": null,
+      "repeat": null,
+      "label": null,
+      "smart": null,
+      "enabled": false,
+      "expect": {
+        "repeat_mode": 5
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "expect.repeat_mode must be text."
+  },
+  {
+    "tool": "update_alarm",
+    "arguments": {
+      "alarm_id": "4",
+      "time": null,
+      "repeat": null,
+      "label": null,
+      "smart": null,
+      "enabled": null,
+      "expect": {
+        "enabled": true
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Give at least one alarm field to change."
+  },
+  {
+    "tool": "set_sleep_schedule",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Give enabled, start, or end."
+  },
+  {
+    "tool": "set_sleep_schedule",
+    "arguments": {
+      "enabled": true,
+      "start": "22:00",
+      "end": "22:00"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "start and end must differ."
+  },
+  {
+    "tool": "find_watch",
+    "arguments": {
+      "on": 1
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "on must be true or false."
+  },
+  {
+    "tool": "music_set_enabled",
+    "arguments": {
+      "enabled": "yes"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "enabled must be true or false."
+  },
+  {
+    "tool": "list_alarms",
+    "arguments": {
+      "refresh": "yes"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "refresh must be true or false."
+  },
+  {
+    "tool": "list_watch_faces",
+    "arguments": {
+      "refresh": 1
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "refresh must be true or false."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": "kelvin",
+      "enabled": null,
+      "location_mode": null,
+      "lat": null,
+      "lon": null,
+      "name": null
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "units must be metric or imperial."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": [],
+      "enabled": null,
+      "location_mode": null,
+      "lat": null,
+      "lon": null,
+      "name": null
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "units must be metric or imperial."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": null,
+      "enabled": null,
+      "location_mode": null,
+      "lat": 1.0,
+      "lon": null,
+      "name": null
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "lat, lon, and name require location_mode."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": null,
+      "enabled": null,
+      "location_mode": "gps",
+      "lat": null,
+      "lon": null,
+      "name": null
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "location_mode must be device or manual."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": null,
+      "enabled": null,
+      "location_mode": "device",
+      "lat": 1.0,
+      "lon": null,
+      "name": null
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "device location takes no coordinates."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": null,
+      "enabled": null,
+      "location_mode": "manual",
+      "lat": null,
+      "lon": 2.0,
+      "name": "Place"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "manual location requires lat, lon, and name."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": null,
+      "enabled": null,
+      "location_mode": "manual",
+      "lat": 91.0,
+      "lon": 2.0,
+      "name": "Place"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "lat must be a number between -90.0 and 90.0."
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": null,
+      "enabled": null,
+      "location_mode": "manual",
+      "lat": 1.0,
+      "lon": 2.0,
+      "name": ""
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "name must be 1 to 32 characters with no control characters."
+  },
+  {
+    "tool": "set_watch_face",
+    "arguments": {
+      "face_id": "../1"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "face_id must be 1 to 20 decimal digits."
+  },
+  {
+    "tool": "delete_watch_face",
+    "arguments": {
+      "face_id": "1/2"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "face_id must be 1 to 20 decimal digits."
+  },
+  {
+    "tool": "set_favourite_contacts",
+    "arguments": {
+      "contacts": [
+        {
+          "name": "",
+          "number": "123"
+        }
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Contact 1: use a name of 1 to 32 characters."
+  },
+  {
+    "tool": "set_favourite_contacts",
+    "arguments": {
+      "contacts": [
+        {
+          "name": "A",
+          "number": "123"
+        },
+        {
+          "name": "B",
+          "number": "1 2 3"
+        }
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Contact 2: that number is already in the list."
+  },
+  {
+    "tool": "set_favourite_contacts",
+    "arguments": {
+      "contacts": [
+        {
+          "name": "A",
+          "number": "abc"
+        }
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Contact 1: use a number of digits, spaces and an optional leading +, at most 20 digits."
+  },
+  {
+    "tool": "set_quick_replies",
+    "arguments": {
+      "replies": [
+        ""
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Reply 1: use 1 to 30 characters on one line."
+  },
+  {
+    "tool": "set_quick_replies",
+    "arguments": {
+      "replies": [
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x"
+      ]
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "The watch holds at most 16 quick replies."
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {}
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "settings must contain at least one setting."
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {
+        "mystery": true
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Unknown watch setting mystery."
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {
+        "stress_auto": "yes"
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "stress_auto must be true or false."
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {
+        "sedentary_start": "9:00"
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "sedentary_start must be a time in HH:MM 24-hour format."
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {
+        "hr_interval": "5min"
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "hr_interval must be one of: 10min, 1min, 30min, off, smart."
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {
+        "hr_interval": []
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "hr_interval must be one of: 10min, 1min, 30min, off, smart."
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {
+        "hr_high_alert": 125
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "hr_high_alert must be one of: 0, 100, 110, 120, 130, 140, 150."
+  },
+  {
+    "tool": "set_watch_face",
+    "arguments": {
+      "face_id": "12345"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "watch-faces/12345/activate",
+        "method": "POST",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "delete_watch_face",
+    "arguments": {
+      "face_id": "12345"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "watch-faces/12345",
+        "method": "DELETE",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "sync_watch_time",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "device/time-sync",
+        "method": "POST",
+        "data": {},
+        "error": "Another watch operation is in progress"
+      }
+    ],
+    "error": "Another watch operation is in progress"
+  },
+  {
+    "tool": "set_watch_settings",
+    "arguments": {
+      "settings": {
+        "hr_interval": "10min",
+        "hr_high_alert": 120,
+        "sedentary_start": "09:00",
+        "stress_auto": true,
+        "secondary_goal": "moving"
+      }
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "watch-settings",
+        "method": "PUT",
+        "data": {
+          "hr_interval": "10min",
+          "hr_high_alert": 120,
+          "sedentary_start": "09:00",
+          "stress_auto": true,
+          "secondary_goal": "moving"
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": "imperial",
+      "enabled": true,
+      "location_mode": "manual",
+      "lat": 59.91,
+      "lon": 10.75,
+      "name": "Oslo"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "weather/settings",
+        "method": "PUT",
+        "data": {
+          "units": "imperial",
+          "enabled": true,
+          "location": {
+            "mode": "manual",
+            "name": "Oslo",
+            "lat": 59.91,
+            "lon": 10.75
+          }
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {
+      "units": null,
+      "enabled": null,
+      "location_mode": "device",
+      "lat": null,
+      "lon": null,
+      "name": "Home"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "weather/settings",
+        "method": "PUT",
+        "data": {
+          "location": {
+            "mode": "device",
+            "name": "Home"
+          }
+        },
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "weather_set",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "weather/settings",
+        "method": "PUT",
+        "data": {},
+        "result": {
+          "ok": true
+        }
+      }
+    ],
+    "result": {
+      "ok": true
+    }
+  },
+  {
+    "tool": "get_health_profile",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/profile",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "configured": false,
+          "profile": null
+        }
+      }
+    ],
+    "result": {
+      "configured": false,
+      "profile": null
+    }
+  },
+  {
+    "tool": "get_notification_settings",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "notifications",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "calls": true,
+          "allowed": [
+            "com.example.app"
+          ]
+        }
+      }
+    ],
+    "result": {
+      "calls": true,
+      "allowed": [
+        "com.example.app"
+      ]
+    }
+  },
+  {
+    "tool": "health_days",
+    "arguments": {
+      "start_date": "2026-01-02",
+      "end_date": "2026-01-31"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/days?from=2026-01-02&to=2026-01-31",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": []
+        }
+      }
+    ],
+    "result": {
+      "days": []
+    }
+  },
+  {
+    "tool": "health_sleep",
+    "arguments": {
+      "start_date": "2026-03-01",
+      "end_date": "2026-03-02"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/sleep?from=2026-03-01&to=2026-03-02",
+        "method": "GET",
+        "data": null,
+        "result": {}
+      }
+    ],
+    "result": {}
+  },
+  {
+    "tool": "health_samples",
+    "arguments": {
+      "start_date": "2026-03-01",
+      "end_date": "2026-03-02"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/samples?from=2026-03-01&to=2026-03-02",
+        "method": "GET",
+        "data": null,
+        "result": {}
+      }
+    ],
+    "result": {}
+  },
+  {
+    "tool": "health_workouts",
+    "arguments": {
+      "start_date": "2026-03-01",
+      "end_date": "2026-03-02"
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/workouts?from=2026-03-01&to=2026-03-02",
+        "method": "GET",
+        "data": null,
+        "result": {}
+      }
+    ],
+    "result": {}
+  },
+  {
+    "tool": "health_series",
+    "arguments": {
+      "metric": "heart_rate",
+      "start_date": "2026-02-01",
+      "end_date": "2026-02-03",
+      "bucket_minutes": 5
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/series?metric=heart_rate&from=2026-02-01&to=2026-02-03&bucket=5",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "points": []
+        }
+      }
+    ],
+    "result": {
+      "points": []
+    }
+  },
+  {
+    "tool": "health_status",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "status",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "health": {
+            "state": "idle",
+            "fetched": 4
+          }
+        }
+      },
+      {
+        "path": "health/profile",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "configured": true
+        }
+      }
+    ],
+    "result": {
+      "state": "idle",
+      "fetched": 4,
+      "configured": true
+    }
+  },
+  {
+    "tool": "set_health_profile",
+    "arguments": {
+      "height_cm": 178,
+      "weight_kg": 72.5,
+      "birthday": "19900405",
+      "gender": "male",
+      "goal_calories": 600,
+      "goal_steps": 10000,
+      "goal_standing_hours": 10,
+      "goal_moving_minutes": 45
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "birthday must be a valid date in YYYY-MM-DD format."
+  },
+  {
+    "tool": "health_days",
+    "arguments": {
+      "start_date": "20260101",
+      "end_date": "2026-01-02"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "start_date must be a valid date in YYYY-MM-DD format."
+  },
+  {
+    "tool": "health_days",
+    "arguments": {
+      "start_date": "2026-01-01",
+      "end_date": "not-a-date"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "end_date must be a valid date in YYYY-MM-DD format."
+  },
+  {
+    "tool": "health_days",
+    "arguments": {
+      "start_date": "2026-01-03",
+      "end_date": "2026-01-02"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "start_date must be on or before end_date."
+  },
+  {
+    "tool": "health_days",
+    "arguments": {
+      "start_date": "2024-01-01",
+      "end_date": "2025-02-04"
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "Date range must not exceed 400 days."
+  },
+  {
+    "tool": "health_series",
+    "arguments": {
+      "metric": "temperature",
+      "start_date": "2026-01-01",
+      "end_date": "2026-01-02",
+      "bucket_minutes": 15
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "metric must be one of: steps, heart_rate, spo2, stress."
+  },
+  {
+    "tool": "health_series",
+    "arguments": {
+      "metric": "steps",
+      "start_date": "2026-01-01",
+      "end_date": "2026-01-02",
+      "bucket_minutes": 30
+    },
+    "today": "2026-10-29",
+    "calls": [],
+    "error": "bucket_minutes must be one of: 1, 5, 15, 60."
+  },
+  {
+    "tool": "set_health_profile",
+    "arguments": {
+      "height_cm": 178,
+      "weight_kg": 72.5,
+      "birthday": "1990-04-05",
+      "gender": "male",
+      "goal_calories": 600,
+      "goal_steps": 10000,
+      "goal_standing_hours": 10,
+      "goal_moving_minutes": 45
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/profile",
+        "method": "PUT",
+        "data": {
+          "height_cm": 178,
+          "weight_kg": 72.5,
+          "birthday": "1990-04-05",
+          "gender": "male",
+          "goal_calories": 600,
+          "goal_steps": 10000,
+          "goal_standing_hours": 10,
+          "goal_moving_minutes": 45
+        },
+        "result": {
+          "configured": true
+        }
+      }
+    ],
+    "result": {
+      "configured": true
+    }
+  },
+  {
+    "tool": "set_notification_settings",
+    "arguments": {
+      "allowed": [
+        "com.example.chat",
+        "com.example.mail"
+      ],
+      "calls": false
+    },
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "notifications",
+        "method": "PUT",
+        "data": {
+          "allowed": [
+            "com.example.chat",
+            "com.example.mail"
+          ],
+          "calls": false
+        },
+        "result": {
+          "allowed": [
+            "com.example.chat",
+            "com.example.mail"
+          ],
+          "calls": false
+        }
+      }
+    ],
+    "result": {
+      "allowed": [
+        "com.example.chat",
+        "com.example.mail"
+      ],
+      "calls": false
+    }
+  },
+  {
+    "tool": "sync_health",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/sync",
+        "method": "POST",
+        "data": {},
+        "result": {
+          "started": true,
+          "health": {
+            "state": "listing",
+            "fetched": 0
+          }
+        }
+      }
+    ],
+    "result": {
+      "started": true,
+      "health": {
+        "state": "listing",
+        "fetched": 0
+      }
+    }
+  },
+  {
+    "tool": "sync_health",
+    "arguments": {},
+    "today": "2026-10-29",
+    "calls": [
+      {
+        "path": "health/sync",
+        "method": "POST",
+        "data": {},
+        "error": "Connect the watch first"
+      }
+    ],
+    "error": "Connect the watch first"
+  },
+  {
+    "tool": "health_period_summary",
+    "arguments": {
+      "start_date": "2026-10-08",
+      "end_date": "2026-10-01"
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "start_date must be on or before end_date."
+  },
+  {
+    "tool": "health_period_summary",
+    "arguments": {
+      "start_date": "2026-1-01",
+      "end_date": "2026-10-01"
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "start_date must be a valid date in YYYY-MM-DD format."
+  },
+  {
+    "tool": "health_period_summary",
+    "arguments": {
+      "start_date": "2026-10-25",
+      "end_date": "2026-10-31"
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "start_date is after today (2026-10-24 on this PC), so there is no data yet."
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "temperature",
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-31"
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "metric must be one of: steps, active_calories, calories, distance_m, standing_hours, resting_hr, avg_hr, min_hr, max_hr, avg_spo2, min_spo2, avg_stress, max_stress, sleep_minutes, deep_minutes, light_minutes, rem_minutes, awake_minutes."
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "steps",
+      "start_date": "2024-01-01",
+      "end_date": "2025-02-04"
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "Date range must not exceed 400 days."
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-01",
+      "end_date": "2026-02-30"
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "end_date must be a valid date in YYYY-MM-DD format."
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-07",
+      "short_night_minutes": 59
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "short_night_minutes must be a whole number from 60 to 720."
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-07",
+      "short_night_minutes": 721
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "short_night_minutes must be a whole number from 60 to 720."
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-07",
+      "short_night_minutes": 360.0
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "short_night_minutes must be a whole number from 60 to 720."
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-07",
+      "short_night_minutes": true
+    },
+    "today": "2026-10-24",
+    "calls": [],
+    "error": "short_night_minutes must be a whole number from 60 to 720."
+  },
+  {
+    "tool": "health_period_summary",
+    "arguments": {
+      "start_date": "2026-10-12",
+      "end_date": "2026-10-18"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/sleep?from=2026-10-12&to=2026-10-18",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "sessions": [
+            {
+              "bed_time": 1791865800,
+              "wakeup_time": 1791892800,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 420,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1791955800,
+              "wakeup_time": 1791981000,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 400,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1792004400,
+              "wakeup_time": 1792008000,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 60,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1792296000,
+              "wakeup_time": 1792310400,
+              "tz_offset": -18000,
+              "finished": false,
+              "total_minutes": 240,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            }
+          ]
+        }
+      },
+      {
+        "path": "health/days?from=2026-10-12&to=2026-10-18",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-12",
+              "steps": 8000,
+              "active_calories": 300,
+              "calories": null,
+              "distance_m": 6000,
+              "resting_hr": null,
+              "avg_hr": 70,
+              "min_hr": 52,
+              "max_hr": 140,
+              "avg_spo2": 97,
+              "min_spo2": null,
+              "avg_stress": 30,
+              "max_stress": null,
+              "standing_hours": 10,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-13",
+              "steps": 10000,
+              "active_calories": 400,
+              "calories": null,
+              "distance_m": 7500,
+              "resting_hr": null,
+              "avg_hr": 72,
+              "min_hr": 50,
+              "max_hr": 150,
+              "avg_spo2": 96,
+              "min_spo2": null,
+              "avg_stress": 40,
+              "max_stress": null,
+              "standing_hours": 11,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      },
+      {
+        "path": "health/workouts?from=2026-10-12&to=2026-10-18",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "workouts": [
+            {
+              "start": 1791846000,
+              "end": 1791848400,
+              "tz_offset": -18000,
+              "sport": "outdoor_walking",
+              "active_seconds": 1800,
+              "calories": null,
+              "avg_hr": null,
+              "max_hr": null,
+              "min_hr": null,
+              "steps": null,
+              "distance_m": null
+            },
+            {
+              "start": 1791932400,
+              "end": 1791933600,
+              "tz_offset": -18000,
+              "sport": "outdoor_walking",
+              "active_seconds": null,
+              "calories": null,
+              "avg_hr": null,
+              "max_hr": null,
+              "min_hr": null,
+              "steps": null,
+              "distance_m": null
+            },
+            {
+              "start": 1791936000,
+              "end": 1791936900,
+              "tz_offset": -18000,
+              "sport": "jump_rope",
+              "active_seconds": 600,
+              "calories": null,
+              "avg_hr": null,
+              "max_hr": null,
+              "min_hr": null,
+              "steps": null,
+              "distance_m": null
+            }
+          ]
+        }
+      },
+      {
+        "path": "health/sleep?from=2026-10-05&to=2026-10-11",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "sessions": [
+            {
+              "bed_time": 1791345600,
+              "wakeup_time": 1791372600,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 390,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            }
+          ]
+        }
+      },
+      {
+        "path": "health/days?from=2026-10-05&to=2026-10-11",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-06",
+              "steps": 6000,
+              "active_calories": 250,
+              "calories": null,
+              "distance_m": 4000,
+              "resting_hr": 58,
+              "avg_hr": 68,
+              "min_hr": 51,
+              "max_hr": 130,
+              "avg_spo2": 97,
+              "min_spo2": null,
+              "avg_stress": 25,
+              "max_stress": null,
+              "standing_hours": 9,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      },
+      {
+        "path": "health/workouts?from=2026-10-05&to=2026-10-11",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "workouts": []
+        }
+      }
+    ],
+    "result": {
+      "period": {
+        "start": "2026-10-12",
+        "end": "2026-10-18",
+        "days": 7
+      },
+      "previous_period": {
+        "start": "2026-10-05",
+        "end": "2026-10-11",
+        "days": 7
+      },
+      "current": {
+        "days_with_data": 2,
+        "steps_total": 18000,
+        "steps_per_day_avg": 9000,
+        "active_calories_kcal_per_day_avg": 350,
+        "distance_km_total": 13.5,
+        "standing_hours_per_day_avg": 10.5,
+        "resting_hr_bpm_avg": null,
+        "avg_hr_bpm": 71.0,
+        "min_hr_bpm": 50,
+        "max_hr_bpm": 150,
+        "stress_score_avg": 35.0,
+        "spo2_pct_avg": 96.5,
+        "sleep_nights": 2,
+        "sleep_minutes_per_night_avg": 410,
+        "bedtime_local_avg": "00:00",
+        "bedtime_std_dev_minutes": 30,
+        "wake_time_local_avg": "07:15",
+        "workouts": 3,
+        "workout_active_minutes_total": 60,
+        "workouts_by_sport": {
+          "outdoor_walking": {
+            "count": 2,
+            "active_minutes": 50
+          },
+          "jump_rope": {
+            "count": 1,
+            "active_minutes": 10
+          }
+        }
+      },
+      "previous": {
+        "days_with_data": 1,
+        "steps_total": 6000,
+        "steps_per_day_avg": 6000,
+        "active_calories_kcal_per_day_avg": 250,
+        "distance_km_total": 4.0,
+        "standing_hours_per_day_avg": 9.0,
+        "resting_hr_bpm_avg": 58.0,
+        "avg_hr_bpm": 68.0,
+        "min_hr_bpm": 51,
+        "max_hr_bpm": 130,
+        "stress_score_avg": 25.0,
+        "spo2_pct_avg": 97.0,
+        "sleep_nights": 1,
+        "sleep_minutes_per_night_avg": 390,
+        "bedtime_local_avg": "23:00",
+        "bedtime_std_dev_minutes": 0,
+        "wake_time_local_avg": "06:30",
+        "workouts": 0,
+        "workout_active_minutes_total": 0,
+        "workouts_by_sport": {}
+      },
+      "change": {
+        "days_with_data": 1,
+        "steps_per_day_avg": 3000,
+        "active_calories_kcal_per_day_avg": 100,
+        "standing_hours_per_day_avg": 1.5,
+        "avg_hr_bpm": 3.0,
+        "stress_score_avg": 10.0,
+        "spo2_pct_avg": -0.5,
+        "sleep_nights": 1,
+        "sleep_minutes_per_night_avg": 20,
+        "bedtime_std_dev_minutes": 30,
+        "workouts": 3,
+        "bedtime_shift_minutes": 60,
+        "wake_time_shift_minutes": 45
+      },
+      "notes": [
+        "Day data on 2 of 7 days.",
+        "resting_hr is missing; it comes from the watch's daily summary. avg_hr_bpm and min_hr_bpm come from minute readings.",
+        "Previous period: day data on 1 of 7 days.",
+        "change leaves out the *_total fields: the periods have day data on 2 and 1 days, so compare per-day averages.",
+        "Unfinished sleep sessions left out: 1 in this period, 0 in the previous one."
+      ]
+    }
+  },
+  {
+    "tool": "health_period_summary",
+    "arguments": {
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-31"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/sleep?from=2026-10-01&to=2026-10-24",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "sessions": []
+        }
+      },
+      {
+        "path": "health/days?from=2026-10-01&to=2026-10-24",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-01",
+              "steps": 9000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": 7000,
+              "resting_hr": 58,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-02",
+              "steps": 7000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": 5000,
+              "resting_hr": 60,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      },
+      {
+        "path": "health/workouts?from=2026-10-01&to=2026-10-24",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "workouts": []
+        }
+      },
+      {
+        "path": "health/sleep?from=2026-09-07&to=2026-09-30",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "sessions": []
+        }
+      },
+      {
+        "path": "health/days?from=2026-09-07&to=2026-09-30",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-09-29",
+              "steps": 5000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": 4000,
+              "resting_hr": 60,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-30",
+              "steps": 6000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": 4500,
+              "resting_hr": 60,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      },
+      {
+        "path": "health/workouts?from=2026-09-07&to=2026-09-30",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "workouts": []
+        }
+      }
+    ],
+    "result": {
+      "period": {
+        "start": "2026-10-01",
+        "end": "2026-10-24",
+        "days": 24
+      },
+      "previous_period": {
+        "start": "2026-09-07",
+        "end": "2026-09-30",
+        "days": 24
+      },
+      "current": {
+        "days_with_data": 2,
+        "steps_total": 16000,
+        "steps_per_day_avg": 8000,
+        "active_calories_kcal_per_day_avg": null,
+        "distance_km_total": 12.0,
+        "standing_hours_per_day_avg": null,
+        "resting_hr_bpm_avg": 59.0,
+        "avg_hr_bpm": null,
+        "min_hr_bpm": null,
+        "max_hr_bpm": null,
+        "stress_score_avg": null,
+        "spo2_pct_avg": null,
+        "sleep_nights": 0,
+        "sleep_minutes_per_night_avg": null,
+        "bedtime_local_avg": null,
+        "bedtime_std_dev_minutes": null,
+        "wake_time_local_avg": null,
+        "workouts": 0,
+        "workout_active_minutes_total": 0,
+        "workouts_by_sport": {}
+      },
+      "previous": {
+        "days_with_data": 2,
+        "steps_total": 11000,
+        "steps_per_day_avg": 5500,
+        "active_calories_kcal_per_day_avg": null,
+        "distance_km_total": 8.5,
+        "standing_hours_per_day_avg": null,
+        "resting_hr_bpm_avg": 60.0,
+        "avg_hr_bpm": null,
+        "min_hr_bpm": null,
+        "max_hr_bpm": null,
+        "stress_score_avg": null,
+        "spo2_pct_avg": null,
+        "sleep_nights": 0,
+        "sleep_minutes_per_night_avg": null,
+        "bedtime_local_avg": null,
+        "bedtime_std_dev_minutes": null,
+        "wake_time_local_avg": null,
+        "workouts": 0,
+        "workout_active_minutes_total": 0,
+        "workouts_by_sport": {}
+      },
+      "change": {
+        "days_with_data": 0,
+        "steps_total": 5000,
+        "steps_per_day_avg": 2500,
+        "distance_km_total": 3.5,
+        "resting_hr_bpm_avg": -1.0,
+        "sleep_nights": 0,
+        "workouts": 0,
+        "workout_active_minutes_total": 0
+      },
+      "notes": [
+        "end_date 2026-10-31 is after today (2026-10-24 on this PC), so the period ends today and is compared with the 24 days before start_date.",
+        "end_date is today or later (2026-10-24 on this PC), so its last day may be partial.",
+        "Day data on 2 of 24 days.",
+        "Previous period: day data on 2 of 24 days."
+      ]
+    }
+  },
+  {
+    "tool": "health_period_summary",
+    "arguments": {
+      "start_date": "2026-10-24",
+      "end_date": "2026-10-24"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/sleep?from=2026-10-24&to=2026-10-24",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [],
+          "sessions": [],
+          "workouts": []
+        }
+      },
+      {
+        "path": "health/days?from=2026-10-24&to=2026-10-24",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [],
+          "sessions": [],
+          "workouts": []
+        }
+      },
+      {
+        "path": "health/workouts?from=2026-10-24&to=2026-10-24",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [],
+          "sessions": [],
+          "workouts": []
+        }
+      },
+      {
+        "path": "health/sleep?from=2026-10-23&to=2026-10-23",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [],
+          "sessions": [],
+          "workouts": []
+        }
+      },
+      {
+        "path": "health/days?from=2026-10-23&to=2026-10-23",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [],
+          "sessions": [],
+          "workouts": []
+        }
+      },
+      {
+        "path": "health/workouts?from=2026-10-23&to=2026-10-23",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [],
+          "sessions": [],
+          "workouts": []
+        }
+      }
+    ],
+    "result": {
+      "period": {
+        "start": "2026-10-24",
+        "end": "2026-10-24",
+        "days": 1
+      },
+      "previous_period": {
+        "start": "2026-10-23",
+        "end": "2026-10-23",
+        "days": 1
+      },
+      "current": {
+        "days_with_data": 0,
+        "steps_total": null,
+        "steps_per_day_avg": null,
+        "active_calories_kcal_per_day_avg": null,
+        "distance_km_total": null,
+        "standing_hours_per_day_avg": null,
+        "resting_hr_bpm_avg": null,
+        "avg_hr_bpm": null,
+        "min_hr_bpm": null,
+        "max_hr_bpm": null,
+        "stress_score_avg": null,
+        "spo2_pct_avg": null,
+        "sleep_nights": 0,
+        "sleep_minutes_per_night_avg": null,
+        "bedtime_local_avg": null,
+        "bedtime_std_dev_minutes": null,
+        "wake_time_local_avg": null,
+        "workouts": 0,
+        "workout_active_minutes_total": 0,
+        "workouts_by_sport": {}
+      },
+      "previous": {
+        "days_with_data": 0,
+        "steps_total": null,
+        "steps_per_day_avg": null,
+        "active_calories_kcal_per_day_avg": null,
+        "distance_km_total": null,
+        "standing_hours_per_day_avg": null,
+        "resting_hr_bpm_avg": null,
+        "avg_hr_bpm": null,
+        "min_hr_bpm": null,
+        "max_hr_bpm": null,
+        "stress_score_avg": null,
+        "spo2_pct_avg": null,
+        "sleep_nights": 0,
+        "sleep_minutes_per_night_avg": null,
+        "bedtime_local_avg": null,
+        "bedtime_std_dev_minutes": null,
+        "wake_time_local_avg": null,
+        "workouts": 0,
+        "workout_active_minutes_total": 0,
+        "workouts_by_sport": {}
+      },
+      "change": {},
+      "notes": [
+        "end_date is today or later (2026-10-24 on this PC), so its last day may be partial.",
+        "No health data in this period.",
+        "No health data in the previous period, so change is empty."
+      ]
+    }
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-12",
+      "end_date": "2026-10-18"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/sleep?from=2026-10-12&to=2026-10-18",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "sessions": [
+            {
+              "bed_time": 1791865800,
+              "wakeup_time": 1791892800,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 420,
+              "deep_minutes": 84,
+              "light_minutes": 252,
+              "rem_minutes": 63,
+              "awake_minutes": 21,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1791955800,
+              "wakeup_time": 1791981000,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 330,
+              "deep_minutes": 60,
+              "light_minutes": 200,
+              "rem_minutes": 50,
+              "awake_minutes": 20,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1792004400,
+              "wakeup_time": 1792008000,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 60,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1792216800,
+              "wakeup_time": 1792245600,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 450,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1792382400,
+              "wakeup_time": 1792396800,
+              "tz_offset": -18000,
+              "finished": false,
+              "total_minutes": 240,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "start": "2026-10-12",
+      "end": "2026-10-18",
+      "nights": 3,
+      "unfinished_sessions": 1,
+      "extra_sessions": 1,
+      "duration_minutes": {
+        "avg": 400,
+        "median": 420,
+        "std_dev": 51,
+        "shortest": {
+          "date": "2026-10-14",
+          "minutes": 330
+        },
+        "longest": {
+          "date": "2026-10-17",
+          "minutes": 450
+        }
+      },
+      "bedtime_local": {
+        "avg": "00:20",
+        "std_dev_minutes": 37,
+        "earliest": "23:30",
+        "latest": "01:00"
+      },
+      "wake_time_local": {
+        "avg": "07:50",
+        "std_dev_minutes": 51,
+        "earliest": "07:00",
+        "latest": "09:00"
+      },
+      "stage_pct": {
+        "deep": 19.2,
+        "light": 60.3,
+        "rem": 15.1,
+        "awake": 5.5
+      },
+      "stage_nights": 2,
+      "short_nights": {
+        "threshold_minutes": 360,
+        "count": 1,
+        "dates": [
+          "2026-10-14"
+        ]
+      },
+      "weekday_nights_minutes_avg": 375,
+      "weekend_nights_minutes_avg": 450,
+      "notes": []
+    }
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-05",
+      "end_date": "2026-10-07"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/sleep?from=2026-10-05&to=2026-10-07",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "sessions": [
+            {
+              "bed_time": 1791234000,
+              "wakeup_time": 1791261600,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 460,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            },
+            {
+              "bed_time": 1791322200,
+              "wakeup_time": 1791350400,
+              "tz_offset": -18000,
+              "finished": true,
+              "total_minutes": 470,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null,
+              "quality": null,
+              "stages": []
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "start": "2026-10-05",
+      "end": "2026-10-07",
+      "nights": 2,
+      "unfinished_sessions": 0,
+      "extra_sessions": 0,
+      "duration_minutes": {
+        "avg": 465,
+        "median": 465,
+        "std_dev": 5,
+        "shortest": {
+          "date": "2026-10-05",
+          "minutes": 460
+        },
+        "longest": {
+          "date": "2026-10-07",
+          "minutes": 470
+        }
+      },
+      "bedtime_local": {
+        "avg": "16:15",
+        "std_dev_minutes": 15,
+        "earliest": "16:00",
+        "latest": "16:30"
+      },
+      "wake_time_local": {
+        "avg": "00:00",
+        "std_dev_minutes": 20,
+        "earliest": "23:40",
+        "latest": "00:20"
+      },
+      "stage_pct": null,
+      "stage_nights": 0,
+      "short_nights": {
+        "threshold_minutes": 360,
+        "count": 0,
+        "dates": []
+      },
+      "weekday_nights_minutes_avg": 465,
+      "weekend_nights_minutes_avg": null,
+      "notes": [
+        "Only 2 nights; regularity figures need more nights to mean much.",
+        "No night has all four stage totals, so stage_pct is null."
+      ]
+    }
+  },
+  {
+    "tool": "health_sleep_analysis",
+    "arguments": {
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-07",
+      "short_night_minutes": 420
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/sleep?from=2026-10-01&to=2026-10-07",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "sessions": []
+        }
+      }
+    ],
+    "result": {
+      "start": "2026-10-01",
+      "end": "2026-10-07",
+      "nights": 0,
+      "unfinished_sessions": 0,
+      "extra_sessions": 0,
+      "notes": [
+        "No finished sleep sessions in this range."
+      ]
+    }
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "steps",
+      "start_date": "2026-09-01",
+      "end_date": "2026-09-20"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/days?from=2026-09-01&to=2026-09-20",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-09-01",
+              "steps": 10400,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-02",
+              "steps": 9550,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-03",
+              "steps": 9800,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-04",
+              "steps": 9350,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-05",
+              "steps": 9700,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-06",
+              "steps": 8850,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-07",
+              "steps": 9100,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-08",
+              "steps": 9150,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-09",
+              "steps": 8700,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-10",
+              "steps": 8950,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-11",
+              "steps": 8200,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-12",
+              "steps": 8450,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-13",
+              "steps": 8000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-14",
+              "steps": 8450,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-15",
+              "steps": 7800,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-16",
+              "steps": 7550,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "metric": "steps",
+      "unit": "steps",
+      "start": "2026-09-01",
+      "end": "2026-09-20",
+      "days_in_range": 20,
+      "days_with_data": 16,
+      "mean": 8875.0,
+      "min": {
+        "date": "2026-09-16",
+        "value": 7550
+      },
+      "max": {
+        "date": "2026-09-01",
+        "value": 10400
+      },
+      "first_half_mean": 9355.0,
+      "second_half_mean": 8075.0,
+      "slope_per_week": -1085.0,
+      "slope_standard_error_per_week": 103.05,
+      "fitted_change": -2325.0,
+      "direction": "down",
+      "weekly": [
+        {
+          "week_start": "2026-08-31",
+          "mean": 9608.3,
+          "days": 6
+        },
+        {
+          "week_start": "2026-09-07",
+          "mean": 8650.0,
+          "days": 7
+        },
+        {
+          "week_start": "2026-09-14",
+          "mean": 7933.3,
+          "days": 3
+        }
+      ],
+      "notes": [
+        "steps is missing on 4 of 20 days."
+      ]
+    }
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "steps",
+      "start_date": "2026-10-10",
+      "end_date": "2026-10-31"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/days?from=2026-10-10&to=2026-10-31",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-10",
+              "steps": 9000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-11",
+              "steps": 9100,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-12",
+              "steps": 9200,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-13",
+              "steps": 9300,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-14",
+              "steps": 9400,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-15",
+              "steps": 9500,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-16",
+              "steps": 9600,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-17",
+              "steps": 9700,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-18",
+              "steps": 9800,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-19",
+              "steps": 9900,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-20",
+              "steps": 10000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-21",
+              "steps": 10100,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-22",
+              "steps": 10200,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-23",
+              "steps": 10300,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-24",
+              "steps": 900,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "metric": "steps",
+      "unit": "steps",
+      "start": "2026-10-10",
+      "end": "2026-10-31",
+      "days_in_range": 22,
+      "days_with_data": 14,
+      "mean": 9650.0,
+      "min": {
+        "date": "2026-10-10",
+        "value": 9000
+      },
+      "max": {
+        "date": "2026-10-23",
+        "value": 10300
+      },
+      "first_half_mean": 9300.0,
+      "second_half_mean": 10000.0,
+      "slope_per_week": 700.0,
+      "slope_standard_error_per_week": 0.0,
+      "fitted_change": 1300.0,
+      "direction": "up",
+      "weekly": [
+        {
+          "week_start": "2026-10-05",
+          "mean": 9050.0,
+          "days": 2
+        },
+        {
+          "week_start": "2026-10-12",
+          "mean": 9500.0,
+          "days": 7
+        },
+        {
+          "week_start": "2026-10-19",
+          "mean": 10100.0,
+          "days": 5
+        }
+      ],
+      "notes": [
+        "Today (2026-10-24 on this PC) and later days are left out: today may be partial."
+      ]
+    }
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "steps",
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-08"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/days?from=2026-10-01&to=2026-10-08",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-01",
+              "steps": 6000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-02",
+              "steps": 10000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-03",
+              "steps": 6000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-04",
+              "steps": 10000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-05",
+              "steps": 6000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-06",
+              "steps": 10000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-07",
+              "steps": 6000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-08",
+              "steps": 10000,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "metric": "steps",
+      "unit": "steps",
+      "start": "2026-10-01",
+      "end": "2026-10-08",
+      "days_in_range": 8,
+      "days_with_data": 8,
+      "mean": 8000.0,
+      "min": {
+        "date": "2026-10-01",
+        "value": 6000
+      },
+      "max": {
+        "date": "2026-10-02",
+        "value": 10000
+      },
+      "first_half_mean": 8000.0,
+      "second_half_mean": 8000.0,
+      "slope_per_week": 1333.33,
+      "slope_standard_error_per_week": 2434.32,
+      "fitted_change": 1333.3,
+      "direction": "no clear trend",
+      "weekly": [
+        {
+          "week_start": "2026-09-28",
+          "mean": 8000.0,
+          "days": 4
+        },
+        {
+          "week_start": "2026-10-05",
+          "mean": 8000.0,
+          "days": 4
+        }
+      ],
+      "notes": [
+        "Only 8 days have steps; at least 14 are needed to call a direction."
+      ]
+    }
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "resting_hr",
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-14"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/days?from=2026-10-01&to=2026-10-14",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-01",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 60,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-02",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 61,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-03",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 62,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-04",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 63,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-05",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 64,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-06",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 65,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-07",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 66,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-08",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": 67,
+              "avg_hr": null,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "metric": "resting_hr",
+      "unit": "bpm",
+      "start": "2026-10-01",
+      "end": "2026-10-14",
+      "days_in_range": 14,
+      "days_with_data": 8,
+      "mean": 63.5,
+      "min": {
+        "date": "2026-10-01",
+        "value": 60
+      },
+      "max": {
+        "date": "2026-10-08",
+        "value": 67
+      },
+      "first_half_mean": 63.0,
+      "second_half_mean": 67.0,
+      "slope_per_week": 7.0,
+      "slope_standard_error_per_week": 0.0,
+      "fitted_change": 7.0,
+      "direction": "no clear trend",
+      "weekly": [
+        {
+          "week_start": "2026-09-28",
+          "mean": 61.5,
+          "days": 4
+        },
+        {
+          "week_start": "2026-10-05",
+          "mean": 65.5,
+          "days": 4
+        }
+      ],
+      "notes": [
+        "Only 8 days have resting_hr; at least 14 are needed to call a direction.",
+        "resting_hr is missing on 6 of 14 days."
+      ]
+    }
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "avg_hr",
+      "start_date": "2026-10-01",
+      "end_date": "2026-10-31"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/days?from=2026-10-01&to=2026-10-31",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-01",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 70,
+              "min_hr": 50,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-02",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 72,
+              "min_hr": 51,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-03",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 71,
+              "min_hr": 49,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "metric": "avg_hr",
+      "unit": "bpm",
+      "start": "2026-10-01",
+      "end": "2026-10-31",
+      "days_in_range": 31,
+      "days_with_data": 3,
+      "mean": 71.0,
+      "min": {
+        "date": "2026-10-01",
+        "value": 70
+      },
+      "max": {
+        "date": "2026-10-02",
+        "value": 72
+      },
+      "first_half_mean": 71.0,
+      "second_half_mean": null,
+      "slope_per_week": null,
+      "slope_standard_error_per_week": null,
+      "fitted_change": null,
+      "direction": null,
+      "weekly": [
+        {
+          "week_start": "2026-09-28",
+          "mean": 71.0,
+          "days": 3
+        }
+      ],
+      "notes": [
+        "Today (2026-10-24 on this PC) and later days are left out: today may be partial.",
+        "Only 3 days have avg_hr; at least 7 are needed for a trend."
+      ]
+    }
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "resting_hr",
+      "start_date": "2026-09-01",
+      "end_date": "2026-09-30"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/days?from=2026-09-01&to=2026-09-30",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-10-01",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 70,
+              "min_hr": 50,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-02",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 72,
+              "min_hr": 51,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-10-03",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 71,
+              "min_hr": 49,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "metric": "resting_hr",
+      "unit": "bpm",
+      "start": "2026-09-01",
+      "end": "2026-09-30",
+      "days_in_range": 30,
+      "days_with_data": 0,
+      "notes": [
+        "No resting_hr values in this range.",
+        "resting_hr comes from the watch's daily summary; min_hr and avg_hr come from minute readings and may be present."
+      ]
+    }
+  },
+  {
+    "tool": "health_trend",
+    "arguments": {
+      "metric": "avg_hr",
+      "start_date": "2026-09-01",
+      "end_date": "2026-09-14"
+    },
+    "today": "2026-10-24",
+    "calls": [
+      {
+        "path": "health/days?from=2026-09-01&to=2026-09-14",
+        "method": "GET",
+        "data": null,
+        "result": {
+          "days": [
+            {
+              "date": "2026-09-01",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 60.0,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-02",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 63.3,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-03",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 58.6,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-04",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 62.0,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-05",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 58.3,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-06",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 63.6,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-07",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 61.9,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-08",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 61.2,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-09",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 65.6,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-10",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 60.9,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-11",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 64.2,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-12",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 60.5,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-13",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 65.8,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            },
+            {
+              "date": "2026-09-14",
+              "steps": null,
+              "active_calories": null,
+              "calories": null,
+              "distance_m": null,
+              "resting_hr": null,
+              "avg_hr": 64.2,
+              "min_hr": null,
+              "max_hr": null,
+              "avg_spo2": null,
+              "min_spo2": null,
+              "avg_stress": null,
+              "max_stress": null,
+              "standing_hours": null,
+              "sleep_minutes": null,
+              "deep_minutes": null,
+              "light_minutes": null,
+              "rem_minutes": null,
+              "awake_minutes": null
+            }
+          ]
+        }
+      }
+    ],
+    "result": {
+      "metric": "avg_hr",
+      "unit": "bpm",
+      "start": "2026-09-01",
+      "end": "2026-09-14",
+      "days_in_range": 14,
+      "days_with_data": 14,
+      "mean": 62.1,
+      "min": {
+        "date": "2026-09-05",
+        "value": 58.3
+      },
+      "max": {
+        "date": "2026-09-13",
+        "value": 65.8
+      },
+      "first_half_mean": 61.1,
+      "second_half_mean": 63.2,
+      "slope_per_week": 2.04,
+      "slope_standard_error_per_week": 0.99,
+      "fitted_change": 3.8,
+      "direction": "no clear trend",
+      "weekly": [
+        {
+          "week_start": "2026-08-31",
+          "mean": 61.0,
+          "days": 6
+        },
+        {
+          "week_start": "2026-09-07",
+          "mean": 62.9,
+          "days": 7
+        },
+        {
+          "week_start": "2026-09-14",
+          "mean": 64.2,
+          "days": 1
+        }
+      ],
+      "notes": []
+    }
+  }
+]

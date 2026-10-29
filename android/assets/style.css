@@ -3204,6 +3204,69 @@ button.is-busy:disabled {
   color: var(--ink-2);
 }
 
+/* ---------- Agents on Wi-Fi ---------- */
+
+.agents-battery {
+  margin-top: 12px;
+}
+
+.agent-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.agent-meta {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+
+.pair-step {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.pair-body .command {
+  margin: 8px 0 14px;
+}
+
+/* The code is the one thing to read off the screen: an inverted ink block, like a selected state. */
+.pair-code {
+  margin-top: 10px;
+  padding: 18px 12px;
+  border-radius: var(--r-card);
+  background: var(--ink);
+  color: var(--on-accent);
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  user-select: all;
+}
+
+.pair-code.is-spent {
+  background: var(--surface-2);
+  color: var(--ink-3);
+}
+
+.pair-timer {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.pair-body .access-row {
+  margin-top: 16px;
+}
+
 /* ---------- Alarm sheet (dialog) ---------- */
 
 .sheet {
@@ -3326,7 +3389,8 @@ button.is-busy:disabled {
 
 /* ---------- Watch faces ---------- */
 
-.face-row {
+.face-row,
+.agent-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -3335,7 +3399,8 @@ button.is-busy:disabled {
   border-top: 1px solid var(--line);
 }
 
-.face-row:first-child {
+.face-row:first-child,
+.agent-row:first-child {
   border-top: 0;
 }
 

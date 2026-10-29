@@ -8,6 +8,10 @@ The phone app opens this page in its WebView, and hands it the token, only
 once its own service has bound 127.0.0.1:8766. If another app holds that port,
 the service cannot start its server and the app shows an error instead.
 
+Paired computers can also reach part of this API over Wi-Fi, through a second,
+TLS-only listener with per-computer tokens; see
+[Agents on Wi-Fi](#agents-on-wi-fi).
+
 | Method | Path | Operation |
 |---|---|---|
 | GET | `/status` | Watch, sync, health and capability status |
@@ -39,6 +43,11 @@ the service cannot start its server and the app shows an error instead.
 | GET | `/notifications` | Notification forwarding settings |
 | PUT | `/notifications` | Replace the forwarding settings |
 | POST | `/notifications/access` | Open Android's notification access screen |
+| GET | `/agents` | Wi-Fi listener, pairing code and paired computers (loopback only) |
+| PUT | `/agents/lan` | Turn the Wi-Fi listener on or off (loopback only) |
+| POST | `/agents/pairing` | Open a pairing code (loopback only) |
+| DELETE | `/agents/pairing` | Close the pairing code (loopback only) |
+| DELETE | `/agents/{id}` | Revoke a paired computer (loopback only) |
 
 Create/update fields: `title` (1 to 200 characters), `body` (up to 20,000
 characters), `watch_title` (up to 20 Unicode code points), `watch_enabled`
@@ -293,6 +302,133 @@ the app is already open, and closes the watch's find-phone screen. It returns
 `{stopped, sent}`: `stopped` is true when the phone was ringing, `sent` when
 the watch was told to close its screen.
 
+## Agents on Wi-Fi
+
+Off by default. While **Settings > Agents on Wi-Fi > Allow agents on Wi-Fi**
+is on, the service also listens with TLS on port 8767 of every interface (on
+another free port when 8767 is taken; mDNS gives the real one). Each
+connection whose local address does not belong to the current Wi-Fi network
+(as Android's `LinkProperties` for it say), or whose remote address is not on
+that network's link (inside one of its prefixes, or IPv6 link-local), is
+closed before the handshake, so mobile data, VPN, hotspot and routed peers
+never reach it; binding every
+interface means a new DHCP address needs no rebind. Turning the switch off
+closes the listener and every open agent connection; pairings stay. While it
+is on, the service keeps running after the watch is released, and starts
+after a reboot or an app update as it does for an owned watch (only with the
+Bluetooth permission). Each Wi-Fi request holds a partial wakelock from the
+end of its TLS handshake for at most 45 seconds, released when it ends; nothing holds the phone awake
+between requests, so Android's battery optimization can still pause the app.
+Settings shows whether Hypr Watch is exempt and opens Android's list.
+
+**TLS.** An EC P-256 key in AndroidKeyStore (alias
+`hypr-watch-agent-tls-v1`, it never leaves the keystore) with the
+self-signed certificate the keystore makes for it (`CN=Hypr Watch`), TLS 1.3
+and 1.2. Clients pin the SHA-256 of the certificate's DER
+SubjectPublicKeyInfo and check nothing else (no hostname, no validity). A
+reinstall makes a new key, so every computer must pair again.
+
+**Requests** use the framing, limits and errors of the loopback API, with
+these differences:
+
+- No page or static files. Only the routes the MCP tools call answer: `GET
+  /status`; `GET`, `POST /notes`; `PATCH`, `DELETE /notes/{uuid}`; `POST
+  /watch/connect`, `/watch/disconnect`, `/watch/sync`; `GET /watch/reminders`;
+  `GET /device`; `POST /device/find-watch`, `/device/find-phone/stop`,
+  `/device/time-sync`; `GET /weather`; `PUT /weather/settings`; `POST
+  /weather/refresh`; `GET /music`; `PUT /music/settings`; `GET`, `POST
+  /alarms`; `POST /alarms/refresh`; `PUT`, `DELETE /alarms/{id}`; `GET`, `PUT
+  /alarms/sleep-mode`; `GET`, `PUT /watch-settings`; `GET`, `POST
+  /heart-rate/live`; `GET /watch-faces`; `POST /watch-faces/{id}/activate`;
+  `DELETE /watch-faces/{id}`; `POST /watch-faces/upload`; `GET`, `PUT
+  /contacts` and `/quick-replies`; `POST /health/sync`; `GET /health/days`,
+  `/health/series`, `/health/sleep`, `/health/samples`, `/health/workouts`;
+  `GET`, `PUT /health/profile`; `GET`, `PUT /notifications`. Anything else
+  (`/export`, `/health/files`, `/health/parse-report`, `/watch/probe-silent`,
+  `/health/connect*`, `/notifications/access`, `/weather/permission`,
+  `/agents*`) answers 404 `Not available over Wi-Fi`, so a paired computer
+  can't read raw health files, open Android screens, pair others or revoke
+  anyone.
+- A request with an `Origin` header gets 403: agents never send one, and a web
+  page on the same network could make a browser do so.
+- Only `Authorization: Bearer hwa1_…` tokens of paired computers; the
+  loopback token is refused. A wrong or revoked token gets 401 `This computer
+  isn't paired with the phone, or was revoked. Pair it again.` After 20 such
+  failures from one address within a minute, its connections are closed
+  unanswered until that minute ends.
+- `/status` reads `connection: "Wi-Fi (TLS)"`.
+- At most 8 connections at once and 2 per remote address (one more is
+  closed), 10 seconds for the TLS handshake, 40 seconds between reads. A
+  connection that hasn't sent an authenticated, allowed request 15 seconds
+  after it was accepted is closed, however slowly it sends.
+- A request that fails in any way, a body nested deeply enough to overflow
+  the JSON parser included, closes that connection only.
+
+**Pairing.** Tapping **Connect an agent** opens a window of 120 seconds
+holding one code of 8 symbols from Crockford base32
+(`0123456789ABCDEFGHJKMNPQRSTVWXYZ`, 40 random bits), shown as `K7Q2-M9XA`.
+Both sides normalise a typed code first: uppercase, drop spaces and `-`,
+read `O` as `0` and `I`, `L` as `1`; it must then be 8 symbols of the
+alphabet. With `spki` the 32-byte pin above:
+
+```
+K = PBKDF2-HMAC-SHA256(code, "hypr-watch pair v1" || spki, 200000 iterations, 32 bytes)
+client proof = HMAC-SHA256(K, "client" || spki || nonce)
+phone proof  = HMAC-SHA256(K, "phone" || spki || nonce || token)
+```
+
+The client reads the certificate's `spki` during the handshake, before it
+trusts it, and sends `POST /pair` (no token) with
+`{"v":1,"name":"<computer, up to 64 characters>","nonce":"<16 bytes>","proof":"<client proof>"}`,
+binary fields base64url without padding. The phone computes K with its own
+`spki`, so a proof made through another certificate (a man in the middle's)
+fails like a wrong code. On success it creates the computer's token, closes
+the window and answers
+`{"v":1,"phone_id","phone_name","agent_id","token":"hwa1_…","proof":"<phone proof>"}`;
+the client keeps the token only if the phone proof checks out with the `spki`
+it saw. `tests/agent-pairing-vectors.json` pins these values for both sides.
+
+A `/pair` body over 1,024 bytes gets 413 before it is read and uses no
+try. Every other request the window processes uses one of its 5 tries, from
+any address: 403 `That code didn't match. N tries left.`, 400 for a malformed
+body. The last try, success, the 2 minutes running out, closing the sheet and
+turning the switch off close the window; `/pair` then answers 404. One
+request is checked at a time; another meanwhile gets 409 and uses no try.
+
+**Discovery.** While the listener is on, NsdManager advertises
+`_hyprwatch._tcp` as `Hypr Watch <model>` on the listener's port, with TXT
+`v=1`, `id=<phone_id>` and `pair=1` while a code is open (else `0`), and
+registers again when that changes. mDNS only suggests an address; the pin
+decides.
+
+**Storage.** `files/agents.json`, replaced whole on each change:
+`{"enabled", "phone_id", "agents": [{"id", "name", "created_at",
+"last_seen_at", "last_ip", "token_sha256_hex"}]}`. Tokens are kept only as
+SHA-256 and compared in constant time; `phone_id` is 16 random bytes made
+once per install. `last_seen_at` and `last_ip` are written at most once a
+minute, or when the address changes. Revoking deletes the entry, so the
+computer's next request gets 401. A file that can't be read is moved to
+`agents.json.bad` and the service starts with Wi-Fi access off and no
+paired computers, logging why.
+
+**Management routes**, on the loopback listener only, with its token, for
+the phone's Settings:
+
+- `GET /agents` returns `{enabled, listening: {host, port} | null, wifi,
+  pairing: {code, expires_at, attempts_left} | null, last_pairing: {result,
+  name?, at} | null, agents: [{id, name, created_at, last_seen_at,
+  last_ip}], battery_exempt}`. `host` is the phone's IPv4 address on Wi-Fi,
+  `null` when not on Wi-Fi. `last_pairing.result` is `paired` (with `name`),
+  `no_tries`, `expired` or `closed`. Times are epoch milliseconds;
+  `last_seen_at` and `last_ip` are `null` until first used.
+- `PUT /agents/lan` `{"enabled": bool}` turns the listener on or off and
+  returns the same object; 503 when it can't start.
+- `POST /agents/pairing` opens a new window (replacing one already open) and
+  returns its `{code, expires_at, attempts_left}`; 400 while the listener is
+  off. `DELETE /agents/pairing` closes it.
+- `DELETE /agents/{id}` revokes a computer: `{deleted: true}`, or 400 `That
+  computer isn't paired`.
+
 ## Backup and restore
 
 Backup and restore run only from **Settings > Backup and restore** in the
@@ -303,7 +439,9 @@ copy that key off the phone.
 A backup holds `notes.db`, `health.db` (with the health profile and every
 feature's settings), `files/watch.json` (the watch key) and
 `files/notification-filter.json`. It leaves out the API token
-(`connect-pc.py` reads the new one), the saved weather fix (taken again when
+(`hypr-watch usb` reads the new one), the paired agents and the Wi-Fi switch
+(`files/agents.json`: the phone's TLS key can't leave the keystore, so a
+restored phone pairs again), the saved weather fix (taken again when
 the app opens), and Android permissions and the Bluetooth bond, which belong
 to the phone. A restore replaces all four files; one the backup lacks is
 removed.
@@ -366,23 +504,33 @@ backup file is damaged or incomplete.`).
 
 ## Command line
 
-Examples, after USB setup:
+`hypr-watch` (plugin/server/cli.ts) uses the Wi-Fi pairing when there is one,
+else USB. Examples:
 
 ```sh
-python scripts/watchctl.py status
-python scripts/watchctl.py create --title 'Buy groceries' --body 'Milk and rice' --send-to-watch true
-python scripts/watchctl.py notes
-python scripts/watchctl.py sync
-python scripts/watchctl.py update --id NOTE_UUID --done true
-python scripts/watchctl.py export
+npx hypr-watch setup [--host ip[:port]] [--name name] [--claude] [--codex] [--yes]
+hypr-watch mcp
+hypr-watch usb --open
+hypr-watch pair
+hypr-watch status
+hypr-watch create --title 'Buy groceries' --body 'Milk and rice' --send-to-watch true
+hypr-watch notes
+hypr-watch sync
+hypr-watch update --id NOTE_UUID --done true
+hypr-watch export
 ```
 
-`watchctl.py` covers notes and watch operations only. Use the MCP tools or
-HTTP for health and notification routes.
+`setup` pairs the phone and registers the MCP server with Claude Code or Codex
+at user scope. `mcp` runs the MCP server over stdio.
+`hypr-watch usb [--watch | --release] [--open]` sets up the USB connection
+(and the Mi Fitness handoff below); `pair [--host ip[:port]] [--name name]`
+and `unpair` manage this computer's Wi-Fi pairing. The note commands cover
+notes and watch operations only. Use the MCP tools or HTTP for health and
+notification routes.
 
 ## Companion handoff
 
-`connect-pc.py --watch` and MCP `connect_watch` also pause Mi Fitness using ADB
+`hypr-watch usb --watch` and MCP `connect_watch` also pause Mi Fitness using ADB
 and force-stop Gadgetbridge. While `/status` reads `connecting` they wait up to
 35 seconds instead of opening the link again, and touch no package unless that
 connect fails. When the connect fails and that call paused Mi Fitness, they
@@ -390,8 +538,9 @@ release the app first (it may own the watch from before), as `--release` does,
 and restore Mi Fitness. A failed connect after an earlier take-over leaves both
 alone. Calling `/watch/connect`
 directly only opens Bluetooth; it does not change another Android package. Use
-`connect-pc.py --release` or MCP `disconnect_watch` to restore Mi Fitness after
-a USB handoff. A release calls `/watch/disconnect`; when the app does not
+`hypr-watch usb --release` or MCP `disconnect_watch` to restore Mi Fitness after
+a USB handoff. Over Wi-Fi, without USB, `connect_watch` and `disconnect_watch`
+only call the API and leave Mi Fitness as it is; the result says so. A release calls `/watch/disconnect`; when the app does not
 answer, it force-stops the app and writes its prefs
 (`shared_prefs/watch-link.xml`) as released over ADB instead, so a later
 restore does not take the watch back; the result message says so. Mi Fitness is re-enabled only
@@ -400,4 +549,6 @@ once one of those worked; otherwise it stays paused and the error says so.
 Private PC files live under `$XDG_STATE_HOME/hypr-watch` or
 `~/.local/state/hypr-watch`, with a mode-700 directory. `connection.json`
 contains the generated API token. `companion.json` records whether Mi Fitness
-should be restored. Neither file belongs in a source or plugin archive.
+should be restored. `pairing.json` (mode 600) holds the Wi-Fi pairing: phone
+id and name, certificate pin, agent id and token, last host and port. None of
+these files belongs in a source or plugin archive.
