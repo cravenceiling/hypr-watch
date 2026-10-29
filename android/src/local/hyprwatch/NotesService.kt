@@ -340,11 +340,12 @@ class NotesService : Service() {
             Http.respond(out, 204, null, ByteArray(0))
             return
         }
-        if ("GET" == method && ("/" == path || "/app.js" == path || "/style.css" == path)) {
+        if ("GET" == method && ("/" == path || "/app.js" == path || "/style.css" == path || "/theme.js" == path || "/geist.woff2" == path)) {
             val asset = if (path == "/") "index.html" else path.substring(1)
             val type = when {
                 path.endsWith(".js") -> "text/javascript"
                 path.endsWith(".css") -> "text/css"
+                path.endsWith(".woff2") -> "font/woff2"
                 else -> "text/html"
             }
             assets.open(asset).use { a -> Http.respond(out, 200, type, a.readBytes()) }
