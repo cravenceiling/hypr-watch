@@ -45,8 +45,8 @@ Agents do not inherit your shell environment. Put `HYPR_WATCH_TRANSPORT` and
 for Codex. For example, after removing the existing entry:
 
 ```sh
-claude mcp add -s user -e HYPR_WATCH_TRANSPORT=usb -e ANDROID_SERIAL=DEVICE_SERIAL hypr-watch -- npx --prefer-offline --fetch-retries=0 --fetch-timeout=5000 -y hypr-watch@0.1.0 mcp
-codex mcp add --env HYPR_WATCH_TRANSPORT=usb --env ANDROID_SERIAL=DEVICE_SERIAL hypr-watch -- npx --prefer-offline --fetch-retries=0 --fetch-timeout=5000 -y hypr-watch@0.1.0 mcp
+claude mcp add -s user -e HYPR_WATCH_TRANSPORT=usb -e ANDROID_SERIAL=DEVICE_SERIAL hypr-watch -- npx --prefer-offline --fetch-retries=0 --fetch-timeout=5000 -y hypr-watch@0.1.1 mcp
+codex mcp add --env HYPR_WATCH_TRANSPORT=usb --env ANDROID_SERIAL=DEVICE_SERIAL hypr-watch -- npx --prefer-offline --fetch-retries=0 --fetch-timeout=5000 -y hypr-watch@0.1.1 mcp
 ```
 
 When `XDG_STATE_HOME` is set, setup includes it in the entry with

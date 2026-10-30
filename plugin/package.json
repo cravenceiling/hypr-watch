@@ -1,6 +1,6 @@
 {
   "name": "hypr-watch",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Connect Claude Code and Codex to Hypr Watch over paired Wi-Fi or authorized USB.",
   "repository": {"type": "git", "url": "https://github.com/cravenceiling/hypr-watch", "directory": "plugin"},
   "homepage": "https://github.com/cravenceiling/hypr-watch#readme",
