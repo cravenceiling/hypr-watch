@@ -1,0 +1,33 @@
+name: Publish hypr-watch
+
+# Pushing a tag like hypr-watch-v0.1.1 publishes plugin/ to npm. npm trusts this workflow
+# (trusted publishing over OIDC), so no npm token is stored in the repo. The `npm`
+# environment needs an approval before the job runs.
+on:
+  push:
+    tags: ['hypr-watch-v*']
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: plugin
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Check the tag matches package.json
+        run: test "hypr-watch-v$(node -p 'require("./package.json").version')" = "$GITHUB_REF_NAME"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm publish --access public
