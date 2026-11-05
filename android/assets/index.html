@@ -44,7 +44,7 @@
 <div class="ring-banner" id="ringing" role="alert" hidden>
   <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>
   <div class="ring-text">
-    <p><strong>Phone is ringing.</strong> Your watch is looking for this phone.</p>
+    <p><strong>Phone is ringing</strong></p>
     <p class="ring-error" id="ring-stop-error" hidden></p>
   </div>
   <button type="button" id="ring-stop" class="secondary">Stop</button>
@@ -146,7 +146,7 @@
     <div class="empty" id="empty" hidden>
       <div class="empty-art" aria-hidden="true"><svg class="icon"><use href="#i-watch"/></svg></div>
       <h2>No notes yet</h2>
-      <p>Write the full note here. Its short title can go to your watch.</p>
+      <p><span class="empty-phone">Tap + to write one.</span><span class="empty-wide">Tap New note to write one.</span> Its short title can go to your watch.</p>
     </div>
 
     <details class="done" id="done-section" hidden>
@@ -159,7 +159,7 @@
 
     <footer class="pane-footer">
       <div class="footer-actions">
-        <button type="button" id="export-notes" class="ghost">
+        <button type="button" id="export-notes" class="ghost" hidden>
           <svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>
           <span>Export notes</span>
         </button>
@@ -487,6 +487,33 @@
         </div>
       </details>
 
+      <details class="card settings-card fold" id="sec-quick-replies" data-fold="quick-replies">
+        <summary class="fold-head">
+          <span class="fold-text">
+            <h2 class="card-title" id="qr-title">Quick replies</h2>
+            <span class="fold-sub" id="qr-sum"></span>
+          </span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </summary>
+        <div class="fold-body">
+          <p class="card-sub fold-lead">Short texts the watch offers when you decline a call.</p>
+          <div class="list-head">
+            <p class="list-count" id="qr-count"></p>
+            <p class="check-state" id="qr-state" role="status"></p>
+          </div>
+          <p class="section-note" id="qr-note" hidden></p>
+          <ol class="edit-list" id="qr-list"></ol>
+          <button type="button" id="qr-add" class="ghost add-row">
+            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
+            <span>Add reply</span>
+          </button>
+          <div class="form-foot">
+            <p class="save-status" id="qr-status" role="status"></p>
+            <button type="button" id="qr-save" class="primary">Save replies</button>
+          </div>
+        </div>
+      </details>
+
       <details class="card settings-card fold" id="sec-faces" data-fold="faces">
         <summary class="fold-head">
           <span class="fold-text">
@@ -532,33 +559,6 @@
             </div>
 
             <p class="install-result" id="face-result" role="status"></p>
-          </div>
-        </div>
-      </details>
-
-      <details class="card settings-card fold" id="sec-quick-replies" data-fold="quick-replies">
-        <summary class="fold-head">
-          <span class="fold-text">
-            <h2 class="card-title" id="qr-title">Quick replies</h2>
-            <span class="fold-sub" id="qr-sum"></span>
-          </span>
-          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
-        </summary>
-        <div class="fold-body">
-          <p class="card-sub fold-lead">Short texts the watch offers when you decline a call.</p>
-          <div class="list-head">
-            <p class="list-count" id="qr-count"></p>
-            <p class="check-state" id="qr-state" role="status"></p>
-          </div>
-          <p class="section-note" id="qr-note" hidden></p>
-          <ol class="edit-list" id="qr-list"></ol>
-          <button type="button" id="qr-add" class="ghost add-row">
-            <svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>
-            <span>Add reply</span>
-          </button>
-          <div class="form-foot">
-            <p class="save-status" id="qr-status" role="status"></p>
-            <button type="button" id="qr-save" class="primary">Save replies</button>
           </div>
         </div>
       </details>
@@ -874,7 +874,7 @@
 
         <div class="field">
           <label for="title">Title</label>
-          <input id="title" name="title" class="title-input" dir="auto" maxlength="200" autocomplete="off" enterkeyhint="next" placeholder="What do you need to remember?" aria-describedby="title-error">
+          <textarea id="title" name="title" class="title-input" dir="auto" maxlength="200" rows="2" autocomplete="off" enterkeyhint="next" placeholder="What do you need to remember?" aria-describedby="title-error"></textarea>
           <p class="field-error" id="title-error" hidden></p>
         </div>
 
