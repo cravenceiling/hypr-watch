@@ -426,6 +426,7 @@ function renderNotes() {
   $('notes').setAttribute('aria-busy', 'false');
 
   const none = state.notes.length === 0;
+  $('export-notes').hidden = none;
   $('empty').hidden = !none;
   $('notes-section').hidden = none;
   $('count').textContent = query ? `${activeShown.length} of ${active.length}` : String(active.length);
@@ -753,15 +754,23 @@ function showConflict(show) {
 }
 
 $('title').addEventListener('input', () => {
+  const title = $('title');
+  // Titles are one line; the textarea only exists so long ones wrap. Pasted line breaks become spaces.
+  if (title.value.includes('\n')) {
+    const { selectionStart, selectionEnd } = title;
+    title.value = title.value.replaceAll('\n', ' ');
+    title.setSelectionRange(selectionStart, selectionEnd);
+  }
   updatePreview();
-  if (!$('title-error').hidden && $('title').value.trim()) setFieldError('title', '');
+  if (!$('title-error').hidden && title.value.trim()) setFieldError('title', '');
 });
 $('watch-title').addEventListener('input', updatePreview);
 $('watch-enabled').addEventListener('change', updateWatchFields);
 
-// Enter in the title moves on to the details instead of submitting.
-$('title').addEventListener('keydown', (event) => {
-  if (event.key === 'Enter' && !event.isComposing && !(event.metaKey || event.ctrlKey)) {
+// Enter in the title moves on to the details. beforeinput catches it from every Android
+// keyboard, including ones that send Enter as committed text or mid-composition.
+$('title').addEventListener('beforeinput', (event) => {
+  if (event.inputType === 'insertLineBreak' || event.inputType === 'insertParagraph') {
     event.preventDefault();
     $('body').focus();
   }

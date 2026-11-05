@@ -1167,10 +1167,14 @@ html.sheet-open .scrim {
   border-color: var(--danger);
 }
 
-.title-input {
-  font-size: 18px !important;
+.field .title-input {
+  min-height: calc(2lh + 24px);
+  max-height: calc(4lh + 24px);
+  overflow-y: auto;
+  font-size: 18px;
   font-weight: 550;
   letter-spacing: -0.01em;
+  line-height: 1.45;
 }
 
 .field textarea {
@@ -3817,13 +3821,22 @@ button.is-busy:disabled {
   }
 }
 
+/* The New note button is a bare + on phones and a labelled button on wide screens. */
+.empty-wide { display: none; }
+
 @media (min-width: 760px) {
+  .empty-phone { display: none; }
+  .empty-wide { display: inline; }
+
   .ring-banner {
     margin: 16px auto 0;
     width: min(1124px, calc(100% - 56px));
   }
 
-  .settings-grid > .group-title {
+  .settings-grid > .group-title,
+  #sec-faces,
+  #sec-contacts,
+  #sec-notifications {
     grid-column: 1 / -1;
   }
 
