@@ -1,0 +1,16 @@
+{
+  "name": "hypr-watch",
+  "version": "0.1.1",
+  "description": "Connect Claude Code and Codex to Hypr Watch over paired Wi-Fi or authorized USB.",
+  "repository": {"type": "git", "url": "https://github.com/cravenceiling/hypr-watch", "directory": "plugin"},
+  "homepage": "https://github.com/cravenceiling/hypr-watch#readme",
+  "keywords": ["mcp", "claude", "codex", "android", "hypr-watch"],
+  "license": "MIT",
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "bin": {"hypr-watch": "dist/cli.js"},
+  "files": ["dist", "README.md", "LICENSE", "npm-shrinkwrap.json"],
+  "scripts": {"test": "node --test test/*.test.ts", "typecheck": "tsc -p .", "build": "tsc -p tsconfig.build.json", "prepack": "rm -rf dist && npm run build"},
+  "dependencies": {"@modelcontextprotocol/sdk": "^1.29.0", "zod": "^4.0.0", "bonjour-service": "^1.3.0"},
+  "devDependencies": {"typescript": "^6.0.0", "@types/node": "^22.0.0"}
+}

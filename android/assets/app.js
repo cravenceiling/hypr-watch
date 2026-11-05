@@ -4,6 +4,7 @@
  * Hypr Watch UI. Served to the Android WebView and, over an adb-forwarded port, to a PC browser.
  * Native contract: window.setAccessToken(token), global fitEditor(), optional window.AndroidNotes.exportNotes(json),
  * AndroidNotes.backup(passphrase) and AndroidNotes.restore(passphrase) answered by window.onBackupResult(result),
+ * AndroidNotes.openBatterySettings(),
  * and the CSS variables --safe-top / --safe-bottom set on <html>.
  */
 
@@ -111,7 +112,7 @@ async function api(path, method = 'GET', body, options = {}) {
   }
   setReachable(true);
   if (response.status === 401) {
-    showAccess(state.token ? 'That token didn’t work. Run the connect script again for a fresh link.' : '');
+    showAccess(state.token ? 'That token didn’t work. Run hypr-watch usb --open again for a fresh link.' : '');
     throw new ApiError(data.error || 'Connect with your local access token', 401);
   }
   if (!response.ok) {
@@ -331,6 +332,12 @@ function element(tag, className, text) {
 const relativeFormat = new Intl.RelativeTimeFormat(navigator.language, { numeric: 'auto', style: 'short' });
 const dateFormat = new Intl.DateTimeFormat(navigator.language, { month: 'short', day: 'numeric' });
 const longDateFormat = new Intl.DateTimeFormat(navigator.language, { dateStyle: 'medium', timeStyle: 'short' });
+const yearDateFormat = new Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'short', day: 'numeric' });
+
+/** A date without its year reads as this year, so older dates carry one. */
+function dateText(ms) {
+  return new Date(ms).getFullYear() === new Date().getFullYear() ? dateFormat.format(ms) : yearDateFormat.format(ms);
+}
 
 function relativeTime(ms) {
   const seconds = Math.round((ms - Date.now()) / 1000);
@@ -339,7 +346,7 @@ function relativeTime(ms) {
   if (abs < 3600) return relativeFormat.format(Math.round(seconds / 60), 'minute');
   if (abs < 86400) return relativeFormat.format(Math.round(seconds / 3600), 'hour');
   if (abs < 7 * 86400) return relativeFormat.format(Math.round(seconds / 86400), 'day');
-  return dateFormat.format(ms);
+  return dateText(ms);
 }
 
 function noteItem(note) {
@@ -359,6 +366,8 @@ function noteItem(note) {
   const heading = element('h3', 'note-title');
   const open = element('button', 'note-open', note.title);
   open.type = 'button';
+  // Notes are in any script: each title and preview takes its direction from its own text.
+  open.dir = 'auto';
   open.dataset.role = 'open';
   if (note.id === state.selectedId && !isMobile()) open.setAttribute('aria-current', 'true');
   open.addEventListener('click', () => openEditor(note));
@@ -368,7 +377,9 @@ function noteItem(note) {
   if (note.body.trim()) {
     // Collapse blank lines so the three-line preview shows text, not gaps.
     const preview = note.body.slice(0, 600).replace(/\n\s*\n+/g, '\n').trim();
-    main.append(element('p', 'note-body', preview));
+    const body = element('p', 'note-body', preview);
+    body.dir = 'auto';
+    main.append(body);
   }
 
   const meta = element('div', 'note-meta');
@@ -1252,13 +1263,17 @@ function svgNode(tag, attrs = {}, text) {
   return node;
 }
 
-/** Ticks from lo to a rounded max, at 1/2/2.5/5 steps. */
-function niceTicks(lo, hi, count = 3) {
+/**
+ * Ticks from lo to a rounded max, at 1/2/2.5/5 steps.
+ * integer: whole-number ticks for counts, where a "0.5 steps" line means nothing.
+ */
+function niceTicks(lo, hi, count = 3, integer = false) {
   const span = Math.max(hi - lo, 1e-9);
   const raw = span / count;
   const mag = 10 ** Math.floor(Math.log10(raw));
   const norm = raw / mag;
-  const step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * mag;
+  const nice = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * mag;
+  const step = integer ? Math.max(1, Math.round(nice)) : nice;
   const start = Math.floor(lo / step) * step;
   const ticks = [];
   for (let t = start; t < hi + step - 1e-9; t += step) ticks.push(Math.round(t * 1000) / 1000);
@@ -1276,7 +1291,7 @@ function labelIndexes(count) {
 
 /** A bar with a 4px rounded data end and a square baseline. */
 function columnPath(x, y, w, h, rounded) {
-  const r = rounded ? Math.min(4, w / 2, h) : 0;
+  const r = rounded ? Math.min(1.5, w / 2, h) : 0;
   if (!r) return `M${x},${y + h}V${y}H${x + w}V${y + h}Z`;
   return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
 }
@@ -1389,10 +1404,10 @@ function chartMessage(container, text) {
  * Columns per day. series: [{ cls, values }] stacked bottom to top; a 2px surface gap separates segments.
  * Missing days draw nothing; the tooltip and table say "No data".
  */
-function columnChart(container, { dates, series, goal, tickFormat, label, tip }) {
+function columnChart(container, { dates, series, goal, tickFormat, label, tip, integer = false }) {
   const width = Math.max(240, Math.round(container.clientWidth));
   const totals = dates.map((_, i) => series.reduce((sum, s) => sum + (isNum(s.values[i]) ? s.values[i] : 0), 0));
-  const ticks = niceTicks(0, Math.max(...totals, goal || 0, 1));
+  const ticks = niceTicks(0, Math.max(...totals, goal || 0, 1), 3, integer);
   const top = ticks[ticks.length - 1];
   const plotW = width - PAD.left - PAD.right;
   const plotH = CHART_HEIGHT - PAD.top - PAD.bottom;
@@ -1401,7 +1416,7 @@ function columnChart(container, { dates, series, goal, tickFormat, label, tip })
   const barW = Math.min(24, Math.max(1, band - STACK_GAP));
 
   const svg = svgNode('svg', { viewBox: `0 0 ${width} ${CHART_HEIGHT}`, height: CHART_HEIGHT, role: 'img', 'aria-label': label });
-  const hover = svgNode('rect', { class: 'hover-band', y: PAD.top, height: plotH, width: band, rx: 6 });
+  const hover = svgNode('rect', { class: 'hover-band', y: PAD.top, height: plotH, width: band });
   svg.append(hover);
   yAxis(svg, ticks, y, width, tickFormat);
 
@@ -1416,14 +1431,19 @@ function columnChart(container, { dates, series, goal, tickFormat, label, tip })
       acc += v;
       const h = bottom - y(acc);
       if (h < 0.5) return;
-      svg.append(svgNode('path', { class: s.cls, d: columnPath(x, bottom - h, barW, h, k === lastSeries) }));
+      // The newest column is today's (or last night's): drawn in full ink, the rest in a lighter tone.
+      svg.append(svgNode('path', { class: s.cls + (i === dates.length - 1 ? ' is-today' : ''), d: columnPath(x, bottom - h, barW, h, k === lastSeries) }));
     });
   });
 
   if (goal) {
     const gy = Math.round(y(goal)) + 0.5;
     svg.append(svgNode('line', { class: 'goal', x1: PAD.left, x2: width - PAD.right, y1: gy, y2: gy }));
-    svg.append(svgNode('text', { class: 'goal-label', x: width - PAD.right, y: gy - 5, 'text-anchor': 'end' }, `Goal ${compactFormat.format(goal)}`));
+    // The goal takes its place in the y-axis lane, so it never sits on a bar; ticks too close to it give way.
+    for (const tick of svg.querySelectorAll('text')) {
+      if (Math.abs(Number(tick.getAttribute('y')) - 4 - gy) < 12) tick.remove();
+    }
+    svg.append(svgNode('text', { class: 'goal-label', x: PAD.left - 8, y: gy + 4, 'text-anchor': 'end' }, compactFormat.format(goal)));
   }
 
   for (const i of labelIndexes(dates.length)) {
@@ -1781,15 +1801,16 @@ function renderSteps(data, days, goal) {
   }
   const average = Math.round(known.reduce((a, b) => a + b, 0) / known.length);
   const met = goal ? known.filter((v) => v >= goal).length : 0;
-  $('steps-sub').textContent = `Average ${numberFormat.format(average)} a day` + (goal ? ` · goal met on ${met} of ${known.length} days` : '');
+  $('steps-sub').textContent = `Average ${numberFormat.format(average)} a day` + (goal ? ` · goal met on ${met} of ${known.length} ${known.length === 1 ? 'day' : 'days'}` : '');
   const best = Math.max(...known);
   columnChart(chart, {
     dates: data.dates,
     series: [{ cls: 'seg-steps', values }],
     goal,
+    integer: true,
     tickFormat: (t) => compactFormat.format(t),
-    label: `Steps per day, ${rangeWords(days.length)}. Average ${numberFormat.format(average)}, highest ${numberFormat.format(best)}.` + (goal ? ` Goal ${numberFormat.format(goal)}, met on ${met} days.` : '') + ` ${days.length - known.length} days without data.`,
-    tip: (i) => tipNodes(fullDayFormat.format(parseIsoDate(data.dates[i])), [{ strong: true, text: values[i] === null ? 'No data' : `${numberFormat.format(values[i])} steps` }]),
+    label: `Steps per day, ${rangeWords(days.length)}. Average ${numberFormat.format(average)}, highest ${numberFormat.format(best)}.` + (goal ? ` Goal ${numberFormat.format(goal)}, met on ${met} ${met === 1 ? 'day' : 'days'}.` : '') + ` ${days.length - known.length} ${days.length - known.length === 1 ? 'day' : 'days'} without data.`,
+    tip: (i) => tipNodes(fullDayFormat.format(parseIsoDate(data.dates[i])), [{ strong: true, text: values[i] === null ? 'No data' : `${numberFormat.format(values[i])} ${values[i] === 1 ? 'step' : 'steps'}` }]),
   });
   renderTable(
     $('steps-table'),
@@ -1923,7 +1944,7 @@ function renderSleep(data, nights) {
     dates: data.dates,
     series: STAGES.map((stage) => ({ cls: 'seg-' + stage.key, values: rows.map((n) => (n ? toHours(n[stage.key]) : null)) })),
     tickFormat: (t) => `${decimalFormat.format(t)}h`,
-    label: `Sleep per night by stage: deep, light, REM and awake, ${rangeWords(data.dates.length)}. ${withData.length} nights recorded` + (avg ? `, average ${formatMinutes(avg)} asleep.` : '.'),
+    label: `Sleep per night by stage: deep, light, REM and awake, ${rangeWords(data.dates.length)}. ${withData.length} ${withData.length === 1 ? 'night' : 'nights'} recorded` + (avg ? `, average ${formatMinutes(avg)} asleep.` : '.'),
     tip: (i) => {
       const night = rows[i];
       const title = fullDayFormat.format(parseIsoDate(data.dates[i]));
@@ -1995,10 +2016,14 @@ function renderWorkouts(data, workouts) {
       span.append(element('b', '', value), document.createTextNode(' ' + unit));
       stats.append(span);
     };
-    if (isNum(w.distance_m) && w.distance_m > 0) stat(decimalFormat.format(w.distance_m / 1000), 'km');
+    // Under a kilometre, kilometres round to "0 km".
+    if (isNum(w.distance_m) && w.distance_m > 0) {
+      if (w.distance_m < 1000) stat(numberFormat.format(Math.round(w.distance_m)), 'm');
+      else stat(decimalFormat.format(w.distance_m / 1000), 'km');
+    }
     if (isNum(w.calories)) stat(numberFormat.format(Math.round(w.calories)), 'kcal');
     if (isNum(w.avg_hr)) stat(numberFormat.format(Math.round(w.avg_hr)), 'bpm avg');
-    if (isNum(w.steps) && w.steps > 0) stat(numberFormat.format(w.steps), 'steps');
+    if (isNum(w.steps) && w.steps > 0) stat(numberFormat.format(w.steps), w.steps === 1 ? 'step' : 'steps');
     if (stats.childElementCount) main.append(stats);
     item.append(icon, main);
     return item;
@@ -2510,7 +2535,7 @@ async function loadProfile() {
 async function loadSettings() {
   if (!state.token || settings.loading) return;
   settings.loading = true;
-  const [profileOk] = await Promise.all([loadProfile(), loadNotifications(), loadFeatures()]);
+  const [profileOk] = await Promise.all([loadProfile(), loadNotifications(), loadFeatures(), loadAgents()]);
   settings.loading = false;
   if (profileOk) settings.loaded = true;
 }
@@ -3282,7 +3307,7 @@ async function loadAlarms() {
     alarms.sleepError = null;
   } else if (sleep.reason.status !== 401) alarms.sleepError = sleep.reason;
   renderAlarms();
-  renderSleep();
+  renderSleepMode();
   refreshStaleAlarms();
 }
 
@@ -3399,7 +3424,11 @@ function alarmRow(alarm, writable) {
   open.addEventListener('click', () => openAlarmSheet(alarm));
   const time = element('span', 'alarm-time', clockText(alarm.time));
   const meta = element('span', 'alarm-meta');
-  if (alarm.label) meta.append(element('span', 'alarm-label', alarm.label));
+  if (alarm.label) {
+    const label = element('span', 'alarm-label', alarm.label);
+    label.dir = 'auto';
+    meta.append(label);
+  }
   const chips = element('span', 'day-chips');
   const custom = alarm.repeat_mode && alarm.repeat_mode.startsWith('mode_');
   const days = alarm.repeat || [];
@@ -3477,7 +3506,7 @@ $('alarms-refresh').addEventListener('click', async () => {
     if (sleep) alarms.sleep = sleep;
     restore();
     renderAlarms();
-    renderSleep();
+    renderSleepMode();
   } catch (error) {
     restore();
     renderAlarms();
@@ -3651,7 +3680,7 @@ $('alarm-add').addEventListener('click', () => openAlarmSheet(null));
 
 /* Sleep mode */
 
-function renderSleep() {
+function renderSleepMode() {
   const s = alarms.sleep;
   const connected = watchConnected();
   const toggle = $('sleep-enabled');
@@ -3690,7 +3719,7 @@ for (const id of ['sleep-start', 'sleep-end']) {
   $(id).addEventListener('input', () => {
     $(id).dataset.dirty = '1';
     setStatusLine('sleep-status', '');
-    renderSleep();
+    renderSleepMode();
   });
 }
 
@@ -3713,7 +3742,7 @@ async function saveSleep(payload, button) {
   } finally {
     if (restore) restore();
     delete toggle.dataset.busy;
-    renderSleep();
+    renderSleepMode();
   }
 }
 
@@ -4231,6 +4260,7 @@ function renderQuickReplies() {
         labelRow.append(label, count);
         const input = element('input');
         input.id = 'qr-' + i;
+        input.dir = 'auto';
         input.value = text;
         input.dataset.index = i;
         input.autocomplete = 'off';
@@ -4252,8 +4282,9 @@ function renderQuickReplies() {
           moveButton('trash', `Remove reply ${i + 1}`, locked, () => qrRemove(i)),
         );
         // Read-only while the watch can't take a write: no controls that would only be disabled.
-        if (writable) row.append(field, tools);
-        else row.append(field);
+        // The tools sit on the label line so the input keeps the row's full width for a 30-character reply.
+        if (writable) labelRow.append(tools);
+        row.append(field);
         return row;
       }),
     );
@@ -4423,7 +4454,10 @@ function renderContacts() {
           input.dataset.key = key;
           input.autocomplete = 'off';
           input.disabled = contacts.saving;
-          if (key === 'name') input.maxLength = CONTACT_NAME_MAX;
+          if (key === 'name') {
+            input.maxLength = CONTACT_NAME_MAX;
+            input.dir = 'auto';
+          }
           else input.inputMode = 'tel';
           const error = contacts.rowErrors[i] && contacts.rowErrors[i][key];
           if (error) {
@@ -4603,11 +4637,15 @@ function renderMusic() {
 }
 
 $('music-enabled').addEventListener('change', async () => {
+  // Read the new value before renderMusic puts the saved one back on the toggle.
+  const enabled = $('music-enabled').checked;
   music.saving = true;
   renderMusic();
+  // Keep the switch where the user put it while the save runs.
+  $('music-enabled').checked = enabled;
   setStatusLine('music-status', 'Saving…');
   try {
-    music.data = await api('music/settings', 'PUT', { enabled: $('music-enabled').checked }, { timeout: 15000 });
+    music.data = await api('music/settings', 'PUT', { enabled }, { timeout: 15000 });
     setStatusLine('music-status', 'Saved', 'ok');
   } catch (error) {
     if (error.status !== 401) setStatusLine('music-status', errorText(error), 'error');
@@ -4687,7 +4725,7 @@ function renderHealthConnect() {
   else if (enabled && s.last_success_at) {
     const records = s.last_written === 1 ? '1 record' : `${s.last_written} records`;
     last = `Last export ${relativeTime(s.last_success_at * 1000)}: ${records} written.`;
-    if (s.pending_days) last += ` ${s.pending_days} ${s.pending_days === 1 ? 'day' : 'days'} still to go.`;
+    if (s.pending_days) last += ` ${numberFormat.format(s.pending_days)} ${s.pending_days === 1 ? 'day' : 'days'} still to go.`;
   } else if (enabled) last = 'Not exported yet. It runs after each sync, or tap Export now.';
   $('hc-last').textContent = last;
   $('hc-all').hidden = $('hc-now').hidden = !enabled || Boolean(s.unavailable);
@@ -5059,6 +5097,271 @@ const hasBackup = () => Boolean(window.AndroidNotes && typeof window.AndroidNote
 $('backup-group').hidden = !hasBackup();
 $('sec-backup').hidden = !hasBackup();
 setSummary('backup-sum', 'Encrypted with a passphrase');
+
+/* ---------- Settings: appearance (phone only) ---------- */
+
+// A PC browser has no bridge and follows its own OS; theme.js already applied the saved mode before first paint.
+if (window.AndroidNotes && typeof window.AndroidNotes.setTheme === 'function') {
+  const buttons = [...document.querySelectorAll('#appearance button')];
+  const showMode = (mode) => buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.themeMode === mode)));
+  showMode(document.documentElement.dataset.themeMode || 'system');
+  for (const button of buttons) {
+    button.addEventListener('click', () => {
+      const mode = button.dataset.themeMode;
+      window.applyTheme(mode);
+      showMode(mode);
+      window.AndroidNotes.setTheme(mode);
+    });
+  }
+  $('sec-appearance').hidden = false;
+}
+
+/* ---------- Settings: agents on Wi-Fi (phone only) ---------- */
+
+// Pairing and revoking belong to the phone's own screen; a PC browser over USB doesn't get the card.
+const hasAgents = () => Boolean(window.AndroidNotes && typeof window.AndroidNotes.openBatterySettings === 'function');
+const agents = { data: null, error: null, saving: false, armed: null, armTimer: 0, poll: 0 };
+const pairSheet = $('pair-sheet');
+
+async function loadAgents() {
+  if (!hasAgents()) return;
+  try {
+    agents.data = await api('agents');
+    agents.error = null;
+  } catch (error) {
+    if (error.status === 401) return;
+    agents.error = error;
+  }
+  renderAgents();
+  if (pairSheet.open) renderPairing();
+}
+
+function renderAgents() {
+  const d = agents.data;
+  const toggle = $('agents-enabled');
+  const connect = $('agents-connect');
+  if (!d) {
+    setNote('agents-note', agents.error ? `Couldn’t load agent settings. ${errorText(agents.error)}` : '', 'error');
+    toggle.disabled = true;
+    connect.disabled = true;
+    return;
+  }
+  const host = d.listening && d.listening.host;
+  const count = d.agents.length;
+  const paired = `${count} ${count === 1 ? 'computer' : 'computers'}`;
+  setSummary('agents-sum', !d.enabled ? (count ? `Off · ${paired}` : 'Off') : host ? `On · ${paired}` : 'On · not on Wi-Fi');
+  toggle.checked = d.enabled;
+  toggle.disabled = agents.saving;
+  $('agents-hint').textContent = !d.enabled ? 'Off' : host ? `Listening on ${host}` : 'Not on Wi-Fi';
+  let note = '';
+  if (agents.error) note = `Couldn’t refresh. ${errorText(agents.error)}`;
+  else if (d.enabled && !d.listening) note = 'Hypr Watch couldn’t start listening. Turn the switch off and on again.';
+  setNote('agents-note', note, 'error');
+  connect.disabled = !host || agents.saving || connect.classList.contains('is-busy');
+
+  const battery = $('agents-battery');
+  battery.hidden = !d.enabled;
+  battery.dataset.state = d.battery_exempt ? 'ok' : 'warn';
+  $('agents-battery-title').textContent = d.battery_exempt ? 'Battery optimization is off' : 'Battery optimization is on';
+  $('agents-battery-detail').textContent = d.battery_exempt
+    ? 'Agents can reach the phone while it sleeps.'
+    : 'Android may pause Hypr Watch while the phone sleeps, and agents can’t connect. Set Hypr Watch to Not optimized.';
+  $('agents-battery-open').textContent = d.battery_exempt ? 'Manage' : 'Open settings';
+  $('agents-battery-open').className = d.battery_exempt ? 'ghost' : 'secondary';
+
+  $('agents-list').replaceChildren(...d.agents.map(agentRow));
+  $('agents-empty').hidden = count > 0;
+  $('agents-empty').textContent = !d.enabled
+    ? 'None yet. Turn on the switch, then tap Connect an agent.'
+    : host ? 'None yet. Tap Connect an agent.' : 'None yet. Join Wi-Fi, then tap Connect an agent.';
+}
+
+function agentMeta(agent) {
+  const paired = `Paired ${dateText(agent.created_at)}`;
+  if (!agent.last_seen_at) return `${paired} · Not used yet`;
+  return `${paired} · Last used ${relativeTime(agent.last_seen_at)}${agent.last_ip ? ' from ' + agent.last_ip : ''}`;
+}
+
+function agentRow(agent) {
+  const item = element('li', 'agent-row');
+  const text = element('div', 'agent-text');
+  text.append(element('p', 'face-name', agent.name), element('p', 'agent-meta', agentMeta(agent)));
+  const armed = agents.armed === agent.id;
+  const revoke = element('button', armed ? 'danger small' : 'ghost small delete', armed ? 'Tap again to revoke' : 'Revoke');
+  revoke.type = 'button';
+  revoke.setAttribute('aria-label', armed ? `Confirm: revoke ${agent.name}` : `Revoke ${agent.name}`);
+  revoke.addEventListener('click', () => {
+    if (agents.armed !== agent.id) {
+      agents.armed = agent.id;
+      clearTimeout(agents.armTimer);
+      agents.armTimer = setTimeout(() => {
+        agents.armed = null;
+        renderAgents();
+      }, 4000);
+      renderAgents();
+      const again = [...$('agents-list').querySelectorAll('button')].find((b) => b.getAttribute('aria-label') === `Confirm: revoke ${agent.name}`);
+      if (again) again.focus();
+      return;
+    }
+    agents.armed = null;
+    clearTimeout(agents.armTimer);
+    revokeAgent(agent, revoke);
+  });
+  item.append(text, revoke);
+  return item;
+}
+
+async function revokeAgent(agent, button) {
+  const restore = busyButton(button, 'Revoking…');
+  try {
+    await api('agents/' + encodeURIComponent(agent.id), 'DELETE', {});
+    notice(`${agent.name} can no longer connect`);
+  } catch (error) {
+    restore();
+    if (error.status !== 401) setStatusLine('agents-status', `Couldn’t revoke ${agent.name}. ${errorText(error)}`, 'error');
+  }
+  await loadAgents();
+}
+
+$('agents-enabled').addEventListener('change', async () => {
+  const on = $('agents-enabled').checked;
+  agents.saving = true;
+  setStatusLine('agents-status', '');
+  renderAgents();
+  try {
+    agents.data = await api('agents/lan', 'PUT', { enabled: on });
+    agents.error = null;
+  } catch (error) {
+    if (error.status !== 401) setStatusLine('agents-status', errorText(error), 'error');
+  }
+  agents.saving = false;
+  renderAgents();
+});
+
+$('agents-battery-open').addEventListener('click', () => window.AndroidNotes.openBatterySettings());
+
+// Back from Android's battery list, or after a while away: the exemption and "last used" may have changed.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && view.current === 'settings') loadAgents();
+});
+
+/* Pairing sheet: one code at a time, polled while it is open; closing it closes the code on the phone. */
+
+async function openPairing() {
+  const button = pairSheet.open ? $('pair-again') : $('agents-connect');
+  const restore = busyButton(button, 'Getting a code…');
+  try {
+    const pairing = await api('agents/pairing', 'POST', {});
+    agents.data = { ...agents.data, pairing, last_pairing: null };
+    restore();
+  } catch (error) {
+    restore();
+    if (error.status !== 401) setStatusLine('agents-status', errorText(error), 'error');
+    renderAgents();
+    return;
+  }
+  renderAgents();
+  renderPairing();
+  if (!pairSheet.open) {
+    pairSheet.showModal();
+    if (!(history.state && history.state.sheet === 'pair')) history.pushState({ view: 'settings', sheet: 'pair' }, '');
+    $('pair-done').focus({ preventScroll: true });
+  }
+  clearInterval(agents.poll);
+  agents.poll = setInterval(() => {
+    renderPairing();
+    loadAgents();
+  }, 1000);
+}
+
+function renderPairing() {
+  const d = agents.data || {};
+  const pairing = d.pairing;
+  const ended = d.last_pairing;
+  let tone = 'busy';
+  let title = 'Waiting for the computer';
+  let detail = 'Keep this open until the computer says it’s paired.';
+  let again = false;
+  if (pairing) {
+    const left = Math.max(0, Math.ceil((pairing.expires_at - Date.now()) / 1000));
+    $('pair-code').textContent = pairing.code;
+    $('pair-timer').textContent = `Expires in ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+    if (pairing.attempts_left < 5) {
+      tone = 'warn';
+      title = 'That code didn’t match';
+      detail = `${pairing.attempts_left} ${pairing.attempts_left === 1 ? 'try' : 'tries'} left. Check the code on the computer and try again.`;
+    }
+  } else {
+    $('pair-timer').textContent = '';
+    again = Boolean(d.listening);
+    if (ended && ended.result === 'paired') {
+      tone = 'ok';
+      title = `Paired with ${ended.name}`;
+      detail = 'Its agents can use Hypr Watch over Wi-Fi now. You can revoke it in Settings at any time.';
+      again = false;
+    } else if (ended && ended.result === 'no_tries') {
+      tone = 'error';
+      title = 'Too many wrong tries';
+      detail = 'This code no longer works. Get a new one to try again.';
+    } else if (ended && ended.result === 'expired') {
+      tone = 'error';
+      title = 'The code expired';
+      detail = 'Get a new code to try again.';
+    } else {
+      tone = 'error';
+      title = 'Pairing stopped';
+      detail = d.listening ? 'Get a new code to try again.' : 'Allow agents on Wi-Fi is off.';
+    }
+  }
+  $('pair-code').classList.toggle('is-spent', !pairing);
+  $('pair-state').dataset.state = tone;
+  $('pair-state-title').textContent = title;
+  $('pair-state-detail').textContent = detail;
+  $('pair-again').hidden = !again;
+  $('pair-done').textContent = pairing ? 'Cancel' : 'Done';
+  // Cancelling is the way out, not the goal, so it stays quiet; Done after the outcome is the main action.
+  $('pair-done').className = (pairing ? 'secondary' : 'primary') + ' save';
+}
+
+function closePairSheet() {
+  if (history.state && history.state.sheet === 'pair') history.back();
+  else if (pairSheet.open) pairSheet.close();
+}
+
+window.addEventListener('popstate', () => {
+  if (pairSheet.open && !(history.state && history.state.sheet === 'pair')) pairSheet.close();
+});
+
+pairSheet.addEventListener('close', () => {
+  clearInterval(agents.poll);
+  agents.poll = 0;
+  const open = agents.data && agents.data.pairing;
+  if (open) agents.data = { ...agents.data, pairing: null };
+  attempt(async () => {
+    if (open) await api('agents/pairing', 'DELETE', {});
+    await loadAgents();
+  });
+});
+pairSheet.addEventListener('cancel', (event) => {
+  event.preventDefault();
+  closePairSheet();
+});
+pairSheet.addEventListener('click', (event) => {
+  // A tap on the backdrop lands on the dialog itself.
+  if (event.target === pairSheet) closePairSheet();
+});
+$('pair-close').addEventListener('click', closePairSheet);
+$('pair-form').addEventListener('submit', (event) => {
+  event.preventDefault();
+  closePairSheet();
+});
+$('pair-again').addEventListener('click', openPairing);
+$('agents-connect').addEventListener('click', openPairing);
+
+if (hasAgents()) {
+  $('agents-group').hidden = false;
+  $('sec-agents').hidden = false;
+}
 
 function showRestoreConfirm(open) {
   $('restore-confirm').hidden = !open;

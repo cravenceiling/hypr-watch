@@ -1,0 +1,45 @@
+{
+  "v": 1,
+  "cases": [
+    {
+      "code": "K7Q2-M9XA",
+      "spki_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "nonce_hex": "00112233445566778899aabbccddeeff",
+      "token": "hwa1_AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "normalised_code": "K7Q2M9XA",
+      "k_hex": "1e59d47c19d73b745d3c9bdff2aa7696afd85ad45ca0beab0c2233370fee2588",
+      "client_proof": "_WJ1wLz5UyZAuSNMmSgpJOosxtyNQyJxz6l4NpvrZdo",
+      "phone_proof": "xF_J3raTUckRPAtMWyLS3kV7UITVglFfkBGehwKxq5s"
+    },
+    {
+      "code": "k7q2 m9xa",
+      "spki_hex": "1111111111111111111111111111111111111111111111111111111111111111",
+      "nonce_hex": "ffeeddccbbaa99887766554433221100",
+      "token": "hwa1_AgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgI",
+      "normalised_code": "K7Q2M9XA",
+      "k_hex": "290277ac4fe9483a06048937ac4d09f47f72b50f7fa9d0329a26187571763deb",
+      "client_proof": "yZ_q64U1IYpJI38hVmwUJ60g9yPmwmZU1n7xAOBLhJY",
+      "phone_proof": "VbtnGa4ge7F8sILQAsACL0Zfn1Vo6OyUCQOYdvqRgvk"
+    },
+    {
+      "code": "oIl0-12ab",
+      "spki_hex": "abababababababababababababababababababababababababababababababab",
+      "nonce_hex": "0123456789abcdef0123456789abcdef",
+      "token": "hwa1_AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+      "normalised_code": "011012AB",
+      "k_hex": "c8cce693729189be4b4df60cc7d6c6d20d5d4069347ab671039c9a23359631d9",
+      "client_proof": "lCD5A7iANFNu7-AQk1Kc6ss6V8d6YqWSbGvhWb8JFIs",
+      "phone_proof": "2QXBqPs0VjUmJSfEDRAdTQhCEHrmysQuO6hYz9Bpews"
+    },
+    {
+      "code": " lio1-zzzz ",
+      "spki_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "nonce_hex": "fedcba98765432100123456789abcdef",
+      "token": "hwa1_BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ",
+      "normalised_code": "1101ZZZZ",
+      "k_hex": "2cd42665639c58adf54c274a903e9eef0137a0ced5967270f9a3aa021296d019",
+      "client_proof": "0g4BlhLO_Q_n4BgzzMMRVTbL4TBtgbQBlxX9tC84dVA",
+      "phone_proof": "WQlzFerx0eaLEOjNS12QD9fBTEefHZxH3EnLoiVIEtg"
+    }
+  ]
+}

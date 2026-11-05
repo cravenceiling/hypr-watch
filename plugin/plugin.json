@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "hypr-watch",
   "version": "0.1.0",
-  "description": "Local notes and supported Bluetooth operations for Redmi Watch 5 Active through an Android bridge.",
+  "description": "Local notes and supported Bluetooth operations for Redmi Watch 5 Active through a paired Wi-Fi or authorized USB Android bridge.",
   "author": {"name": "Local user"},
   "extensions": {"com.openai": {"interface": {"displayName": "Hypr Watch", "shortDescription": "Notes across phone and watch", "category": "Productivity", "defaultPrompt": "Show my notes and watch connection status."}}}
 }

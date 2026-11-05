@@ -1,9 +1,11 @@
 # Context
 
 Hypr Watch shares one Android SQLite database with the phone WebView and
-PC browser. Android listens only on 127.0.0.1:8766. ADB forwards that port over
+PC browser. Android listens on 127.0.0.1:8766. ADB forwards that port over
 USB. A generated bearer token, strict Host/Origin checks and a self-only CSP
 protect note operations. The watch auth key remains in Android private storage.
+When the user allows it, paired computers also reach part of the API over
+Wi-Fi, through a separate TLS listener (see the end of this file).
 
 The Android app is Kotlin on the platform SDK (no AndroidX), built without
 Gradle by scripts/build-android.sh. Its UI is the same HTML/CSS/JS served to the
@@ -207,8 +209,10 @@ UI saves use an optional revision precondition to avoid overwriting a note
 changed on another device. All full note data remains in the SQLite notes
 record when a watch task is completed or removed.
 
-The local Python MCP server exposes only supported note, connection, health
-and notification-setting operations. Its USB handoff pauses Mi Fitness and
+The local TypeScript MCP server (plugin/server, run by Node without a build
+step, with the `hypr-watch` command line beside it) exposes only supported
+note, connection, health and notification-setting operations, over the Wi-Fi
+pairing when there is one, else USB. Its USB handoff pauses Mi Fitness and
 saves its prior enabled state, then restores it on release, only once the app
 released the watch (over the API, or by a force-stop and deleting its
 ownership over ADB). It never exposes
@@ -235,3 +239,30 @@ take. A restore decrypts and checks everything first, stops the service
 back, then restarts the service and connects the watch. When Android refuses
 that restart from the background, the Activity starts the service once it is
 in front.
+
+Agents on Wi-Fi (Agents.kt, Android-free and host-tested; AgentLan.kt) are
+off by default. While on, the service keeps running without the watch and
+listens with TLS on port 8767 of every interface, closing each socket whose
+local address is not on the current Wi-Fi network or whose peer is not on its
+link (a NetworkCallback on TRANSPORT_WIFI keeps those addresses and prefixes),
+so an address change needs no rebind. Sockets are capped at 8, 2 per peer,
+and one that hasn't made an authenticated request 15 s after accept is
+closed; any failure, an Error included, ends only its own request.
+The TLS key is an AndroidKeyStore EC P-256 key with the keystore's self-signed
+certificate, handed to the TLS stack by a key manager that returns it for EC
+suites only; it never leaves the keystore, so a reinstall means pairing again,
+and computers pin the SHA-256 of its SubjectPublicKeyInfo. The listener serves
+no page and only the routes the MCP tools call, refuses any request with an
+Origin header, and takes only per-computer `hwa1_` tokens, never the loopback
+token; management (`/api/agents*`: the switch, pairing, revoking) is
+loopback-only, so a paired computer can't pair others. Pairing is an
+8-symbol code the phone shows for 2 minutes with 5 tries in all; both proofs
+are HMACs under a PBKDF2 key over the code and the certificate pin, so a
+man in the middle's certificate fails like a wrong code and a captured proof
+costs 200,000 iterations per guess. `files/agents.json` holds only token
+hashes and stays out of backups. NsdManager advertises `_hyprwatch._tcp`
+with the phone id and whether a code is open; it is only an address hint. A
+request holds a partial wakelock from its finished handshake for at most 45
+seconds; nothing keeps the phone or Wi-Fi awake between requests. The pairing
+window runs on elapsedRealtime. An unreadable agents.json is moved aside and
+the service starts with Wi-Fi access off.

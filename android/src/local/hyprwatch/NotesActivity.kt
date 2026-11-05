@@ -20,6 +20,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.net.Uri
 import android.provider.DocumentsContract
+import android.provider.Settings
 import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -40,10 +41,20 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 /** Behind the status bar, navigation bar, WebView and permission screens. */
-private const val LIGHT_BACKGROUND = 0xffe8eef7.toInt()
-private const val DARK_BACKGROUND = 0xff0f1726.toInt()
+private const val LIGHT_BACKGROUND = 0xffccc8b1.toInt()
+private const val DARK_BACKGROUND = 0xff2f2d26.toInt()
+private const val LIGHT_INK = 0xff211f1b.toInt()
+private const val DARK_INK = 0xffd1cdb7.toInt()
 
 private const val APP_URL = "http://127.0.0.1:8766/"
+
+/** Appearance from Settings: "system", "light" or "dark". The page reads it in theme.js before it paints. */
+private const val UI_PREFS = "ui"
+private const val THEME = "theme"
+private val THEMES = setOf("system", "light", "dark")
+
+private fun themeMode(context: Context): String =
+    context.getSharedPreferences(UI_PREFS, Context.MODE_PRIVATE).getString(THEME, "system")?.takeIf { it in THEMES } ?: "system"
 private const val EXPORT = 2
 private const val LOCATION = 3
 private const val PICK_FILE = 4
@@ -80,6 +91,21 @@ class NotesActivity : Activity() {
 
     /** OnBackInvokedCallback on API 33+, registered only while the WebView can go back. */
     private var backCallback: Any? = null
+
+    /**
+     * A forced Appearance overrides the night bits, so the DayNight theme, the date and time pickers and
+     * the WebView's prefers-color-scheme match it from launch. A change while open restyles live (see setTheme)
+     * and reaches this override on the next launch.
+     */
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        val mode = themeMode(base)
+        if (mode == "system" || Build.VERSION.SDK_INT < 29) return
+        val night = if (mode == "dark") Configuration.UI_MODE_NIGHT_YES else Configuration.UI_MODE_NIGHT_NO
+        val config = Configuration()
+        config.uiMode = (base.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or night
+        applyOverrideConfiguration(config)
+    }
 
     override fun onCreate(saved: Bundle?) {
         // DayNight makes the WebView's prefers-color-scheme follow the system (API 33+).
@@ -177,6 +203,36 @@ class NotesActivity : Activity() {
                 @JavascriptInterface
                 fun restore(passphrase: String?) {
                     if (NotesService.serving) runOnUiThread { pickBackupFile(RESTORE, passphrase) }
+                }
+
+                /** Android's list of apps exempt from battery optimisation; needs no permission, unlike asking for the exemption directly. */
+                @JavascriptInterface
+                fun openBatterySettings() {
+                    runOnUiThread {
+                        try {
+                            startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+                        } catch (e: Exception) {
+                            Toast.makeText(this@NotesActivity, "Couldn’t open battery settings", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+
+                @JavascriptInterface
+                fun getTheme(): String = themeMode(this@NotesActivity)
+
+                /** The page's prefers-color-scheme keeps a forced Light or Dark until relaunch, so System asks here. */
+                @JavascriptInterface
+                fun systemDark(): Boolean = this@NotesActivity.systemDark()
+
+                /** The page has already switched itself; the bars and the window background follow without a reload. */
+                @JavascriptInterface
+                fun setTheme(mode: String?) {
+                    if (mode !in THEMES) return
+                    getSharedPreferences(UI_PREFS, MODE_PRIVATE).edit().putString(THEME, mode).apply()
+                    runOnUiThread {
+                        styleSystemBars()
+                        web?.setBackgroundColor(background())
+                    }
                 }
             },
             "AndroidNotes",
@@ -541,9 +597,16 @@ class NotesActivity : Activity() {
         super.onDestroy()
     }
 
-    private fun isDark(): Boolean =
+    private fun isDark(): Boolean = when (themeMode(this)) {
+        "dark" -> true
+        "light" -> false
+        else -> systemDark()
+    }
+
+    /** The system's own setting: the base context, since [attachBaseContext] may override this Activity's. */
+    private fun systemDark(): Boolean =
         Build.VERSION.SDK_INT >= 29 &&
-            (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            (baseContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
     private fun background(): Int = if (isDark()) DARK_BACKGROUND else LIGHT_BACKGROUND
 
@@ -573,6 +636,7 @@ class NotesActivity : Activity() {
         val message = TextView(this)
         message.text = text
         message.setBackgroundColor(background())
+        message.setTextColor(if (isDark()) DARK_INK else LIGHT_INK)
         message.setPadding(32, 48, 32, 32)
         message.setOnApplyWindowInsetsListener { v, insets ->
             val bars = systemBars(insets)

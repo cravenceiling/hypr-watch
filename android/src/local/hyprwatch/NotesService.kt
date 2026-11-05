@@ -51,6 +51,7 @@ class NotesService : Service() {
     private lateinit var watch: WatchConnection
     private lateinit var reconnect: WatchReconnect
     private lateinit var sync: NotesSync
+    private lateinit var lan: AgentLan
     private lateinit var token: String
     private var unlockRegistered = false
     private var bluetoothRegistered = false
@@ -151,6 +152,9 @@ class NotesService : Service() {
             watch = WatchConnection(this, features, reconnect)
             connects = Connects(reconnect) { n -> watch.connect(n, reconnect::wanted) }
             sync = NotesSync(notes, watch)
+            lan = AgentLan(this) { method, path, body, raw ->
+                route(method, path, body, raw).also { if (method == "GET" && path == "/api/status") it.put("connection", "Wi-Fi (TLS)") }
+            }
             val pool = Executors.newFixedThreadPool(4)
             clients = pool
             val listener = ServerSocket()
@@ -183,6 +187,7 @@ class NotesService : Service() {
             if (Build.VERSION.SDK_INT >= 33) registerReceiver(bluetooth, bt, RECEIVER_NOT_EXPORTED) else registerReceiver(bluetooth, bt)
             bluetoothRegistered = true
             onReconnectThread { reconnect.start() }
+            lan.resume()
         } catch (e: Exception) {
             Log.e("HyprWatch", "Service failed to start", e)
             stopping = true
@@ -202,7 +207,9 @@ class NotesService : Service() {
             val connect = intent?.getBooleanExtra(EXTRA_CONNECT, false) == true
             when (reconnect.serviceStart(connect, restart = intent == null)) {
                 WatchReconnect.StartAction.CONNECT -> explicitConnect()
-                WatchReconnect.StartAction.STOP -> {
+                WatchReconnect.StartAction.STOP -> if (lan.enabled()) {
+                    Log.i("HyprWatch", "Restarted after a kill; staying up for agents on Wi-Fi")
+                } else {
                     Log.i("HyprWatch", "Restarted after a kill without the watch to keep; stopping")
                     stopSelf(startId)
                 }
@@ -283,6 +290,7 @@ class NotesService : Service() {
         background.shutdownNow()
         reconnects.shutdownNow()
         for (wake in synchronized(holds) { holds.toList() }) release(wake)
+        if (::lan.isInitialized) lan.shutdown()
         if (::sync.isInitialized) sync.shutdown()
         if (::watch.isInitialized) watch.shutdown()
         if (::features.isInitialized) features.close()
@@ -340,11 +348,12 @@ class NotesService : Service() {
             Http.respond(out, 204, null, ByteArray(0))
             return
         }
-        if ("GET" == method && ("/" == path || "/app.js" == path || "/style.css" == path)) {
+        if ("GET" == method && ("/" == path || "/app.js" == path || "/style.css" == path || "/theme.js" == path || "/geist.woff2" == path)) {
             val asset = if (path == "/") "index.html" else path.substring(1)
             val type = when {
                 path.endsWith(".js") -> "text/javascript"
                 path.endsWith(".css") -> "text/css"
+                path.endsWith(".woff2") -> "font/woff2"
                 else -> "text/html"
             }
             assets.open(asset).use { a -> Http.respond(out, 200, type, a.readBytes()) }
@@ -425,6 +434,7 @@ class NotesService : Service() {
             return JSONObject().put("queued", true).put("message", "Sync queued. Watch updates are checked automatically.")
         }
         if (method == "GET" && path == "/api/export") return JSONObject().put("version", 1).put("notes", notes.list())
+        lan.route(method, path, input)?.let { return it }
         return features.route(method, path, input, raw) ?: throw IllegalArgumentException("Unknown API operation")
     }
 
@@ -535,16 +545,17 @@ class LinkStore(context: Context) : WatchReconnect.Store {
 }
 
 /**
- * After a reboot or an app update, starts the service when the app owns the watch, which then reconnects it.
- * Not without the Bluetooth permission: the connected-device service would be refused its foreground start.
+ * After a reboot or an app update, starts the service when the app owns the watch, which then reconnects it,
+ * or when agents may connect on Wi-Fi. Not without the Bluetooth permission: the connected-device service
+ * would be refused its foreground start.
  */
 class LinkStartReceiver : BroadcastReceiver() {
     override fun onReceive(c: Context, i: Intent) {
         val start = i.action == Intent.ACTION_BOOT_COMPLETED || i.action == Intent.ACTION_MY_PACKAGE_REPLACED
-        val owned = start && LinkStore.owned(c)
+        val wanted = start && (LinkStore.owned(c) || AgentLan.enabled(c))
         val granted = c.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
-        if (!WatchReconnect.startsAfter(start, owned, Build.VERSION.SDK_INT, granted)) {
-            if (owned) Log.i("HyprWatch", "Not starting after ${i.action}: Bluetooth permission is off")
+        if (!WatchReconnect.startsAfter(start, wanted, Build.VERSION.SDK_INT, granted)) {
+            if (wanted) Log.i("HyprWatch", "Not starting after ${i.action}: Bluetooth permission is off")
             return
         }
         try {

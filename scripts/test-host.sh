@@ -55,8 +55,10 @@ kotlinc -jvm-target 17 -Werror -d "$root/build/tests/backup" "$src/Backup.kt" "$
 # Host stubs replace NotesStore and WatchConnection; NotesSync and SyncGuards are the real sources.
 kotlinc -jvm-target 17 -Werror -classpath "$root/build/tests/json.jar" -d "$root/build/host-tests" "$root"/tests/host/local/hyprwatch/*.kt "$src/NotesSync.kt" "$src/SyncGuards.kt"
 "$jdk/bin/java" -cp "$root/build/host-tests:$root/build/tests/json.jar:$kotlin_stdlib" local.hyprwatch.SyncTest
+# Agents on Wi-Fi: pairing against the PC's vectors, agent tokens, and the LAN listener's routes and refusals.
+rm -rf "$root/build/tests/agents"
+mkdir -p "$root/build/tests/agents"
+kotlinc -jvm-target 17 -Werror -classpath "$root/build/tests/json.jar" -d "$root/build/tests/agents" "$src/Http.kt" "$src/Agents.kt" "$root/tests/AgentsTest.kt"
+"$jdk/bin/java" -cp "$root/build/tests/agents:$root/build/tests/json.jar:$kotlin_stdlib" local.hyprwatch.AgentsTest "$root/tests/agent-pairing-vectors.json"
 
-python "$root/tests/test_companion.py"
-python "$root/tests/test_health_tools.py"
-python "$root/tests/test_health_insights.py"
-python "$root/tests/test_feature_tools.py"
+(cd "$root/plugin" && node --test test/*.test.ts)

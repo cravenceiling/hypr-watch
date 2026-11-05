@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="local.hyprwatch" android:versionCode="1" android:versionName="0.1.0">
   <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35" />
   <uses-permission android:name="android.permission.INTERNET" />
+  <!-- Agents on Wi-Fi: which local addresses belong to the Wi-Fi network (AgentLan). -->
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
   <uses-permission android:name="android.permission.VIBRATE" />
