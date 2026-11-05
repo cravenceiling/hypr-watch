@@ -332,6 +332,12 @@ function element(tag, className, text) {
 const relativeFormat = new Intl.RelativeTimeFormat(navigator.language, { numeric: 'auto', style: 'short' });
 const dateFormat = new Intl.DateTimeFormat(navigator.language, { month: 'short', day: 'numeric' });
 const longDateFormat = new Intl.DateTimeFormat(navigator.language, { dateStyle: 'medium', timeStyle: 'short' });
+const yearDateFormat = new Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'short', day: 'numeric' });
+
+/** A date without its year reads as this year, so older dates carry one. */
+function dateText(ms) {
+  return new Date(ms).getFullYear() === new Date().getFullYear() ? dateFormat.format(ms) : yearDateFormat.format(ms);
+}
 
 function relativeTime(ms) {
   const seconds = Math.round((ms - Date.now()) / 1000);
@@ -340,7 +346,7 @@ function relativeTime(ms) {
   if (abs < 3600) return relativeFormat.format(Math.round(seconds / 60), 'minute');
   if (abs < 86400) return relativeFormat.format(Math.round(seconds / 3600), 'hour');
   if (abs < 7 * 86400) return relativeFormat.format(Math.round(seconds / 86400), 'day');
-  return dateFormat.format(ms);
+  return dateText(ms);
 }
 
 function noteItem(note) {
@@ -360,6 +366,8 @@ function noteItem(note) {
   const heading = element('h3', 'note-title');
   const open = element('button', 'note-open', note.title);
   open.type = 'button';
+  // Notes are in any script: each title and preview takes its direction from its own text.
+  open.dir = 'auto';
   open.dataset.role = 'open';
   if (note.id === state.selectedId && !isMobile()) open.setAttribute('aria-current', 'true');
   open.addEventListener('click', () => openEditor(note));
@@ -369,7 +377,9 @@ function noteItem(note) {
   if (note.body.trim()) {
     // Collapse blank lines so the three-line preview shows text, not gaps.
     const preview = note.body.slice(0, 600).replace(/\n\s*\n+/g, '\n').trim();
-    main.append(element('p', 'note-body', preview));
+    const body = element('p', 'note-body', preview);
+    body.dir = 'auto';
+    main.append(body);
   }
 
   const meta = element('div', 'note-meta');
@@ -1253,13 +1263,17 @@ function svgNode(tag, attrs = {}, text) {
   return node;
 }
 
-/** Ticks from lo to a rounded max, at 1/2/2.5/5 steps. */
-function niceTicks(lo, hi, count = 3) {
+/**
+ * Ticks from lo to a rounded max, at 1/2/2.5/5 steps.
+ * integer: whole-number ticks for counts, where a "0.5 steps" line means nothing.
+ */
+function niceTicks(lo, hi, count = 3, integer = false) {
   const span = Math.max(hi - lo, 1e-9);
   const raw = span / count;
   const mag = 10 ** Math.floor(Math.log10(raw));
   const norm = raw / mag;
-  const step = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * mag;
+  const nice = (norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 2.5 ? 2.5 : norm <= 5 ? 5 : 10) * mag;
+  const step = integer ? Math.max(1, Math.round(nice)) : nice;
   const start = Math.floor(lo / step) * step;
   const ticks = [];
   for (let t = start; t < hi + step - 1e-9; t += step) ticks.push(Math.round(t * 1000) / 1000);
@@ -1390,10 +1404,10 @@ function chartMessage(container, text) {
  * Columns per day. series: [{ cls, values }] stacked bottom to top; a 2px surface gap separates segments.
  * Missing days draw nothing; the tooltip and table say "No data".
  */
-function columnChart(container, { dates, series, goal, tickFormat, label, tip }) {
+function columnChart(container, { dates, series, goal, tickFormat, label, tip, integer = false }) {
   const width = Math.max(240, Math.round(container.clientWidth));
   const totals = dates.map((_, i) => series.reduce((sum, s) => sum + (isNum(s.values[i]) ? s.values[i] : 0), 0));
-  const ticks = niceTicks(0, Math.max(...totals, goal || 0, 1));
+  const ticks = niceTicks(0, Math.max(...totals, goal || 0, 1), 3, integer);
   const top = ticks[ticks.length - 1];
   const plotW = width - PAD.left - PAD.right;
   const plotH = CHART_HEIGHT - PAD.top - PAD.bottom;
@@ -1787,15 +1801,16 @@ function renderSteps(data, days, goal) {
   }
   const average = Math.round(known.reduce((a, b) => a + b, 0) / known.length);
   const met = goal ? known.filter((v) => v >= goal).length : 0;
-  $('steps-sub').textContent = `Average ${numberFormat.format(average)} a day` + (goal ? ` · goal met on ${met} of ${known.length} days` : '');
+  $('steps-sub').textContent = `Average ${numberFormat.format(average)} a day` + (goal ? ` · goal met on ${met} of ${known.length} ${known.length === 1 ? 'day' : 'days'}` : '');
   const best = Math.max(...known);
   columnChart(chart, {
     dates: data.dates,
     series: [{ cls: 'seg-steps', values }],
     goal,
+    integer: true,
     tickFormat: (t) => compactFormat.format(t),
-    label: `Steps per day, ${rangeWords(days.length)}. Average ${numberFormat.format(average)}, highest ${numberFormat.format(best)}.` + (goal ? ` Goal ${numberFormat.format(goal)}, met on ${met} days.` : '') + ` ${days.length - known.length} days without data.`,
-    tip: (i) => tipNodes(fullDayFormat.format(parseIsoDate(data.dates[i])), [{ strong: true, text: values[i] === null ? 'No data' : `${numberFormat.format(values[i])} steps` }]),
+    label: `Steps per day, ${rangeWords(days.length)}. Average ${numberFormat.format(average)}, highest ${numberFormat.format(best)}.` + (goal ? ` Goal ${numberFormat.format(goal)}, met on ${met} ${met === 1 ? 'day' : 'days'}.` : '') + ` ${days.length - known.length} ${days.length - known.length === 1 ? 'day' : 'days'} without data.`,
+    tip: (i) => tipNodes(fullDayFormat.format(parseIsoDate(data.dates[i])), [{ strong: true, text: values[i] === null ? 'No data' : `${numberFormat.format(values[i])} ${values[i] === 1 ? 'step' : 'steps'}` }]),
   });
   renderTable(
     $('steps-table'),
@@ -1929,7 +1944,7 @@ function renderSleep(data, nights) {
     dates: data.dates,
     series: STAGES.map((stage) => ({ cls: 'seg-' + stage.key, values: rows.map((n) => (n ? toHours(n[stage.key]) : null)) })),
     tickFormat: (t) => `${decimalFormat.format(t)}h`,
-    label: `Sleep per night by stage: deep, light, REM and awake, ${rangeWords(data.dates.length)}. ${withData.length} nights recorded` + (avg ? `, average ${formatMinutes(avg)} asleep.` : '.'),
+    label: `Sleep per night by stage: deep, light, REM and awake, ${rangeWords(data.dates.length)}. ${withData.length} ${withData.length === 1 ? 'night' : 'nights'} recorded` + (avg ? `, average ${formatMinutes(avg)} asleep.` : '.'),
     tip: (i) => {
       const night = rows[i];
       const title = fullDayFormat.format(parseIsoDate(data.dates[i]));
@@ -2001,10 +2016,14 @@ function renderWorkouts(data, workouts) {
       span.append(element('b', '', value), document.createTextNode(' ' + unit));
       stats.append(span);
     };
-    if (isNum(w.distance_m) && w.distance_m > 0) stat(decimalFormat.format(w.distance_m / 1000), 'km');
+    // Under a kilometre, kilometres round to "0 km".
+    if (isNum(w.distance_m) && w.distance_m > 0) {
+      if (w.distance_m < 1000) stat(numberFormat.format(Math.round(w.distance_m)), 'm');
+      else stat(decimalFormat.format(w.distance_m / 1000), 'km');
+    }
     if (isNum(w.calories)) stat(numberFormat.format(Math.round(w.calories)), 'kcal');
     if (isNum(w.avg_hr)) stat(numberFormat.format(Math.round(w.avg_hr)), 'bpm avg');
-    if (isNum(w.steps) && w.steps > 0) stat(numberFormat.format(w.steps), 'steps');
+    if (isNum(w.steps) && w.steps > 0) stat(numberFormat.format(w.steps), w.steps === 1 ? 'step' : 'steps');
     if (stats.childElementCount) main.append(stats);
     item.append(icon, main);
     return item;
@@ -3405,7 +3424,11 @@ function alarmRow(alarm, writable) {
   open.addEventListener('click', () => openAlarmSheet(alarm));
   const time = element('span', 'alarm-time', clockText(alarm.time));
   const meta = element('span', 'alarm-meta');
-  if (alarm.label) meta.append(element('span', 'alarm-label', alarm.label));
+  if (alarm.label) {
+    const label = element('span', 'alarm-label', alarm.label);
+    label.dir = 'auto';
+    meta.append(label);
+  }
   const chips = element('span', 'day-chips');
   const custom = alarm.repeat_mode && alarm.repeat_mode.startsWith('mode_');
   const days = alarm.repeat || [];
@@ -4237,6 +4260,7 @@ function renderQuickReplies() {
         labelRow.append(label, count);
         const input = element('input');
         input.id = 'qr-' + i;
+        input.dir = 'auto';
         input.value = text;
         input.dataset.index = i;
         input.autocomplete = 'off';
@@ -4258,8 +4282,9 @@ function renderQuickReplies() {
           moveButton('trash', `Remove reply ${i + 1}`, locked, () => qrRemove(i)),
         );
         // Read-only while the watch can't take a write: no controls that would only be disabled.
-        if (writable) row.append(field, tools);
-        else row.append(field);
+        // The tools sit on the label line so the input keeps the row's full width for a 30-character reply.
+        if (writable) labelRow.append(tools);
+        row.append(field);
         return row;
       }),
     );
@@ -4429,7 +4454,10 @@ function renderContacts() {
           input.dataset.key = key;
           input.autocomplete = 'off';
           input.disabled = contacts.saving;
-          if (key === 'name') input.maxLength = CONTACT_NAME_MAX;
+          if (key === 'name') {
+            input.maxLength = CONTACT_NAME_MAX;
+            input.dir = 'auto';
+          }
           else input.inputMode = 'tel';
           const error = contacts.rowErrors[i] && contacts.rowErrors[i][key];
           if (error) {
@@ -4697,7 +4725,7 @@ function renderHealthConnect() {
   else if (enabled && s.last_success_at) {
     const records = s.last_written === 1 ? '1 record' : `${s.last_written} records`;
     last = `Last export ${relativeTime(s.last_success_at * 1000)}: ${records} written.`;
-    if (s.pending_days) last += ` ${s.pending_days} ${s.pending_days === 1 ? 'day' : 'days'} still to go.`;
+    if (s.pending_days) last += ` ${numberFormat.format(s.pending_days)} ${s.pending_days === 1 ? 'day' : 'days'} still to go.`;
   } else if (enabled) last = 'Not exported yet. It runs after each sync, or tap Export now.';
   $('hc-last').textContent = last;
   $('hc-all').hidden = $('hc-now').hidden = !enabled || Boolean(s.unavailable);
@@ -5143,10 +5171,13 @@ function renderAgents() {
 
   $('agents-list').replaceChildren(...d.agents.map(agentRow));
   $('agents-empty').hidden = count > 0;
+  $('agents-empty').textContent = !d.enabled
+    ? 'None yet. Turn on the switch, then tap Connect an agent.'
+    : host ? 'None yet. Tap Connect an agent.' : 'None yet. Join Wi-Fi, then tap Connect an agent.';
 }
 
 function agentMeta(agent) {
-  const paired = `Paired ${dateFormat.format(agent.created_at)}`;
+  const paired = `Paired ${dateText(agent.created_at)}`;
   if (!agent.last_seen_at) return `${paired} · Not used yet`;
   return `${paired} · Last used ${relativeTime(agent.last_seen_at)}${agent.last_ip ? ' from ' + agent.last_ip : ''}`;
 }

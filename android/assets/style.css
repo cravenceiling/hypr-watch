@@ -67,20 +67,23 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
-  /* Square-ish, decided once: cards, controls, chips. */
-  --r-card: 4px;
-  --r-control: 3px;
-  --r-chip: 2px;
+  /* Softened corners, decided once: cards, controls, chips. Floating chrome is a full pill. */
+  --r-card: 12px;
+  --r-control: 8px;
+  --r-chip: 5px;
+  --r-sheet: 16px;
 
   --font: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-code: ui-monospace, "SF Mono", "Roboto Mono", monospace;
 
   --gutter: 16px;
-  /* The floating New note button: its height, its gap above the tab bar, and the room the list keeps clear below its last line. */
-  --fab-height: 52px;
-  --fab-offset: 12px;
-  --fab-space: calc(var(--fab-offset) + var(--fab-height) + 32px);
-  --tabbar: 64px;
+  /* A full-width floating bar above the gesture bar, with the round New note button above its right end.
+     --tabbar is the height the bar covers; --fab-space is the room the notes list keeps clear above it,
+     enough for the raised button (12px gap, 56px button) plus some air. */
+  --dock: 56px;
+  --dock-gap: 12px;
+  --tabbar: calc(var(--dock) + var(--dock-gap));
+  --fab-space: 92px;
 
   font-family: var(--font);
   color: var(--ink);
@@ -271,8 +274,8 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 16px;
+  min-height: 40px;
+  padding: 0 14px;
   border-radius: var(--r-control);
   font-size: 15px;
   font-weight: 500;
@@ -428,23 +431,32 @@ html[data-view="notes"] {
   height: 16px;
 }
 
-/* On phones the main action is a floating button within thumb reach. */
+/* On phones the main action is a round button above the bar's right end, within thumb reach. */
 .new-note {
   position: fixed;
   right: var(--gutter);
-  bottom: calc(var(--safe-bottom-value) + var(--tabbar) + var(--fab-offset));
+  bottom: calc(var(--safe-bottom-value) + var(--dock-gap) + var(--dock) + 12px);
   z-index: 4;
-  min-height: var(--fab-height);
-  padding: 0 20px 0 16px;
-  border-radius: var(--r-card);
-  font-size: 15px;
+  width: var(--dock);
+  min-height: var(--dock);
+  padding: 0;
+  border-radius: 999px;
   box-shadow: var(--shadow-float);
 }
 
 .new-note .icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   stroke-width: 2;
+}
+
+.new-note span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* ---------- Search ---------- */
@@ -453,7 +465,7 @@ html[data-view="notes"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 44px;
+  min-height: 42px;
   margin-top: 4px;
   padding: 0 12px;
   border-radius: var(--r-control);
@@ -474,7 +486,7 @@ html[data-view="notes"] {
 .search input {
   flex: 1;
   min-width: 0;
-  height: 100%;
+  align-self: stretch;
   border: 0;
   padding: 0;
   background: transparent;
@@ -703,8 +715,8 @@ h2.section-title::before,
   flex: none;
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 0;
 }
 
@@ -744,7 +756,7 @@ h2.section-title::before,
 .note-main {
   flex: 1;
   min-width: 0;
-  padding: 15px 16px 14px 0;
+  padding: 13px 14px 12px 0;
 }
 
 .note-title {
@@ -752,17 +764,17 @@ h2.section-title::before,
   font-weight: 550;
   line-height: 1.35;
   overflow-wrap: anywhere;
+  transition: color 150ms ease;
+}
+
+/* The clamp sits on the button: a button is laid out as one atomic box, so a clamp on the heading never applied. */
+.note-open {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  transition: color 150ms ease;
-}
-
-.note-open {
-  display: inline;
   padding: 0;
-  text-align: left;
+  text-align: start;
   font-weight: inherit;
 }
 
@@ -774,7 +786,7 @@ h2.section-title::before,
 .note-open::after {
   content: "";
   position: absolute;
-  inset: 0 0 0 52px;
+  inset: 0 0 0 48px;
 }
 
 .note-body {
@@ -858,7 +870,7 @@ h2.section-title::before,
   flex-direction: column;
   gap: 10px;
   height: 76px;
-  padding: 20px 16px 18px 52px;
+  padding: 20px 16px 18px 48px;
   opacity: 0;
   animation: skeleton-in 200ms ease 400ms forwards;
 }
@@ -1006,7 +1018,7 @@ html.sheet-open .scrim {
   z-index: 6;
   height: var(--editor-height, 100dvh);
   max-height: var(--editor-height, 100dvh);
-  border-radius: 10px 10px 0 0;
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
   display: flex;
   flex-direction: column;
   background: var(--overlay);
@@ -1221,6 +1233,7 @@ html.sheet-open .scrim {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .switch-label {
@@ -1234,6 +1247,7 @@ html.sheet-open .scrim {
   font-weight: 400;
   line-height: 1.35;
   color: var(--ink-2);
+  overflow-wrap: anywhere;
 }
 
 input[role="switch"] {
@@ -1524,8 +1538,10 @@ html.sheet-open .toast {
   bottom: calc(var(--safe-bottom-value) + 84px);
 }
 
+/* With the keyboard up, the bottom of the sheet is the field being typed in; the toast goes to the top, just under the 60px header so Close stays tappable. */
 html.sheet-open.keyboard-open .toast {
-  bottom: 84px;
+  top: calc(var(--safe-top-value) + 66px);
+  bottom: auto;
 }
 
 /* ---------- PC access screen ---------- */
@@ -1597,7 +1613,7 @@ html.sheet-open.keyboard-open .toast {
   min-height: 48px;
 }
 
-/* ---------- Sections: bottom tab bar on phones ---------- */
+/* ---------- Sections: a floating dock on phones ---------- */
 
 .appbar {
   display: contents;
@@ -1609,17 +1625,20 @@ html.sheet-open.keyboard-open .toast {
 
 .tabs {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--safe-bottom-value) + var(--dock-gap));
   z-index: 4;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  height: calc(var(--tabbar) + var(--safe-bottom-value));
-  padding: 6px 8px calc(6px + var(--safe-bottom-value));
-  background: var(--bg);
-  box-shadow: 0 -1px 0 var(--line);
+  display: flex;
+  gap: 2px;
+  height: var(--dock);
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--overlay);
+  background: color-mix(in srgb, var(--overlay) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: var(--shadow-float);
 }
 
 /* The keyboard covers the bottom of the screen; give the space back to the content. */
@@ -1631,18 +1650,33 @@ html.keyboard-open .tabs {
   display: none;
 }
 
+/* With the bar gone and --tabbar at 0, the raised button would sit over the end of the list. */
+@media (max-width: 759px) {
+  html.keyboard-open .new-note {
+    display: none;
+  }
+}
+
 .tab {
   display: flex;
-  flex-direction: column;
+  flex: 1;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 6px;
   min-width: 0;
-  border-radius: var(--r-control);
+  border-radius: 999px;
   color: var(--ink-2);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   transition: transform 120ms var(--ease-out);
+}
+
+/* A large system font shortens the label rather than pushing the icon out of its third. */
+.tab-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tab-icon {
@@ -1651,15 +1685,15 @@ html.keyboard-open .tabs {
 }
 
 .tab .icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .tab:active {
   transform: scale(0.96);
 }
 
-/* The selected section is an inverted ink block, as in a YoRHa menu. */
+/* The selected section is an inverted ink pill, as in a YoRHa menu. */
 .tab[aria-current="page"] {
   background: var(--ink);
   color: var(--on-accent);
@@ -1688,7 +1722,7 @@ html:not([data-view="notes"]) .toast {
 }
 
 .card {
-  padding: 16px;
+  padding: 14px;
   border-radius: var(--r-card);
   background: var(--surface);
   border: 1px solid var(--line);
@@ -1726,7 +1760,9 @@ html:not([data-view="notes"]) .toast {
   border-radius: var(--r-card);
 }
 
+/* On narrow cards the button drops below the text instead of squeezing it, as in .access-row. */
 .sync-card {
+  flex-wrap: wrap;
   margin: 4px 0 16px;
   padding: 10px 10px 10px 16px;
   background: var(--surface);
@@ -1736,6 +1772,14 @@ html:not([data-view="notes"]) .toast {
 .sync-card > button,
 .access-row > button {
   align-self: center;
+}
+
+.sync-card > .sync-text {
+  flex: 1 1 160px;
+}
+
+.sync-card > button {
+  margin-left: auto;
 }
 
 .sync-text {
@@ -1789,6 +1833,7 @@ html:not([data-view="notes"]) .toast {
 
 .callout {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   gap: 10px;
   margin-bottom: 16px;
@@ -1807,7 +1852,7 @@ html:not([data-view="notes"]) .toast {
 }
 
 .callout-text {
-  flex: 1;
+  flex: 1 1 160px;
   min-width: 0;
   color: var(--ink);
   text-wrap: pretty;
@@ -1820,6 +1865,7 @@ html:not([data-view="notes"]) .toast {
 
 .callout .secondary {
   align-self: center;
+  margin-left: auto;
   box-shadow: inset 0 0 0 1px var(--warn);
   color: var(--ink);
 }
@@ -2382,8 +2428,9 @@ html:not([data-view="notes"]) .toast {
   position: relative;
 }
 
+/* In em so the room for the unit grows with a large system font. */
 .unit-input input {
-  padding-right: 52px;
+  padding-right: 3.25em;
 }
 
 .unit {
@@ -2434,11 +2481,23 @@ html:not([data-view="notes"]) .toast {
 }
 
 .gender-field .segmented label {
-  flex: 1;
+  flex: 1 1 auto;
   margin: 0;
   min-height: 40px;
   font-size: 15px;
   cursor: pointer;
+}
+
+/* With a large system font the two options stack instead of pushing the page wider than the screen. */
+.gender-field .segmented {
+  flex-wrap: wrap;
+}
+
+/* Half of a 320px phone is too narrow for both options on one line. */
+@media (max-width: 359px) {
+  .gender-field {
+    grid-column: 1 / -1;
+  }
 }
 
 .gender-field[aria-invalid="true"] .segmented {
@@ -2587,10 +2646,11 @@ html:not([data-view="notes"]) .toast {
 
 /* ---------- Find phone banner ---------- */
 
+/* Below the scrim and the editor sheet (5, 6): above them it covered the sheet's close button. */
 .ring-banner {
   position: sticky;
   top: var(--safe-top-value);
-  z-index: 7;
+  z-index: 5;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -3165,7 +3225,9 @@ button.is-busy:disabled {
   max-width: 100%;
 }
 
+/* Its own line: a one-letter label on the chip row read as another day. */
 .alarm-label {
+  flex-basis: 100%;
   font-size: 14px;
   font-weight: 500;
   color: var(--ink-2);
@@ -3182,7 +3244,7 @@ button.is-busy:disabled {
   display: inline-grid;
   place-items: center;
   min-width: 24px;
-  height: 20px;
+  min-height: 20px;
   padding: 0 4px;
   border-radius: var(--r-chip);
   color: var(--ink-2);
@@ -3240,7 +3302,8 @@ button.is-busy:disabled {
   border-radius: var(--r-card);
   background: var(--ink);
   color: var(--on-accent);
-  font-size: 38px;
+  /* Fits one line on a 320px phone with a large system font; past that it breaks only at the hyphen. */
+  font-size: min(38px, 9vw);
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: 0.08em;
@@ -3276,7 +3339,7 @@ button.is-busy:disabled {
   margin: auto 0 0;
   padding: 0;
   border: 0;
-  border-radius: 10px 10px 0 0;
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
   background: var(--overlay);
   color: var(--ink);
   overflow: hidden;
@@ -3417,6 +3480,12 @@ button.is-busy:disabled {
   align-items: center;
   gap: 4px;
   flex: none;
+}
+
+/* Keeps every Use button in one column: faces that can't be deleted hold the trash button's place. */
+.face-actions:not(:has(> .delete, > .danger))::after {
+  content: "";
+  width: 40px;
 }
 
 #faces-status {
@@ -3582,9 +3651,20 @@ button.is-busy:disabled {
   gap: 0;
 }
 
-/* Lines the buttons up with the input, below its label, even when an error shows under it. */
-.edit-row > .field + .row-tools {
-  padding-top: 31px;
+/* Quick replies keep their buttons on the label line; the counter stays beside them. */
+.label-row:has(> .row-tools) {
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 8px;
+  margin-bottom: 2px;
+}
+
+.label-row > .row-tools {
+  margin-right: -8px;
+}
+
+.label-row:has(> .row-tools) > .counter {
+  margin-left: auto;
 }
 
 .contact-row {
@@ -3622,8 +3702,10 @@ button.is-busy:disabled {
 
 /* ---------- Weather ---------- */
 
+/* With a large system font the condition drops below the temperature; one long word widened the page. */
 .weather-now {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 16px;
   margin: 14px 0;
@@ -3770,7 +3852,7 @@ button.is-busy:disabled {
   .sheet {
     width: min(440px, calc(100% - 48px));
     margin: auto;
-    border-radius: 6px;
+    border-radius: var(--r-sheet);
     box-shadow: var(--shadow-float);
     transition: transform 200ms var(--ease-out), opacity 200ms ease;
   }
@@ -3919,11 +4001,20 @@ button.is-busy:disabled {
 
   .new-note {
     position: static;
+    width: auto;
     min-height: 44px;
     padding: 0 18px 0 14px;
     border-radius: var(--r-control);
     font-size: 15px;
     box-shadow: none;
+  }
+
+  .new-note span {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
   }
 
   .new-note .icon {
@@ -3994,12 +4085,13 @@ button.is-busy:disabled {
     padding: 3px;
     border-radius: var(--r-control);
     background: var(--surface-2);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: inset 0 0 0 1px var(--line);
   }
 
   .tab {
-    flex-direction: row;
-    gap: 6px;
+    flex: none;
     min-height: 36px;
     padding: 0 14px 0 10px;
     border-radius: var(--r-chip);
